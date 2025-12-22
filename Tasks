@@ -1,0 +1,38 @@
+Bài 1
+Viết một hàm trích xuất hai ký tự đầu tiên và hai ký tự cuối cùng từ chuỗi được truyền vào qua tham số, sau đó trả về chúng ghép lại với nhau. Nên thêm một điều kiện: nếu độ dài của chuỗi nhỏ hơn 2 thì hàm sẽ trả về chuỗi rỗng.
+
+Bài  2
+Viết một hàm thay thế tất cả các ký tự trong chuỗi (được truyền vào qua tham số) bằng ký hiệu $, với điều kiện ký tự bị thay thế luôn là ký tự đầu tiên của chuỗi.
+Ví dụ: nếu chuỗi bắt đầu bằng chữ 's' thì tất cả các ký tự 's' trong chuỗi sẽ được thay bằng $.
+
+Bài 3
+Viết một hàm nhận vào một chuỗi và cho biết ký tự đầu tiên bị lặp lại trong chuỗi đó, đồng thời cho biết vị trí xuất hiện đầu tiên của ký tự này.
+Để làm điều này, ta có thể lưu số lần xuất hiện của các ký tự trong một dictionary. Ngay khi gặp một ký tự đã tồn tại trong dictionary, ta dừng ngay chương trình.
+Nếu không có ký tự nào bị lặp, hàm sẽ trả về None.
+
+Bài 4
+Viết một hàm có thể chuyển một ma trận (matrix) thành một danh sách (list) sao cho danh sách đó chứa tất cả các giá trị của các hàng trong ma trận theo đúng thứ tự ban đầu.
+Ví dụ: [[1, 2], [3, 4]] → [1, 2, 3, 4].
+
+Bài 5
+Viết một hàm có thể xóa một giá trị khỏi tuple.
+Rõ ràng, điều này không thể thực hiện trực tiếp vì tuple là kiểu dữ liệu bất biến. Do đó, hàm sẽ có hai tham số:
+Tham số thứ nhất: tuple cần xóa giá trị
+Tham số thứ hai: giá trị cần xóa
+Trong hàm, ta sẽ chuyển tuple sang list, xóa giá trị cần thiết, sau đó chuyển list lại thành tuple và trả về kết quả.
+
+Bài 6
+Viết một hàm có thể sắp xếp dictionary (được truyền vào qua tham số) theo giá trị (value) theo thứ tự tăng dần hoặc giảm dần.
+Hàm có hai tham số:
+Tham số thứ nhất: dictionary cần sắp xếp
+Tham số thứ hai: tham số logic (boolean) quyết định sắp xếp tăng dần hay giảm dần
+
+Mặc định, tham số này là False, tức là sắp xếp tăng dần, nhưng có thể bị ghi đè.
+Hàm chỉ có một giá trị trả về, trong đó các khóa (key) của dictionary sẽ được sắp xếp dựa trên giá trị (value), không phải theo thứ tự chữ cái của key.
+Ta cũng có thể sử dụng tham số reverse trong hàm sort để đảo ngược thứ tự sắp xếp khi cần sắp xếp giảm dần.
+
+Bài 7
+Viết một chương trình liên tục loại bỏ mỗi phần tử thứ ba khỏi một danh sách cho đến khi không còn phần tử nào trong danh sách.
+Trong chương trình, ta sẽ tạo một bản sao của danh sách và thực sự xóa phần tử từ bản sao đó, trong khi vẫn duyệt qua danh sách gốc nhiều lần.
+Nếu một số không còn tồn tại trong danh sách sao chép thì ta bỏ qua. Nếu biến phụ của ta chia hết cho 3, ta sẽ loại bỏ phần tử tương ứng khỏi danh sách.
+Trong quá trình lặp, biến phụ này sẽ tăng lên 1 sau mỗi lần duyệt.
