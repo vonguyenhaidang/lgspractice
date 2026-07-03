@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thẻ Đấu Giá Của Đội</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#151a33;
+    --ink-2:#1f2749;
+    --ink-3:#2a3364;
+    --gold:#d4af37;
+    --gold-light:#f4e4a6;
+    --cream:#fff8e9;
+    --coral:#ff6b5e;
+    --mint:#6ee7b7;
+    --radius:18px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(212,175,55,0.10), transparent 45%),
+      radial-gradient(circle at 85% 85%, rgba(212,175,55,0.08), transparent 40%),
+      var(--ink);
+    font-family:'Inter', sans-serif;
+    color:var(--cream);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:32px 16px;
+  }
+  .stage{ width:100%; max-width:480px; }
+  .eyebrow{
+    text-align:center;
+    letter-spacing:0.25em;
+    text-transform:uppercase;
+    font-size:12px;
+    color:var(--gold);
+    font-weight:600;
+    margin-bottom:6px;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    text-align:center;
+    font-size:30px;
+    font-weight:600;
+    margin-bottom:28px;
+    color:var(--cream);
+  }
+  /* ---------- SETUP PANEL ---------- */
+  .panel{
+    background:var(--ink-2);
+    border:1px solid rgba(212,175,55,0.25);
+    border-radius:var(--radius);
+    padding:28px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.35);
+  }
+  .field{ margin-bottom:18px; }
+  .field label{
+    display:block;
+    font-size:13px;
+    color:var(--gold-light);
+    margin-bottom:8px;
+    font-weight:600;
+  }
+  .field input{
+    width:100%;
+    padding:14px 16px;
+    border-radius:10px;
+    border:1px solid rgba(212,175,55,0.35);
+    background:var(--ink-3);
+    color:var(--cream);
+    font-family:'Inter', sans-serif;
+    font-size:15px;
+    outline:none;
+    transition:border-color .2s, box-shadow .2s;
+  }
+  .field input:focus{
+    border-color:var(--gold);
+    box-shadow:0 0 0 3px rgba(212,175,55,0.18);
+  }
+  .btn{
+    width:100%;
+    padding:15px;
+    border-radius:10px;
+    border:none;
+    background:linear-gradient(135deg, var(--gold-light), var(--gold));
+    color:#1a1408;
+    font-weight:700;
+    font-size:15px;
+    cursor:pointer;
+    letter-spacing:0.02em;
+    transition:transform .15s, box-shadow .15s;
+  }
+  .btn:hover{ transform:translateY(-2px); box-shadow:0 10px 24px rgba(212,175,55,0.35); }
+  .btn:active{ transform:translateY(0); }
+  .btn-ghost{
+    background:transparent;
+    border:1px solid rgba(255,248,233,0.25);
+    color:var(--cream);
+  }
+  .btn-ghost:hover{ box-shadow:none; border-color:var(--gold); background:rgba(212,175,55,0.08);}
+  .btn-danger{
+    background:transparent;
+    border:1px solid rgba(255,107,94,0.4);
+    color:var(--coral);
+  }
+  .hint{ font-size:12px; color:rgba(255,248,233,0.55); margin-top:-10px; margin-bottom:18px; }
+
+  /* ---------- CREDIT CARD ---------- */
+  .card-wrap{ perspective:1000px; margin-bottom:26px; }
+  .card{
+    position:relative;
+    aspect-ratio: 1.586/1;
+    border-radius:20px;
+    padding:26px;
+    background:
+      radial-gradient(circle at var(--mx,70%) var(--my,20%), rgba(255,255,255,0.20), transparent 45%),
+      linear-gradient(135deg, #23294a 0%, #171b34 55%, #0f1226 100%);
+    box-shadow:0 25px 60px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(212,175,55,0.35);
+    color:var(--cream);
+    transform-style:preserve-3d;
+    transition:transform .12s ease-out;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+  }
+  .card::after{
+    content:'';
+    position:absolute; inset:0;
+    background:linear-gradient(120deg, transparent 30%, rgba(212,175,55,0.18) 45%, transparent 60%);
+    background-size:220% 220%;
+    background-position: var(--shine, 0%) 0%;
+    pointer-events:none;
+  }
+  .card-top{ display:flex; justify-content:space-between; align-items:flex-start; }
+  .card-brand{
+    font-family:'Fraunces', serif;
+    font-size:15px;
+    letter-spacing:0.08em;
+    color:var(--gold-light);
+    text-transform:uppercase;
+  }
+  .card-brand small{ display:block; font-family:'Inter',sans-serif; font-size:9px; letter-spacing:0.2em; color:rgba(255,248,233,0.5); margin-top:2px; }
+  .chip{
+    width:44px; height:32px;
+    border-radius:6px;
+    background:linear-gradient(135deg, #f4e4a6, #d4af37 40%, #9c7a1f);
+    position:relative;
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,0.2);
+  }
+  .chip::before{
+    content:'';
+    position:absolute; inset:5px;
+    border:1px solid rgba(0,0,0,0.25);
+    border-radius:3px;
+  }
+  .card-number{
+    font-family:'Space Mono', monospace;
+    font-size:19px;
+    letter-spacing:0.12em;
+    margin:14px 0 4px;
+    text-shadow:0 1px 2px rgba(0,0,0,0.4);
+  }
+  .card-bottom{ display:flex; justify-content:space-between; align-items:flex-end; }
+  .card-team{
+    text-transform:uppercase;
+    font-weight:700;
+    font-size:15px;
+    letter-spacing:0.04em;
+    max-width:65%;
+    overflow-wrap:break-word;
+  }
+  .card-team small{ display:block; font-size:9px; color:rgba(255,248,233,0.5); letter-spacing:0.2em; font-weight:500; margin-bottom:4px; }
+  .card-balance{ text-align:right; }
+  .card-balance small{ display:block; font-size:9px; color:rgba(255,248,233,0.5); letter-spacing:0.2em; margin-bottom:4px; }
+  .card-balance .amt{ font-family:'Space Mono', monospace; font-size:20px; font-weight:700; color:var(--gold-light); }
+  .card.empty .amt{ color:var(--coral); }
+
+  .stamp{
+    position:absolute;
+    top:44%; left:50%;
+    transform:translate(-50%,-50%) rotate(-18deg);
+    border:4px solid var(--coral);
+    color:var(--coral);
+    font-family:'Fraunces', serif;
+    font-weight:700;
+    font-size:26px;
+    padding:6px 18px;
+    border-radius:10px;
+    opacity:0;
+    letter-spacing:0.08em;
+    transition:opacity .3s;
+    background:rgba(21,26,51,0.5);
+  }
+  .stamp.show{ opacity:0.92; }
+
+  /* ---------- SPEND PANEL ---------- */
+  .spend-row{ display:flex; gap:10px; margin-bottom:10px; }
+  .spend-row input{ flex:1; }
+  .spend-row .btn{ width:auto; padding:0 20px; }
+
+  .balance-bar{
+    height:8px;
+    border-radius:6px;
+    background:rgba(255,248,233,0.12);
+    overflow:hidden;
+    margin:6px 0 20px;
+  }
+  .balance-fill{
+    height:100%;
+    background:linear-gradient(90deg, var(--mint), var(--gold));
+    transition:width .3s;
+  }
+  .balance-fill.low{ background:linear-gradient(90deg, var(--coral), #b23a2f); }
+
+  .receipt{
+    list-style:none;
+    max-height:220px;
+    overflow-y:auto;
+    margin-bottom:6px;
+  }
+  .receipt li{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 4px;
+    border-bottom:1px dashed rgba(255,248,233,0.15);
+    font-size:14px;
+    gap:10px;
+  }
+  .receipt li .item-name{ font-weight:600; flex:1; }
+  .receipt li .item-price{ font-family:'Space Mono', monospace; color:var(--gold-light); white-space:nowrap; }
+  .receipt li .remove{
+    background:none; border:none; color:var(--coral); cursor:pointer; font-size:16px; line-height:1; padding:2px 6px;
+  }
+  .receipt-empty{ text-align:center; padding:18px 0; color:rgba(255,248,233,0.45); font-size:13px; }
+
+  .error-msg{
+    background:rgba(255,107,94,0.12);
+    border:1px solid rgba(255,107,94,0.4);
+    color:var(--coral);
+    padding:10px 14px;
+    border-radius:10px;
+    font-size:13px;
+    margin-bottom:14px;
+    display:none;
+  }
+  .error-msg.show{ display:block; }
+
+  .footer-actions{ display:flex; gap:10px; margin-top:18px; }
+  .footer-actions .btn{ flex:1; }
+
+  .hidden{ display:none !important; }
+
+  @keyframes shake{
+    0%,100%{ transform:translateX(0); }
+    25%{ transform:translateX(-6px); }
+    75%{ transform:translateX(6px); }
+  }
+  .shake{ animation:shake .3s; }
+
+  @media (max-width:420px){
+    .card-number{ font-size:15px; }
+    h1{ font-size:24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="eyebrow">Phiên Đấu Giá Học Đường</div>
+  <h1>Thẻ Đấu Giá Của Đội</h1>
+
+  <!-- SETUP -->
+  <div class="panel" id="setupPanel">
+    <div class="field">
+      <label for="teamNameInput">Tên đội của bạn</label>
+      <input type="text" id="teamNameInput" placeholder="Ví dụ: Đội Sư Tử Vàng" maxlength="24">
+    </div>
+    <div class="field">
+      <label for="startBalanceInput">Số xu khởi điểm</label>
+      <input type="number" id="startBalanceInput" value="1000" min="1" step="10">
+    </div>
+    <div class="hint">Đây là số xu đội bạn có để tham gia đấu giá các vật phẩm.</div>
+    <button class="btn" id="createCardBtn">Tạo Thẻ Đấu Giá</button>
+  </div>
+
+  <!-- CARD + SPEND -->
+  <div id="cardArea" class="hidden">
+    <div class="card-wrap">
+      <div class="card" id="card">
+        <div class="stamp" id="emptyStamp">HẾT XU</div>
+        <div class="card-top">
+          <div class="card-brand">Auction Gala<small>THẺ THÀNH VIÊN ĐẤU GIÁ</small></div>
+          <div class="chip"></div>
+        </div>
+        <div class="card-number" id="cardNumber">0000 0000 0000 0000</div>
+        <div class="card-bottom">
+          <div class="card-team"><small>Chủ thẻ</small><span id="cardTeamName">—</span></div>
+          <div class="card-balance"><small>Số dư</small><span class="amt" id="cardBalance">0 Xu</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="balance-bar"><div class="balance-fill" id="balanceFill" style="width:100%"></div></div>
+
+    <div class="panel">
+      <div class="error-msg" id="errorMsg"></div>
+      <div class="field">
+        <label>Ghi lại vật phẩm vừa mua</label>
+        <div class="spend-row">
+          <input type="text" id="itemNameInput" placeholder="Tên vật phẩm">
+          <input type="number" id="itemPriceInput" placeholder="Giá" min="1" style="max-width:110px;">
+        </div>
+      </div>
+      <button class="btn" id="addPurchaseBtn">Trừ Xu &amp; Ghi Vào Thẻ</button>
+
+      <div style="margin-top:22px;">
+        <label style="display:block; font-size:13px; color:var(--gold-light); margin-bottom:8px; font-weight:600;">Lịch sử mua hàng</label>
+        <ul class="receipt" id="receiptList">
+          <li class="receipt-empty">Chưa mua vật phẩm nào</li>
+        </ul>
+      </div>
+
+      <div class="footer-actions">
+        <button class="btn btn-ghost" id="undoBtn">Hoàn Tác Gần Nhất</button>
+        <button class="btn btn-danger" id="resetBtn">Làm Lại Từ Đầu</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const setupPanel = document.getElementById('setupPanel');
+  const cardArea = document.getElementById('cardArea');
+  const teamNameInput = document.getElementById('teamNameInput');
+  const startBalanceInput = document.getElementById('startBalanceInput');
+  const createCardBtn = document.getElementById('createCardBtn');
+
+  const card = document.getElementById('card');
+  const cardNumberEl = document.getElementById('cardNumber');
+  const cardTeamNameEl = document.getElementById('cardTeamName');
+  const cardBalanceEl = document.getElementById('cardBalance');
+  const emptyStamp = document.getElementById('emptyStamp');
+  const balanceFill = document.getElementById('balanceFill');
+
+  const itemNameInput = document.getElementById('itemNameInput');
+  const itemPriceInput = document.getElementById('itemPriceInput');
+  const addPurchaseBtn = document.getElementById('addPurchaseBtn');
+  const receiptList = document.getElementById('receiptList');
+  const errorMsg = document.getElementById('errorMsg');
+  const undoBtn = document.getElementById('undoBtn');
+  const resetBtn = document.getElementById('resetBtn');
+
+  let state = { teamName:'', startBalance:0, balance:0, purchases:[] };
+
+  function generateCardNumber(name){
+    let seed = 7;
+    for (const ch of (name + Date.now())) seed = (seed*31 + ch.charCodeAt(0)) >>> 0;
+    let digits = '';
+    for(let i=0;i<16;i++){
+      seed = (seed*1103515245 + 12345) >>> 0;
+      digits += (seed % 10);
+    }
+    return digits.match(/.{1,4}/g).join(' ');
+  }
+
+  function formatXu(n){
+    return n.toLocaleString('vi-VN') + ' Xu';
+  }
+
+  function showError(msg){
+    errorMsg.textContent = msg;
+    errorMsg.classList.add('show');
+    card.classList.add('shake');
+    setTimeout(()=>card.classList.remove('shake'), 300);
+    setTimeout(()=> errorMsg.classList.remove('show'), 2600);
+  }
+
+  createCardBtn.addEventListener('click', ()=>{
+    const name = teamNameInput.value.trim();
+    const balance = parseInt(startBalanceInput.value, 10);
+    if(!name){ teamNameInput.focus(); teamNameInput.style.borderColor = 'var(--coral)'; return; }
+    if(!balance || balance <= 0){ startBalanceInput.focus(); startBalanceInput.style.borderColor = 'var(--coral)'; return; }
+
+    state = { teamName:name, startBalance:balance, balance:balance, purchases:[] };
+    cardTeamNameEl.textContent = name;
+    cardNumberEl.textContent = generateCardNumber(name);
+    setupPanel.classList.add('hidden');
+    cardArea.classList.remove('hidden');
+    renderCard();
+  });
+
+  function renderCard(){
+    cardBalanceEl.textContent = formatXu(state.balance);
+    const pct = Math.max(0, Math.min(100, (state.balance/state.startBalance)*100));
+    balanceFill.style.width = pct + '%';
+    balanceFill.classList.toggle('low', pct <= 20);
+    card.classList.toggle('empty', state.balance <= 0);
+    emptyStamp.classList.toggle('show', state.balance <= 0);
+    renderReceipt();
+  }
+
+  function renderReceipt(){
+    if(state.purchases.length === 0){
+      receiptList.innerHTML = '<li class="receipt-empty">Chưa mua vật phẩm nào</li>';
+      return;
+    }
+    receiptList.innerHTML = state.purchases.map((p, i) => `
+      <li>
+        <span class="item-name">${escapeHtml(p.name)}</span>
+        <span class="item-price">-${formatXu(p.price)}</span>
+        <button class="remove" data-index="${i}" title="Xoá dòng này">✕</button>
+      </li>
+    `).join('');
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  addPurchaseBtn.addEventListener('click', ()=>{
+    const name = itemNameInput.value.trim();
+    const price = parseInt(itemPriceInput.value, 10);
+    if(!name){ showError('Hãy nhập tên vật phẩm vừa mua.'); itemNameInput.focus(); return; }
+    if(!price || price <= 0){ showError('Hãy nhập giá hợp lệ.'); itemPriceInput.focus(); return; }
+    if(price > state.balance){ showError('Đội bạn không đủ xu cho vật phẩm này!'); return; }
+
+    state.purchases.push({name, price});
+    state.balance -= price;
+    itemNameInput.value = '';
+    itemPriceInput.value = '';
+    itemNameInput.focus();
+    renderCard();
+  });
+
+  receiptList.addEventListener('click', (e)=>{
+    if(e.target.classList.contains('remove')){
+      const idx = parseInt(e.target.dataset.index, 10);
+      const removed = state.purchases.splice(idx,1)[0];
+      state.balance += removed.price;
+      renderCard();
+    }
+  });
+
+  undoBtn.addEventListener('click', ()=>{
+    if(state.purchases.length === 0) return;
+    const removed = state.purchases.pop();
+    state.balance += removed.price;
+    renderCard();
+  });
+
+  resetBtn.addEventListener('click', ()=>{
+    if(!confirm('Bạn có chắc muốn làm lại từ đầu? Toàn bộ lịch sử mua hàng sẽ mất.')) return;
+    cardArea.classList.add('hidden');
+    setupPanel.classList.remove('hidden');
+    teamNameInput.value = '';
+    teamNameInput.style.borderColor = '';
+    startBalanceInput.style.borderColor = '';
+  });
+
+  itemPriceInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') addPurchaseBtn.click(); });
+
+  // 3D tilt + shine effect
+  card.addEventListener('mousemove', (e)=>{
+    const rect = card.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    const rotateY = (x - 0.5) * 14;
+    const rotateX = (0.5 - y) * 14;
+    card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    card.style.setProperty('--mx', (x*100)+'%');
+    card.style.setProperty('--my', (y*100)+'%');
+    card.style.setProperty('--shine', (x*100)+'%');
+  });
+  card.addEventListener('mouseleave', ()=>{
+    card.style.transform = 'rotateX(0deg) rotateY(0deg)';
+  });
+</script>
+</body>
+</html>
