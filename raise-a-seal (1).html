@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Raise a Seal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --abyss:#0B2438;
+  --deep:#0E3A52;
+  --ocean:#146B7A;
+  --teal:#1FA1A8;
+  --seafoam:#9FEAD9;
+  --sand:#F2D9A6;
+  --sand-dark:#D9B679;
+  --coral:#FF6F5E;
+  --coral-dark:#E85847;
+  --cream:#FBF6EA;
+  --ink:#0B2130;
+  --gold:#F4C542;
+  --purple:#8B6DD1;
+  --danger:#E85847;
+  --good:#4FBF8B;
+  --radius:18px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:'Quicksand',sans-serif;
+  background:linear-gradient(180deg,var(--abyss),var(--deep) 60%,var(--ocean));
+  color:var(--cream);
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  padding:18px;
+}
+h1,h2,h3,.display{font-family:'Fredoka',sans-serif;}
+button{font-family:'Quicksand',sans-serif;font-weight:600;cursor:pointer;border:none;}
+button:disabled{cursor:not-allowed;opacity:.45;}
+.app{width:100%;max-width:1180px;}
+
+/* ---------- Topbar ---------- */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(11,36,56,0.55);
+  border:1px solid rgba(159,234,217,0.18);
+  border-radius:var(--radius);
+  padding:12px 20px;margin-bottom:16px;
+  backdrop-filter:blur(6px);
+  flex-wrap:wrap;gap:10px;
+}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .wave-icon{font-size:26px;}
+.brand h1{font-size:22px;margin:0;letter-spacing:.5px;color:var(--seafoam);}
+.brand .tagline{font-size:11px;color:var(--sand);opacity:.75;margin-top:-2px;}
+.topbar-stats{display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
+.pill{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.1);
+  padding:6px 12px;border-radius:999px;font-size:13px;font-weight:600;
+}
+.pill .icon{font-size:15px;}
+.icon-btn{
+  background:rgba(255,255,255,0.08);
+  color:var(--cream);width:36px;height:36px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+  border:1px solid rgba(255,255,255,0.12);
+  transition:transform .15s ease, background .15s ease;
+}
+.icon-btn:hover{background:rgba(255,255,255,0.18);transform:scale(1.08);}
+
+/* ---------- Layout ---------- */
+.game-layout{display:grid;grid-template-columns:1.35fr 1fr;gap:16px;align-items:start;}
+@media(max-width:860px){.game-layout{grid-template-columns:1fr;}}
+
+/* ---------- Stage panel ---------- */
+.stage-panel{
+  position:relative;
+  border-radius:24px;
+  overflow:hidden;
+  min-height:460px;
+  border:1px solid rgba(159,234,217,0.18);
+  background:linear-gradient(180deg,#2C6E8C 0%,#1B4E68 38%,#123B52 55%,var(--ocean) 100%);
+  animation:sky-cycle 100s ease-in-out infinite alternate;
+}
+@keyframes sky-cycle{
+  0%{filter:brightness(1) saturate(1);}
+  50%{filter:brightness(0.82) saturate(1.15) hue-rotate(-8deg);}
+  100%{filter:brightness(1.05) saturate(0.95) hue-rotate(4deg);}
+}
+.stars{position:absolute;inset:0;background-image:radial-gradient(1.5px 1.5px at 20% 15%, rgba(255,255,255,.5) 50%, transparent 55%),radial-gradient(1.5px 1.5px at 60% 8%, rgba(255,255,255,.4) 50%, transparent 55%),radial-gradient(1px 1px at 80% 20%, rgba(255,255,255,.45) 50%, transparent 55%),radial-gradient(1.5px 1.5px at 40% 25%, rgba(255,255,255,.3) 50%, transparent 55%);opacity:.55;pointer-events:none;}
+.wave-layer{position:absolute;bottom:0;left:0;width:200%;height:110px;}
+.wave-back{opacity:.55;animation:wave-scroll 14s linear infinite;bottom:26px;}
+.wave-front{animation:wave-scroll 8s linear infinite reverse;bottom:0px;}
+@keyframes wave-scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+.floe{
+  position:absolute;bottom:64px;left:50%;transform:translateX(-50%);
+  width:280px;height:70px;
+  background:radial-gradient(ellipse at center, rgba(242,217,166,0.95), rgba(217,182,121,0.9));
+  border-radius:50%;
+  box-shadow:0 10px 30px rgba(0,0,0,0.35);
+  z-index:2;
+}
+
+/* ---------- Fish tank dressing ---------- */
+.sand-floor{position:absolute;left:0;right:0;bottom:0;height:52px;background:linear-gradient(180deg,var(--sand-dark),#B9905A);border-top:2px solid rgba(255,255,255,0.18);z-index:1;}
+.sand-floor::before{content:"";position:absolute;inset:0;background-image:radial-gradient(2px 2px at 8% 35%, rgba(0,0,0,0.14), transparent 60%),radial-gradient(2px 2px at 22% 65%, rgba(0,0,0,0.1), transparent 60%),radial-gradient(2px 2px at 38% 25%, rgba(0,0,0,0.12), transparent 60%),radial-gradient(2px 2px at 58% 55%, rgba(0,0,0,0.1), transparent 60%),radial-gradient(2px 2px at 74% 30%, rgba(0,0,0,0.12), transparent 60%),radial-gradient(2px 2px at 90% 60%, rgba(0,0,0,0.1), transparent 60%);}
+.seaweed{position:absolute;bottom:48px;width:12px;height:64px;transform-origin:bottom center;animation:sway 3.4s ease-in-out infinite;z-index:1;}
+.seaweed.tall{height:88px;}
+.seaweed i{display:block;width:100%;height:100%;background:linear-gradient(180deg,#3E9169,#28583E);border-radius:45% 45% 10px 10px/65% 65% 10px 10px;font-style:normal;}
+@keyframes sway{0%,100%{transform:rotate(-7deg);}50%{transform:rotate(8deg);}}
+.rock{position:absolute;bottom:44px;background:radial-gradient(circle at 32% 28%, #7C8B94, #3E4A52);border-radius:50% 50% 46% 46%;box-shadow:inset -5px -5px 10px rgba(0,0,0,0.35);z-index:1;}
+
+.tank-glass{position:absolute;inset:0;pointer-events:none;z-index:6;background:linear-gradient(115deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 16%, rgba(255,255,255,0) 30%),linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0) 14%);}
+.caustics{position:absolute;inset:0;pointer-events:none;opacity:.22;mix-blend-mode:screen;z-index:1;background-image:repeating-linear-gradient(68deg, rgba(255,255,255,0.16) 0px, rgba(255,255,255,0.16) 2px, transparent 2px, transparent 46px);animation:caustic-drift 10s linear infinite;}
+@keyframes caustic-drift{0%{transform:translate(0,0);}100%{transform:translate(-130px,24px);}}
+
+.bg-fish{position:absolute;font-size:15px;opacity:.6;pointer-events:none;z-index:2;animation:fish-swim linear forwards;filter:drop-shadow(0 2px 2px rgba(0,0,0,0.3));}
+@keyframes fish-swim{from{transform:translateX(0) scaleX(var(--dir,1));}to{transform:translateX(var(--dist,320px)) scaleX(var(--dir,1));}}
+
+.bubble{position:absolute;bottom:0;border-radius:50%;background:rgba(255,255,255,0.25);animation:bubble-float linear infinite;pointer-events:none;z-index:3;}
+@keyframes bubble-float{0%{transform:translateY(0) scale(1);opacity:.7;}100%{transform:translateY(-420px) scale(1.3);opacity:0;}}
+
+.seal-mover{position:absolute;left:50%;bottom:78px;width:230px;height:230px;transform:translateX(-50%);z-index:10;transition:left 1.4s ease-in-out;}
+.seal-wrap{
+  position:absolute;inset:0;cursor:pointer;
+  animation:float-bob 3.2s ease-in-out infinite;
+  filter:drop-shadow(0 12px 14px rgba(0,0,0,0.35));
+}
+@keyframes float-bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-9px);}}
+.seal-wrap.sick{filter: drop-shadow(0 12px 14px rgba(0,0,0,0.35)) saturate(.55) hue-rotate(55deg) brightness(.92);}
+.seal-wrap.celebrate{animation:float-bob 3.2s ease-in-out infinite, celebrate-jump .6s ease-in-out 2;}
+@keyframes celebrate-jump{0%,100%{transform:translateY(0) rotate(0);}50%{transform:translateY(-26px) rotate(-6deg);}}
+.seal-wrap.spin{animation:spin-once .7s ease-in-out !important;}
+@keyframes spin-once{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+.seal-wrap.poke{animation:poke-bounce .4s ease !important;}
+@keyframes poke-bounce{0%,100%{transform:scale(1);}40%{transform:scale(0.9,1.1);}70%{transform:scale(1.05,0.95);}}
+
+.speech-bubble{
+  position:absolute;left:50%;top:2px;transform:translateX(-50%) translateY(4px) scale(0.7);
+  background:#fff;color:var(--ink);padding:7px 13px;border-radius:14px;
+  font-family:'Fredoka',sans-serif;font-size:12.5px;font-weight:600;
+  max-width:170px;text-align:center;line-height:1.25;
+  opacity:0;pointer-events:none;box-shadow:0 6px 16px rgba(0,0,0,0.28);
+  transition:opacity .22s ease, transform .22s ease;z-index:25;
+}
+.speech-bubble::after{content:"";position:absolute;left:50%;bottom:-7px;transform:translateX(-50%);border-width:7px 6px 0 6px;border-style:solid;border-color:#fff transparent transparent transparent;}
+.speech-bubble.show{opacity:1;transform:translateX(-50%) translateY(0) scale(1);}
+
+.stage-actions{position:absolute;right:14px;bottom:78px;display:flex;flex-direction:column;gap:8px;z-index:15;}
+.mini-act-btn{
+  width:38px;height:38px;border-radius:50%;background:rgba(11,36,56,0.65);border:1px solid rgba(255,255,255,0.2);
+  color:#fff;font-size:17px;display:flex;align-items:center;justify-content:center;
+  transition:transform .15s ease, background .15s ease;
+}
+.mini-act-btn:hover:not(:disabled){transform:scale(1.1);background:rgba(255,255,255,0.22);}
+
+.eye{animation:blink 4.4s ease-in-out infinite;transform-origin:center;}
+@keyframes blink{0%,88%,100%{transform:scaleY(1);}94%{transform:scaleY(.12);}}
+.flipper-l{animation:wag-l 2.4s ease-in-out infinite;transform-origin:75px 200px;}
+.flipper-r{animation:wag-r 2.4s ease-in-out infinite;transform-origin:208px 162px;}
+@keyframes wag-l{0%,100%{transform:rotate(0deg);}50%{transform:rotate(-8deg);}}
+@keyframes wag-r{0%,100%{transform:rotate(0deg);}50%{transform:rotate(8deg);}}
+.egg-body.near-hatch{animation:egg-wiggle 1.1s ease-in-out infinite;}
+@keyframes egg-wiggle{0%,100%{transform:rotate(0deg);}25%{transform:rotate(-3deg);}75%{transform:rotate(3deg);}}
+
+.zzz{position:absolute;right:calc(50% - 90px);top:40px;font-family:'Fredoka',sans-serif;font-size:22px;color:#fff;opacity:0;pointer-events:none;z-index:20;}
+.zzz.show{animation:zzz-rise 2.4s ease-in infinite;}
+@keyframes zzz-rise{0%{opacity:0;transform:translateY(0) scale(.6);}20%{opacity:.9;}100%{opacity:0;transform:translateY(-46px) scale(1.2);}}
+
+.stage-hud{position:absolute;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;z-index:20;}
+.name-badge{background:rgba(11,36,56,0.65);border:1px solid rgba(255,255,255,0.15);padding:8px 14px;border-radius:14px;}
+.name-badge .n{font-family:'Fredoka',sans-serif;font-size:17px;color:var(--sand);}
+.name-badge .s{font-size:11px;opacity:.8;text-transform:uppercase;letter-spacing:.5px;}
+.stat-cluster{background:rgba(11,36,56,0.65);border:1px solid rgba(255,255,255,0.15);padding:10px 14px;border-radius:14px;min-width:180px;}
+.stat-row{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:11px;}
+.stat-row .lbl{width:56px;opacity:.85;}
+.bar-track{flex:1;height:8px;background:rgba(255,255,255,0.12);border-radius:6px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:6px;transition:width .4s ease;}
+.bar-fill.hunger{background:linear-gradient(90deg,#F4C542,#FF9F4A);}
+.bar-fill.happiness{background:linear-gradient(90deg,#FF6F5E,#FF9F9F);}
+.bar-fill.energy{background:linear-gradient(90deg,#8B6DD1,#B79CF0);}
+.bar-fill.clean{background:linear-gradient(90deg,#4FC3E0,#9FEAD9);}
+.bar-fill.health{background:linear-gradient(90deg,#4FBF8B,#9FEAD9);}
+
+.growth-footer{position:absolute;left:14px;right:14px;bottom:14px;z-index:20;}
+.growth-info{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;opacity:.9;}
+.growth-track{height:12px;background:rgba(11,36,56,0.55);border:1px solid rgba(255,255,255,0.15);border-radius:8px;overflow:hidden;}
+.growth-fill{height:100%;background:linear-gradient(90deg,var(--seafoam),var(--teal));transition:width .5s ease;}
+
+.warm-btn{
+  position:absolute;left:50%;bottom:60px;transform:translateX(-50%);
+  background:var(--coral);color:#fff;padding:12px 22px;border-radius:999px;
+  font-family:'Fredoka',sans-serif;font-size:15px;box-shadow:0 8px 18px rgba(255,111,94,0.4);
+  z-index:20;
+}
+.warm-btn:hover{background:var(--coral-dark);}
+
+.return-cta{
+  position:absolute;left:50%;top:60px;transform:translateX(-50%);
+  background:linear-gradient(90deg,var(--gold),#FFE29A);color:var(--ink);
+  padding:10px 20px;border-radius:999px;font-family:'Fredoka',sans-serif;font-size:14px;
+  box-shadow:0 8px 22px rgba(244,197,66,0.45);
+  animation:pulse-cta 1.6s ease-in-out infinite;
+  z-index:20;
+}
+@keyframes pulse-cta{0%,100%{transform:translateX(-50%) scale(1);}50%{transform:translateX(-50%) scale(1.06);}}
+
+.status-tag{position:absolute;left:14px;bottom:36px;font-size:11px;background:rgba(232,88,71,0.85);padding:4px 10px;border-radius:8px;font-weight:700;letter-spacing:.4px;z-index:20;}
+
+/* ---------- Control panel ---------- */
+.control-panel{
+  background:rgba(11,36,56,0.55);
+  border:1px solid rgba(159,234,217,0.18);
+  border-radius:24px;
+  min-height:460px;
+  display:flex;flex-direction:column;
+  backdrop-filter:blur(6px);
+  overflow:hidden;
+}
+.tabs{display:flex;border-bottom:1px solid rgba(255,255,255,0.1);}
+.tab-btn{
+  flex:1;background:none;color:var(--cream);opacity:.6;padding:12px 4px;font-size:12.5px;
+  border-bottom:3px solid transparent;transition:all .15s ease;
+}
+.tab-btn.active{opacity:1;border-bottom-color:var(--coral);color:var(--sand);}
+.tab-btn:hover{opacity:.9;}
+.tab-panel{display:none;padding:16px;flex:1;overflow-y:auto;max-height:560px;}
+.tab-panel.active{display:block;}
+
+.section-title{font-family:'Fredoka',sans-serif;font-size:15px;color:var(--seafoam);margin:0 0 10px 0;display:flex;align-items:center;gap:6px;}
+
+.item-card{
+  display:flex;align-items:center;gap:12px;
+  background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);
+  border-radius:14px;padding:10px 12px;margin-bottom:8px;
+}
+.item-card .emoji{font-size:26px;width:36px;text-align:center;}
+.item-card .info{flex:1;}
+.item-card .info .nm{font-weight:700;font-size:13.5px;}
+.item-card .info .dsc{font-size:11px;opacity:.7;}
+.item-card .qty{font-size:11px;background:rgba(255,255,255,0.1);padding:2px 8px;border-radius:8px;margin-right:4px;}
+.action-btn{
+  background:var(--teal);color:#fff;padding:8px 14px;border-radius:10px;font-size:12.5px;white-space:nowrap;
+  transition:background .15s ease, transform .1s ease;
+}
+.action-btn:hover:not(:disabled){background:var(--seafoam);color:var(--ink);transform:translateY(-1px);}
+.action-btn.secondary{background:rgba(255,255,255,0.1);}
+.action-btn.secondary:hover:not(:disabled){background:rgba(255,255,255,0.2);color:var(--cream);}
+.action-btn.gold{background:var(--gold);color:var(--ink);}
+
+.quick-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.quick-row .action-btn{flex:1;min-width:90px;}
+
+.mini-game-box{background:rgba(255,255,255,0.04);border:1px dashed rgba(159,234,217,0.35);border-radius:16px;padding:16px;text-align:center;}
+.catch-track{position:relative;height:34px;background:rgba(255,255,255,0.08);border-radius:10px;margin:16px 0;overflow:hidden;}
+.catch-zone{position:absolute;top:0;bottom:0;left:41%;width:18%;background:rgba(159,234,217,0.35);border-left:2px dashed var(--seafoam);border-right:2px dashed var(--seafoam);}
+.catch-marker{position:absolute;top:2px;bottom:2px;width:14px;border-radius:6px;background:var(--coral);left:10%;box-shadow:0 0 10px rgba(255,111,94,0.7);}
+.bath-area{position:relative;height:150px;background:rgba(79,195,224,0.12);border-radius:16px;margin:14px 0;overflow:hidden;}
+.bubble-target{position:absolute;width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.9), rgba(159,234,217,.55));border:2px solid rgba(255,255,255,.7);animation:bubble-pop-in .25s ease;}
+@keyframes bubble-pop-in{from{transform:scale(0);}to{transform:scale(1);}}
+.result-banner{font-family:'Fredoka',sans-serif;font-size:16px;margin-top:8px;}
+
+.shop-grid{display:grid;grid-template-columns:1fr;gap:8px;}
+
+.gift-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:10px;}
+.gift-slot{
+  aspect-ratio:1;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);font-size:24px;position:relative;cursor:pointer;
+  transition:transform .15s ease;
+}
+.gift-slot:hover{transform:translateY(-3px);}
+.gift-slot.locked{opacity:.35;filter:grayscale(1);cursor:default;}
+.gift-slot.locked:hover{transform:none;}
+.gift-slot .count{position:absolute;bottom:3px;right:5px;font-size:9px;background:rgba(0,0,0,0.4);padding:1px 5px;border-radius:6px;}
+.rarity-common{box-shadow:inset 0 0 0 2px rgba(159,234,217,0.35);}
+.rarity-rare{box-shadow:inset 0 0 0 2px rgba(79,195,224,0.55);}
+.rarity-epic{box-shadow:inset 0 0 0 2px rgba(139,109,209,0.7);}
+.rarity-legendary{box-shadow:inset 0 0 0 2px rgba(244,197,66,0.85);}
+
+.log-entry{font-size:12px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.06);opacity:.9;}
+.log-entry .t{opacity:.5;font-size:10px;margin-right:6px;}
+.ach-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);}
+.ach-row .ic{font-size:20px;width:26px;text-align:center;}
+.ach-row.locked{opacity:.35;}
+.ach-row .an{font-size:12.5px;font-weight:700;}
+.ach-row .ad{font-size:10.5px;opacity:.7;}
+
+/* ---------- Overlay / modal ---------- */
+.overlay{position:fixed;inset:0;background:rgba(6,18,28,0.78);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px;backdrop-filter:blur(3px);}
+.overlay.hidden{display:none;}
+.modal{background:linear-gradient(180deg,#123A52,#0B2438);border:1px solid rgba(159,234,217,0.25);border-radius:22px;max-width:420px;width:100%;padding:26px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,0.5);}
+.modal h2{color:var(--seafoam);margin:0 0 8px 0;font-size:22px;}
+.modal p{font-size:13.5px;opacity:.85;line-height:1.5;}
+.modal input[type=text]{
+  width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);
+  background:rgba(255,255,255,0.08);color:#fff;font-size:14px;margin:12px 0;font-family:'Quicksand',sans-serif;
+}
+.modal .gift-reveal{font-size:60px;margin:14px 0;animation:gift-pop .5s ease;}
+@keyframes gift-pop{0%{transform:scale(0) rotate(-20deg);}70%{transform:scale(1.2) rotate(8deg);}100%{transform:scale(1) rotate(0);}}
+.rarity-tag{display:inline-block;padding:3px 12px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px;}
+.rarity-tag.common{background:rgba(159,234,217,0.2);color:var(--seafoam);}
+.rarity-tag.rare{background:rgba(79,195,224,0.25);color:#7fd7ee;}
+.rarity-tag.epic{background:rgba(139,109,209,0.3);color:#c9b6ff;}
+.rarity-tag.legendary{background:rgba(244,197,66,0.3);color:var(--gold);}
+
+/* ---------- Toasts ---------- */
+#toast-container{position:fixed;top:18px;right:18px;display:flex;flex-direction:column;gap:8px;z-index:100;}
+.toast{
+  background:rgba(11,36,56,0.95);border:1px solid rgba(159,234,217,0.3);color:#fff;
+  padding:10px 16px;border-radius:12px;font-size:13px;box-shadow:0 8px 20px rgba(0,0,0,0.35);
+  animation:toast-in .3s ease, toast-out .4s ease 2.6s forwards;
+}
+@keyframes toast-in{from{transform:translateX(60px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+@keyframes toast-out{to{transform:translateX(60px);opacity:0;}}
+
+.footer-note{text-align:center;font-size:11px;opacity:.5;margin-top:14px;}
+::-webkit-scrollbar{width:8px;}
+::-webkit-scrollbar-thumb{background:rgba(159,234,217,0.25);border-radius:8px;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="brand">
+      <span class="wave-icon">🦭</span>
+      <div>
+        <h1>Raise a Seal</h1>
+        <div class="tagline">Your own little seal aquarium 🐚</div>
+      </div>
+    </div>
+    <div class="topbar-stats">
+      <div class="pill"><span class="icon">🐚</span><span id="coin-display">0</span></div>
+      <div class="pill"><span class="icon">🌊</span>Gen <span id="gen-display">1</span></div>
+      <div class="pill"><span class="icon">🎖️</span>Lvl <span id="level-display">1</span></div>
+      <button class="icon-btn" id="sound-toggle" title="Toggle sound">🔊</button>
+      <button class="icon-btn" id="help-btn" title="How to play">❔</button>
+    </div>
+  </div>
+
+  <div class="game-layout">
+    <!-- STAGE -->
+    <div class="stage-panel" id="stage-panel">
+      <div class="stars"></div>
+      <svg class="wave-layer wave-back" viewBox="0 0 400 40" preserveAspectRatio="none"><path d="M0 20 Q 25 0 50 20 T 100 20 T 150 20 T 200 20 T 250 20 T 300 20 T 350 20 T 400 20 V40 H0 Z" fill="#1B4E68"/><path d="M400 20 Q 425 0 450 20 T 500 20 T 550 20 T 600 20 T 650 20 T 700 20 T 750 20 T 800 20 V40 H400 Z" fill="#1B4E68"/></svg>
+      <svg class="wave-layer wave-front" viewBox="0 0 400 40" preserveAspectRatio="none"><path d="M0 22 Q 25 4 50 22 T 100 22 T 150 22 T 200 22 T 250 22 T 300 22 T 350 22 T 400 22 V40 H0 Z" fill="#123B52"/><path d="M400 22 Q 425 4 450 22 T 500 22 T 550 22 T 600 22 T 650 22 T 700 22 T 750 22 T 800 22 V40 H400 Z" fill="#123B52"/></svg>
+
+      <div class="caustics"></div>
+      <div class="rock" style="left:6%;width:70px;height:26px;"></div>
+      <div class="rock" style="right:8%;width:52px;height:20px;"></div>
+      <div class="seaweed" style="left:12%;animation-delay:-0.6s;"><i></i></div>
+      <div class="seaweed tall" style="left:17%;animation-delay:-1.8s;"><i></i></div>
+      <div class="seaweed" style="right:14%;animation-delay:-1.1s;"><i></i></div>
+      <div class="seaweed tall" style="right:9%;animation-delay:-2.4s;"><i></i></div>
+      <div class="sand-floor"></div>
+      <div class="floe" id="floe"></div>
+      <div id="bg-fish-layer"></div>
+      <div id="bubbles-layer"></div>
+      <div class="tank-glass"></div>
+
+      <div class="stage-actions">
+        <button class="mini-act-btn" id="swim-btn" title="Swim a lap">🏊</button>
+        <button class="mini-act-btn" id="wave-btn" title="Wave hello">👋</button>
+        <button class="mini-act-btn" id="spin-btn" title="Spin!">🌀</button>
+      </div>
+
+      <div class="stage-hud">
+        <div class="name-badge">
+          <div class="n" id="seal-name-display">Pip</div>
+          <div class="s" id="seal-stage-display">Egg</div>
+        </div>
+        <div class="stat-cluster">
+          <div class="stat-row"><span class="lbl">Hunger</span><div class="bar-track"><div class="bar-fill hunger" id="bar-hunger"></div></div></div>
+          <div class="stat-row"><span class="lbl">Happy</span><div class="bar-track"><div class="bar-fill happiness" id="bar-happiness"></div></div></div>
+          <div class="stat-row"><span class="lbl">Energy</span><div class="bar-track"><div class="bar-fill energy" id="bar-energy"></div></div></div>
+          <div class="stat-row"><span class="lbl">Clean</span><div class="bar-track"><div class="bar-fill clean" id="bar-clean"></div></div></div>
+          <div class="stat-row"><span class="lbl">Health</span><div class="bar-track"><div class="bar-fill health" id="bar-health"></div></div></div>
+        </div>
+      </div>
+
+      <div id="status-tag" class="status-tag" style="display:none;">SICK — needs medicine</div>
+
+      <div class="seal-mover" id="seal-mover">
+        <div class="seal-wrap" id="seal-wrap"></div>
+        <div class="speech-bubble" id="seal-speech"></div>
+      </div>
+      <div class="zzz" id="zzz-el">Z Z Z</div>
+
+      <button class="warm-btn" id="warm-btn" style="display:none;">🔥 Warm the Egg</button>
+      <button class="return-cta" id="return-btn" style="display:none;">🌊 Ready to Return to the Sea!</button>
+
+      <div class="growth-footer">
+        <div class="growth-info"><span id="growth-label">Egg · Warmth</span><span id="growth-pct">0%</span></div>
+        <div class="growth-track"><div class="growth-fill" id="growth-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <!-- CONTROL PANEL -->
+    <div class="control-panel">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="care">🐟 Care</button>
+        <button class="tab-btn" data-tab="play">🎾 Play</button>
+        <button class="tab-btn" data-tab="shop">🛍️ Shop</button>
+        <button class="tab-btn" data-tab="collection">🏆 Gifts</button>
+        <button class="tab-btn" data-tab="journal">📜 Journal</button>
+      </div>
+
+      <div class="tab-panel active" id="tab-care">
+        <div class="section-title">Quick care</div>
+        <div class="quick-row">
+          <button class="action-btn" id="quick-feed-btn">🐟 Quick Feed</button>
+          <button class="action-btn" id="quick-clean-btn">🧼 Quick Clean</button>
+          <button class="action-btn secondary" id="rest-btn">💤 Rest</button>
+          <button class="action-btn secondary" id="medicine-btn">💊 Medicine</button>
+        </div>
+        <div class="section-title">🐟 Feed from bag</div>
+        <div id="feed-list"></div>
+      </div>
+
+      <div class="tab-panel" id="tab-play">
+        <div class="section-title">🎾 Play with your seal</div>
+        <p style="font-size:12px;opacity:.75;margin-top:-6px;">Click <b>Catch!</b> when the marker crosses the glowing zone. Costs a little energy.</p>
+        <div id="play-area"></div>
+      </div>
+
+      <div class="tab-panel" id="tab-shop">
+        <div class="section-title">🛍️ Beach Shop</div>
+        <div class="shop-grid" id="shop-list"></div>
+      </div>
+
+      <div class="tab-panel" id="tab-collection">
+        <div class="section-title">🏆 Gifts from the Sea (<span id="gift-count">0</span>/<span id="gift-total">0</span>)</div>
+        <div class="gift-grid" id="gift-grid"></div>
+      </div>
+
+      <div class="tab-panel" id="tab-journal">
+        <div class="section-title">🎖️ Achievements</div>
+        <div id="ach-list" style="margin-bottom:16px;"></div>
+        <div class="section-title">📜 Recent activity</div>
+        <div id="log-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-note">Your seal's progress lives in this browser tab only — refreshing the page starts a brand new adventure. 🐚</div>
+</div>
+
+<div id="toast-container"></div>
+
+<div class="overlay" id="welcome-overlay">
+  <div class="modal">
+    <div style="font-size:52px;">🥚</div>
+    <h2>Welcome, seal keeper!</h2>
+    <p>A tiny egg has washed up on the shore. Keep it warm, then feed, play with, and clean your seal to help it grow. When it's fully grown, it'll swim back to the sea and leave you a gift — and a brand new egg to raise, a little better than before.</p>
+    <input type="text" id="name-input" placeholder="Name your seal..." maxlength="16">
+    <button class="action-btn gold" id="start-btn" style="width:100%;padding:12px;font-size:14px;">Begin the Adventure 🌊</button>
+  </div>
+</div>
+
+<div class="overlay hidden" id="minigame-overlay">
+  <div class="modal" id="minigame-modal"></div>
+</div>
+
+<div class="overlay hidden" id="gift-overlay">
+  <div class="modal" id="gift-modal"></div>
+</div>
+
+<div class="overlay hidden" id="help-overlay">
+  <div class="modal">
+    <h2>How to play 🦭</h2>
+    <p style="text-align:left;">
+      <b>🥚 Egg:</b> Tap "Warm the Egg" to help it hatch.<br><br>
+      <b>🐟 Hunger / 🎾 Happiness / 💤 Energy / 🧼 Clean / ❤️ Health</b> all drift down over time — tend to them or your seal may fall sick.<br><br>
+      <b>Growth</b> fills as you care for your seal well. Fill it fully at each stage to evolve: Pup → Juvenile → Adult.<br><br>
+      <b>🌊 Return to the Sea:</b> once fully grown and healthy, your seal returns home, leaving you a random gift and a brand new — slightly stronger — egg.<br><br>
+      <b>🏊 👋 🌀 Tank actions:</b> use the little buttons beside the tank to make your seal swim a lap, wave hello, or spin — it'll talk to you too! Tap the seal directly for a quick poke.<br><br>
+      Earn 🐚 shells by playing mini-games and beachcombing over time. Spend them in the Shop.
+    </p>
+    <button class="action-btn" id="close-help-btn" style="width:100%;padding:10px;margin-top:6px;">Got it!</button>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================= DATA ============================= */
+
+const COAT_OPTIONS = [
+  {name:"Silver Speckled", color:"#B9C4C9", spot:"#8B98A0"},
+  {name:"Sandy Brown", color:"#C79A6B", spot:"#A67A4C"},
+  {name:"Charcoal Grey", color:"#6E7B85", spot:"#4E5A63"},
+  {name:"Cream Pearl", color:"#EDE3D0", spot:"#D3C4A3"},
+  {name:"Slate Blue", color:"#7C93A8", spot:"#5C7387"},
+  {name:"Chestnut", color:"#8C5A3C", spot:"#6B4128"}
+];
+
+const FOODS = {
+  herring:  {name:"Herring", emoji:"🐟", desc:"A basic, reliable snack.", hunger:18, happiness:2, growth:3, price:5},
+  salmon:   {name:"Salmon", emoji:"🍣", desc:"Rich and filling.", hunger:32, happiness:5, growth:6, price:12},
+  squidTreat:{name:"Squid Treat", emoji:"🦑", desc:"A happy little treat.", hunger:6, happiness:24, growth:2, price:8},
+  krillPack:{name:"Krill Pack", emoji:"🍤", desc:"Tiny, nutritious, and cheap.", hunger:12, happiness:1, growth:2, price:3}
+};
+const SHOP_ITEMS = {
+  herring:{price:5},salmon:{price:12},squidTreat:{price:8},krillPack:{price:3},
+  soap:{name:"Soap Bar", emoji:"🧼", desc:"Instant clean +30", price:6},
+  medicine:{name:"Medicine Vial", emoji:"💊", desc:"Cures sickness, +40 health", price:15},
+  toyBall:{name:"Toy Ball", emoji:"🎾", desc:"Permanently boosts play rewards +20%", price:40, oneTime:true}
+};
+
+const GIFT_POOL = [
+  {id:"shell", name:"Sea Shell", emoji:"🐚", rarity:"common", desc:"A humble spiral shell, still smelling of salt water."},
+  {id:"pebble", name:"Smooth Pebble", emoji:"🪨", rarity:"common", desc:"Polished perfectly by years of tide."},
+  {id:"kelp", name:"Kelp Ribbon", emoji:"🌿", rarity:"common", desc:"A dried strand of golden kelp."},
+  {id:"star", name:"Little Starfish", emoji:"⭐", rarity:"common", desc:"Dried in the sun, still five-pointed and proud."},
+  {id:"pearl", name:"Pearl", emoji:"🦪", rarity:"rare", desc:"Found nestled in an old oyster shell."},
+  {id:"coral", name:"Coral Fragment", emoji:"🪸", rarity:"rare", desc:"A piece of reef, pink and delicate."},
+  {id:"glass", name:"Sea Glass", emoji:"💎", rarity:"rare", desc:"Frosted glass, tumbled smooth by the waves."},
+  {id:"gstar", name:"Golden Starfish", emoji:"🌟", rarity:"epic", desc:"Glimmers faintly even out of water."},
+  {id:"bottle", name:"Message in a Bottle", emoji:"🍾", rarity:"epic", desc:"The note inside is soaked beyond reading — but it feels important."},
+  {id:"compass", name:"Ancient Compass", emoji:"🧭", rarity:"epic", desc:"Its needle spins toward the deepest trench."},
+  {id:"crown", name:"Crown of the Tide", emoji:"👑", rarity:"legendary", desc:"Woven from coral and gold, worn by no one knows who."},
+  {id:"moonstone", name:"Moonstone Pearl", emoji:"🌙", rarity:"legendary", desc:"Glows faintly under moonlight. Very few have ever seen one."},
+  {id:"krakentooth", name:"Kraken's Tooth", emoji:"🦷", rarity:"legendary", desc:"Enormous. Definitely from something enormous."}
+];
+const RARITY_WEIGHTS = {common:55, rare:30, epic:12, legendary:3};
+
+const STAGE_ORDER = ["egg","pup","juvenile","adult","ready"];
+const STAGE_LABEL = {egg:"Egg", pup:"Pup", juvenile:"Juvenile", adult:"Adult", ready:"Fully Grown"};
+const GROWTH_TARGET = {egg:100, pup:120, juvenile:160, adult:200};
+
+const ACHIEVEMENTS = [
+  {id:"first_feed", name:"First Bite", desc:"Feed your seal for the first time.", icon:"🐟", check:s=>s.stats.timesFed>=1},
+  {id:"first_play", name:"Let's Play!", desc:"Play with your seal for the first time.", icon:"🎾", check:s=>s.stats.timesPlayed>=1},
+  {id:"feed_25", name:"Fish Monger", desc:"Feed your seal 25 times.", icon:"🐠", check:s=>s.stats.timesFed>=25},
+  {id:"play_15", name:"Playmate", desc:"Play with your seal 15 times.", icon:"🏐", check:s=>s.stats.timesPlayed>=15},
+  {id:"clean_10", name:"Squeaky Clean", desc:"Bathe your seal 10 times.", icon:"🧽", check:s=>s.stats.timesCleaned>=10},
+  {id:"first_return", name:"Bon Voyage", desc:"Raise your first seal to adulthood.", icon:"🌊", check:s=>s.stats.sealsRaised>=1},
+  {id:"return_3", name:"Seal Whisperer", desc:"Raise 3 seals.", icon:"🦭", check:s=>s.stats.sealsRaised>=3},
+  {id:"return_5", name:"Guardian of the Tide", desc:"Raise 5 seals.", icon:"🛡️", check:s=>s.stats.sealsRaised>=5},
+  {id:"collect_5", name:"Beachcomber", desc:"Collect 5 gifts total.", icon:"🏖️", check:s=>totalGiftCount(s)>=5},
+  {id:"collect_10", name:"Curator", desc:"Collect 10 unique gifts.", icon:"🖼️", check:s=>Object.keys(s.gifts).length>=10},
+  {id:"legendary", name:"Legend of the Deep", desc:"Find a legendary gift.", icon:"👑", check:s=>Object.keys(s.gifts).some(id=>GIFT_POOL.find(g=>g.id===id).rarity==="legendary")}
+];
+
+function totalGiftCount(s){return Object.values(s.gifts).reduce((a,b)=>a+b,0);}
+
+const SEAL_LINES = {
+  egg: ["...", "*wiggle wiggle*", "Something's happening in here!"],
+  hungry: ["My tummy's rumbling!", "Got any fish for me?", "Feed me, pretty please?", "I could eat a whole bucket of herring."],
+  dirty: ["I feel so slimy...", "Bath time soon? Pleeease?", "Ew, there's seaweed in my whiskers."],
+  tired: ["So... sleepy...", "*big yawn*", "Just five more minutes...", "My flippers feel heavy."],
+  sick: ["I don't feel so good...", "*sniffle* everything's fuzzy...", "Ooh, my tummy hurts."],
+  happy: ["Best. Day. Ever!", "I love this tank!", "You're my favorite human!", "Life is good down here."],
+  sleepy_state: ["Zzz...", "...zzz...", "Zzzzz..."],
+  idle: ["Blub blub!", "Watching the bubbles float by~", "Is it snack time yet?", "The water feels nice today.", "I found a shiny pebble!", "Boop!", "This tank has the best view.", "*blows a little bubble*"],
+  swim: ["Wheee, look at me go!", "Racing the bubbles!", "Splish splash!", "Watch this lap!"],
+  wave: ["Hi hi hi!", "Hello there!", "*waves flipper*", "So happy to see you!"],
+  spin: ["Wheeeee!", "Dizzy but happy!", "Ta-da! 🌀", "Whoosh!"],
+  poke: ["Hey, that tickles!", "Boop back!", "Heehee!", "*giggles*"],
+  wake: ["Huh? Oh, hi!", "*yawns awake*", "Five more minutes...", "Oh! You're here!"]
+};
+
+function pickContextualLine(){
+  if(state.stage==="egg") return pick(SEAL_LINES.egg);
+  if(state.sick) return pick(SEAL_LINES.sick);
+  if(state.asleep) return pick(SEAL_LINES.sleepy_state);
+  if(state.hunger<30) return pick(SEAL_LINES.hungry);
+  if(state.clean<30) return pick(SEAL_LINES.dirty);
+  if(state.energy<25) return pick(SEAL_LINES.tired);
+  if(state.happiness>82) return pick(SEAL_LINES.happy);
+  return pick(SEAL_LINES.idle);
+}
+
+let speechTimer = null;
+function speak(text){
+  const bubble = document.getElementById("seal-speech");
+  if(!bubble || !text) return;
+  bubble.textContent = text;
+  bubble.classList.add("show");
+  clearTimeout(speechTimer);
+  speechTimer = setTimeout(()=>bubble.classList.remove("show"), 2600);
+}
+
+function ambientSpeech(){
+  if(!started) return;
+  if(document.hidden) return;
+  if(catchGameActive || bathActive) return;
+  if(Math.random()<0.65) speak(pickContextualLine());
+}
+setInterval(ambientSpeech, 9000);
+
+/* ============================= STATE ============================= */
+
+let state = {
+  generation: 1,
+  trainerLevel: 1,
+  coins: 15,
+  sealName: "Pip",
+  coat: COAT_OPTIONS[0],
+  stage: "egg",
+  growth: 0,
+  hunger: 70, happiness: 70, energy: 70, clean: 70, health: 100,
+  sick: false,
+  asleep: false,
+  asleepUntil: 0,
+  inventory: {herring:3, salmon:0, squidTreat:1, krillPack:2, soap:2, medicine:1},
+  upgrades: {toyBall:false},
+  gifts: {},
+  stats: {sealsRaised:0, timesFed:0, timesPlayed:0, timesCleaned:0, timesRested:0},
+  unlockedAch: {},
+  log: [],
+  soundOn: true,
+};
+
+let started = false;
+let catchGameActive = false;
+let catchStartTime = 0;
+let catchAnimFrame = null;
+
+/* ============================= UTIL ============================= */
+
+function clamp(v,min,max){return Math.max(min,Math.min(max,v));}
+function rand(min,max){return Math.random()*(max-min)+min;}
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+
+function weightedGift(){
+  const roll = Math.random()*100;
+  let acc = 0, rarity = "common";
+  for(const r of ["legendary","epic","rare","common"]){
+    // iterate rarest first is fine since we accumulate below; simpler: build cumulative in fixed order
+  }
+  const order = ["common","rare","epic","legendary"];
+  acc = 0;
+  for(const r of order){ acc += RARITY_WEIGHTS[r]; if(roll<=acc){ rarity=r; break; } }
+  const pool = GIFT_POOL.filter(g=>g.rarity===rarity);
+  return pick(pool);
+}
+
+function playBeep(freq, dur, type){
+  if(!state.soundOn) return;
+  try{
+    const ctx = playBeep._ctx || (playBeep._ctx = new (window.AudioContext||window.webkitAudioContext)());
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type || "sine";
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + dur);
+  }catch(e){}
+}
+
+function toast(msg, kind){
+  const el = document.createElement("div");
+  el.className = "toast";
+  el.textContent = msg;
+  document.getElementById("toast-container").appendChild(el);
+  setTimeout(()=>el.remove(), 3100);
+}
+
+function addLog(msg){
+  const time = new Date();
+  const hh = String(time.getHours()).padStart(2,"0");
+  const mm = String(time.getMinutes()).padStart(2,"0");
+  state.log.unshift({msg, time:`${hh}:${mm}`});
+  if(state.log.length>40) state.log.pop();
+  renderJournal();
+}
+
+/* ============================= CORE TICK ============================= */
+
+const DECAY_MS = 6000;
+
+function tickDecay(){
+  if(!started) return;
+  if(state.stage==="egg"){
+    // ambient warmth while egg
+    state.growth = clamp(state.growth + 1, 0, GROWTH_TARGET.egg);
+    checkStageAdvance();
+    render();
+    return;
+  }
+  if(state.asleep){
+    state.hunger = clamp(state.hunger - 1, 0, 100);
+    state.clean = clamp(state.clean - 1, 0, 100);
+    render();
+    return;
+  }
+
+  state.hunger = clamp(state.hunger - 4, 0, 100);
+  state.energy = clamp(state.energy - 3, 0, 100);
+  state.clean = clamp(state.clean - 3, 0, 100);
+
+  const avg = (state.hunger+state.energy+state.clean)/3;
+  state.happiness = clamp(state.happiness - (avg<40 ? 4 : 2), 0, 100);
+
+  if(state.hunger<=10) state.health = clamp(state.health-4,0,100);
+  if(state.clean<=10) state.health = clamp(state.health-2,0,100);
+  if(state.sick) state.health = clamp(state.health-3,0,100);
+
+  if((state.hunger<=0 || state.clean<=0) && !state.sick){
+    if(Math.random()<0.22){
+      state.sick = true;
+      toast(`${state.sealName} isn't feeling well...`);
+      addLog(`${state.sealName} got sick from neglect. 🤒`);
+      playBeep(160,0.4,"sawtooth");
+    }
+  }
+
+  if(!state.sick && state.hunger>40 && state.clean>40 && state.energy>40){
+    state.health = clamp(state.health+2,0,100);
+  }
+
+  // passive beachcombing coins
+  if(Math.random()<0.35){
+    state.coins += 1;
+  }
+
+  checkStageAdvance();
+  checkAchievements();
+  render();
+}
+setInterval(tickDecay, DECAY_MS);
+
+function growthMultiplier(){ return 1 + (state.trainerLevel-1)*0.05; }
+
+function gainGrowth(amount){
+  if(state.stage==="egg" || state.stage==="ready") return;
+  if(state.sick) return;
+  const healthFactor = state.health<30 ? 0.5 : 1;
+  state.growth = clamp(state.growth + amount*growthMultiplier()*healthFactor, 0, GROWTH_TARGET[state.stage] || 999);
+  checkStageAdvance();
+}
+
+function checkStageAdvance(){
+  if(state.stage==="egg" && state.growth>=GROWTH_TARGET.egg){
+    hatchEgg();
+  } else if(state.stage==="pup" && state.growth>=GROWTH_TARGET.pup){
+    advanceStage("juvenile");
+  } else if(state.stage==="juvenile" && state.growth>=GROWTH_TARGET.juvenile){
+    advanceStage("adult");
+  } else if(state.stage==="adult" && state.growth>=GROWTH_TARGET.adult){
+    state.stage = "ready";
+    toast(`${state.sealName} is fully grown!`);
+    addLog(`${state.sealName} is fully grown and ready to return to the sea! 🌊`);
+  }
+}
+
+function hatchEgg(){
+  state.stage = "pup";
+  state.growth = 0;
+  toast(`Your egg hatched! Meet ${state.sealName}!`);
+  addLog(`🥚 The egg hatched — welcome, ${state.sealName}!`);
+  playBeep(520,0.25,"triangle"); setTimeout(()=>playBeep(660,0.3,"triangle"),150);
+}
+
+function advanceStage(next){
+  state.stage = next;
+  state.growth = 0;
+  toast(`${state.sealName} grew into a ${STAGE_LABEL[next]}!`);
+  addLog(`✨ ${state.sealName} grew into a ${STAGE_LABEL[next]}!`);
+  playBeep(440,0.2,"triangle"); setTimeout(()=>playBeep(560,0.25,"triangle"),140);
+}
+
+function checkAchievements(){
+  ACHIEVEMENTS.forEach(a=>{
+    if(!state.unlockedAch[a.id] && a.check(state)){
+      state.unlockedAch[a.id] = true;
+      toast(`🎖️ Achievement: ${a.name}`);
+      addLog(`🎖️ Unlocked achievement: ${a.name}`);
+      playBeep(700,0.15,"square"); setTimeout(()=>playBeep(900,0.2,"square"),120);
+    }
+  });
+}
+
+/* ============================= ACTIONS ============================= */
+
+function feedItem(key){
+  const food = FOODS[key];
+  if(!food || state.inventory[key]<=0) return;
+  if(state.asleep){ toast(`${state.sealName} is asleep!`); return; }
+  state.inventory[key]--;
+  const fullness = state.hunger>=90 ? 0.4 : 1;
+  state.hunger = clamp(state.hunger + food.hunger*fullness, 0, 100);
+  state.happiness = clamp(state.happiness + food.happiness, 0, 100);
+  gainGrowth(food.growth*fullness);
+  state.stats.timesFed++;
+  addLog(`🐟 Fed ${state.sealName} some ${food.name}.`);
+  playBeep(380,0.15,"sine");
+  checkAchievements();
+  render();
+}
+
+function quickFeed(){
+  const order = ["herring","krillPack","salmon","squidTreat"];
+  const key = order.find(k=>state.inventory[k]>0);
+  if(!key){ toast("Your bag is empty! Visit the Shop."); return; }
+  feedItem(key);
+}
+
+function quickClean(){
+  if(state.asleep){ toast(`${state.sealName} is asleep!`); return; }
+  if(state.inventory.soap<=0){ toast("No soap left! Buy some at the Shop."); return; }
+  state.inventory.soap--;
+  state.clean = clamp(state.clean+30,0,100);
+  state.happiness = clamp(state.happiness+3,0,100);
+  gainGrowth(1);
+  state.stats.timesCleaned++;
+  addLog(`🧼 Cleaned ${state.sealName} up with soap.`);
+  playBeep(500,0.15,"sine");
+  checkAchievements();
+  render();
+}
+
+function restAction(){
+  if(state.asleep) return;
+  if(state.stage==="egg"){ toast("Eggs don't need rest!"); return; }
+  state.asleep = true;
+  state.asleepUntil = Date.now()+8000;
+  state.stats.timesRested++;
+  addLog(`💤 ${state.sealName} curled up for a nap.`);
+  render();
+  setTimeout(()=>{
+    if(!state.asleep) return;
+    state.asleep = false;
+    state.energy = clamp(state.energy+55,0,100);
+    state.hunger = clamp(state.hunger-4,0,100);
+    toast(`${state.sealName} woke up refreshed!`);
+    addLog(`☀️ ${state.sealName} woke up with more energy.`);
+    render();
+  }, 8000);
+}
+
+function wakeEarly(){
+  if(!state.asleep) return;
+  const remaining = Math.max(0, state.asleepUntil - Date.now());
+  const elapsed = 8000 - remaining;
+  const gained = Math.round(55*(elapsed/8000));
+  state.asleep = false;
+  state.energy = clamp(state.energy+gained,0,100);
+  addLog(`${state.sealName} was woken up early.`);
+  render();
+}
+
+function useMedicine(){
+  if(state.inventory.medicine<=0){ toast("No medicine in your bag!"); return; }
+  if(!state.sick){ toast(`${state.sealName} isn't sick right now.`); return; }
+  state.inventory.medicine--;
+  state.sick = false;
+  state.health = clamp(state.health+40,0,100);
+  addLog(`💊 Gave ${state.sealName} medicine. Feeling better!`);
+  playBeep(600,0.2,"sine");
+  render();
+}
+
+function warmEgg(){
+  if(state.stage!=="egg") return;
+  state.growth = clamp(state.growth+8,0,GROWTH_TARGET.egg);
+  playBeep(300+Math.random()*100,0.1,"sine");
+  checkStageAdvance();
+  render();
+}
+
+/* ---------- Tank actions: swim, wave, spin, poke ---------- */
+let swimming = false;
+
+function spawnSwimTrail(mover){
+  const layer = document.getElementById("bubbles-layer");
+  if(!layer) return;
+  for(let i=0;i<2;i++){
+    const b = document.createElement("div");
+    const size = rand(3,7);
+    b.className = "bubble";
+    b.style.width = size+"px"; b.style.height = size+"px";
+    const leftPct = parseFloat(mover.style.left)||50;
+    b.style.left = clamp(leftPct + rand(-4,4), 2, 96)+"%";
+    b.style.animationDuration = rand(3,5)+"s";
+    layer.appendChild(b);
+    setTimeout(()=>b.remove(), 5000);
+  }
+}
+
+function swimAction(){
+  if(state.stage==="egg"){ toast("Eggs can't swim yet!"); return; }
+  if(state.asleep){ toast(`${state.sealName} is asleep!`); return; }
+  if(swimming) return;
+  swimming = true;
+  const mover = document.getElementById("seal-mover");
+  const legs = [18, 80, 32, 68, 50];
+  let idx = 0;
+  function step(){
+    if(idx>=legs.length){
+      setTimeout(()=>{ swimming = false; }, 1450);
+      return;
+    }
+    mover.style.left = legs[idx] + "%";
+    spawnSwimTrail(mover);
+    idx++;
+    setTimeout(step, 820);
+  }
+  step();
+  state.happiness = clamp(state.happiness+5,0,100);
+  state.energy = clamp(state.energy-5,0,100);
+  addLog(`🏊 ${state.sealName} swam a lap around the tank.`);
+  speak(pick(SEAL_LINES.swim));
+  playBeep(480,0.1,"sine");
+  checkAchievements();
+  render();
+}
+
+function waveAction(){
+  if(state.stage==="egg"){ toast("Eggs don't wave!"); return; }
+  const wrap = document.getElementById("seal-wrap");
+  wrap.classList.remove("poke"); void wrap.offsetWidth; wrap.classList.add("poke");
+  setTimeout(()=>wrap.classList.remove("poke"), 420);
+  state.happiness = clamp(state.happiness+3,0,100);
+  speak(pick(state.asleep ? SEAL_LINES.wake : SEAL_LINES.wave));
+  if(state.asleep) wakeEarly();
+  playBeep(560,0.12,"sine");
+  render();
+}
+
+function spinAction(){
+  if(state.stage==="egg"){ toast("Eggs can't spin!"); return; }
+  if(state.asleep){ toast(`${state.sealName} is asleep!`); return; }
+  const wrap = document.getElementById("seal-wrap");
+  wrap.classList.remove("spin"); void wrap.offsetWidth; wrap.classList.add("spin");
+  setTimeout(()=>wrap.classList.remove("spin"), 720);
+  state.happiness = clamp(state.happiness+4,0,100);
+  state.energy = clamp(state.energy-3,0,100);
+  speak(pick(SEAL_LINES.spin));
+  playBeep(680,0.16,"triangle");
+  render();
+}
+
+function pokeSeal(){
+  if(state.stage==="egg") return;
+  const now = Date.now();
+  if(now - (pokeSeal._last||0) < 900) return;
+  pokeSeal._last = now;
+  const wrap = document.getElementById("seal-wrap");
+  wrap.classList.remove("poke"); void wrap.offsetWidth; wrap.classList.add("poke");
+  setTimeout(()=>wrap.classList.remove("poke"), 420);
+  speak(pick(state.asleep ? SEAL_LINES.wake : SEAL_LINES.poke));
+  playBeep(420,0.08,"sine");
+}
+
+const FISH_EMOJI = ["🐟","🐠","🐡"];
+function spawnBackgroundFish(){
+  if(!started) return;
+  const layer = document.getElementById("bg-fish-layer");
+  if(!layer) return;
+  const fish = document.createElement("div");
+  fish.className = "bg-fish";
+  fish.textContent = pick(FISH_EMOJI);
+  const goingRight = Math.random()<0.5;
+  fish.style.top = rand(12,55)+"%";
+  fish.style.left = goingRight ? "-6%" : "104%";
+  fish.style.setProperty("--dir", goingRight ? "1" : "-1");
+  fish.style.setProperty("--dist", goingRight ? "420px" : "-420px");
+  fish.style.animationDuration = rand(9,16)+"s";
+  layer.appendChild(fish);
+  setTimeout(()=>fish.remove(), 17000);
+}
+setInterval(spawnBackgroundFish, 5000);
+
+/* ---------- Buy / Shop ---------- */
+function buyItem(key){
+  const item = SHOP_ITEMS[key];
+  if(!item) return;
+  if(item.oneTime && state.upgrades[key]){ toast("Already purchased!"); return; }
+  if(state.coins<item.price){ toast("Not enough shells!"); return; }
+  state.coins -= item.price;
+  if(item.oneTime){
+    state.upgrades[key] = true;
+    toast(`${item.name} unlocked!`);
+    addLog(`🎾 Purchased upgrade: ${item.name}.`);
+  } else {
+    state.inventory[key] = (state.inventory[key]||0)+1;
+    toast(`Bought ${item.name || FOODS[key].name}!`);
+    addLog(`🛍️ Bought ${item.name || FOODS[key].name} for ${item.price} shells.`);
+  }
+  playBeep(450,0.12,"sine");
+  render();
+}
+
+/* ---------- Return to sea ---------- */
+function returnToSea(){
+  if(state.stage!=="ready") return;
+  if(state.sick){ toast("Heal your seal before it returns!"); return; }
+  const wrap = document.getElementById("seal-wrap");
+  wrap.style.animation = "none";
+  wrap.style.transition = "transform 1.8s ease-in, opacity 1.8s ease-in";
+  wrap.style.transform = "translateY(40px) scale(0.4)";
+  wrap.style.opacity = "0";
+  playBeep(500,0.3,"triangle"); setTimeout(()=>playBeep(650,0.35,"triangle"),200); setTimeout(()=>playBeep(800,0.4,"triangle"),420);
+  setTimeout(()=>{
+    finalizeReturn();
+    wrap.style.transition="";
+    wrap.style.transform="";
+    wrap.style.opacity="1";
+    wrap.style.animation="";
+  }, 1500);
+}
+
+function finalizeReturn(){
+  state.stats.sealsRaised++;
+  const gift = weightedGift();
+  state.gifts[gift.id] = (state.gifts[gift.id]||0)+1;
+  addLog(`🌊 ${state.sealName} swam home and left you a ${gift.name}!`);
+  checkAchievements();
+  showGiftModal(gift);
+
+  // new generation
+  state.generation++;
+  state.trainerLevel = state.generation;
+  const oldName = state.sealName;
+  state.coat = pick(COAT_OPTIONS);
+  state.stage = "egg";
+  state.growth = 0;
+  const bonus = clamp((state.trainerLevel-1)*2, 0, 25);
+  state.hunger = clamp(70+bonus,0,100);
+  state.happiness = clamp(70+bonus,0,100);
+  state.energy = clamp(70+bonus,0,100);
+  state.clean = clamp(70+bonus,0,100);
+  state.health = 100;
+  state.sick = false;
+  state.asleep = false;
+  render();
+}
+
+/* ============================= MINI GAMES ============================= */
+
+function openPlayGame(){
+  renderPlayArea();
+}
+
+function startCatchGame(){
+  if(state.asleep){ toast(`${state.sealName} is asleep!`); return; }
+  if(state.stage==="egg"){ toast("Wait for your egg to hatch first!"); return; }
+  if(state.energy<10){ toast(`${state.sealName} is too tired to play.`); return; }
+  state.energy = clamp(state.energy-10,0,100);
+  catchGameActive = true;
+  catchStartTime = performance.now();
+  renderPlayArea();
+  animateCatch();
+}
+
+function animateCatch(){
+  const marker = document.getElementById("catch-marker");
+  if(!marker || !catchGameActive) return;
+  const now = performance.now();
+  const period = 1500;
+  const pos = 50 + 40*Math.sin(((now-catchStartTime)/period)*2*Math.PI);
+  marker.style.left = pos+"%";
+  catchAnimFrame = requestAnimationFrame(animateCatch);
+}
+
+function resolveCatch(){
+  if(!catchGameActive) return;
+  catchGameActive = false;
+  cancelAnimationFrame(catchAnimFrame);
+  const now = performance.now();
+  const period = 1500;
+  const pos = 50 + 40*Math.sin(((now-catchStartTime)/period)*2*Math.PI);
+  const dist = Math.abs(pos-50);
+  const mult = state.upgrades.toyBall ? 1.2 : 1;
+  let tier, happinessGain, growthGain, coinGain;
+  if(dist<=4){ tier="Perfect! 🎯"; happinessGain=20; growthGain=10; coinGain=5; }
+  else if(dist<=9){ tier="Good! 👍"; happinessGain=12; growthGain=6; coinGain=2; }
+  else { tier="Missed it! 😅"; happinessGain=3; growthGain=1; coinGain=0; }
+  happinessGain=Math.round(happinessGain*mult); growthGain=growthGain*mult; coinGain=Math.round(coinGain*mult);
+
+  state.happiness = clamp(state.happiness+happinessGain,0,100);
+  gainGrowth(growthGain);
+  state.coins += coinGain;
+  state.stats.timesPlayed++;
+  addLog(`🎾 Played catch with ${state.sealName}: ${tier}`);
+  playBeep(dist<=4?700:(dist<=9?500:300), 0.2, "square");
+
+  const wrap = document.getElementById("seal-wrap");
+  wrap.classList.add("celebrate");
+  setTimeout(()=>wrap.classList.remove("celebrate"), 1200);
+
+  checkAchievements();
+  renderPlayResult(tier, happinessGain, growthGain, coinGain);
+  render();
+}
+
+let bathActive = false;
+function startBathGame(){
+  if(state.asleep){ toast(`${state.sealName} is asleep!`); return; }
+  if(state.stage==="egg"){ toast("Wait for your egg to hatch first!"); return; }
+  bathActive = true;
+  let popped = 0;
+  let spawned = 0;
+  const total = 5;
+  renderBathArea(popped, total);
+  const area = document.getElementById("bath-target-area");
+
+  function spawnBubble(){
+    if(spawned>=total){ finishBath(popped,total); return; }
+    spawned++;
+    const b = document.createElement("div");
+    b.className = "bubble-target";
+    const left = rand(5,80), top = rand(5,70);
+    b.style.left = left+"%"; b.style.top = top+"%";
+    let clicked = false;
+    b.onclick = ()=>{
+      if(clicked) return;
+      clicked = true;
+      popped++;
+      b.remove();
+      playBeep(600+Math.random()*200,0.1,"sine");
+      document.getElementById("bath-progress").textContent = `${popped}/${total} bubbles popped`;
+      setTimeout(spawnBubble, 250);
+    };
+    area.appendChild(b);
+    setTimeout(()=>{
+      if(!clicked && b.parentNode){ b.remove(); setTimeout(spawnBubble, 250); }
+    }, 1400);
+  }
+  spawnBubble();
+
+  function finishBath(popped,total){
+    bathActive = false;
+    const cleanGain = popped*8;
+    const growthGain = Math.floor(popped/2);
+    const happinessGain = popped*1;
+    state.clean = clamp(state.clean+cleanGain,0,100);
+    state.happiness = clamp(state.happiness+happinessGain,0,100);
+    gainGrowth(growthGain);
+    state.stats.timesCleaned++;
+    addLog(`🛁 Bath time with ${state.sealName}: popped ${popped}/${total} bubbles.`);
+    checkAchievements();
+    renderBathResult(popped,total,cleanGain);
+    render();
+  }
+}
+
+/* ============================= RENDER ============================= */
+
+function sealSVGInner(){
+  const coat = state.coat.color;
+  const spot = state.coat.spot;
+  const mood = state.sick ? "sick" : (state.asleep ? "sleepy" : "normal");
+  const eyeL = eyeMarkup(58,122,mood);
+  const eyeR = eyeMarkup(89,112,mood);
+
+  if(state.stage==="egg"){
+    const pct = state.growth/GROWTH_TARGET.egg;
+    let cracks = "";
+    if(pct>0.33) cracks += `<path d="M100 60 L92 90 L104 100 L90 130" stroke="#8a6f4d" stroke-width="2" fill="none" opacity="0.7"/>`;
+    if(pct>0.66) cracks += `<path d="M140 70 L150 95 L138 108 L148 140" stroke="#8a6f4d" stroke-width="2" fill="none" opacity="0.7"/>`;
+    if(pct>0.9) cracks += `<path d="M110 150 L100 165 L120 172" stroke="#8a6f4d" stroke-width="2" fill="none" opacity="0.7"/>`;
+    return `
+      <ellipse cx="120" cy="205" rx="55" ry="10" fill="rgba(0,0,0,0.18)"/>
+      <ellipse class="egg-body ${pct>0.7?'near-hatch':''}" cx="120" cy="128" rx="58" ry="72" fill="${state.coat.color}"/>
+      <ellipse cx="120" cy="128" rx="58" ry="72" fill="url(#eggShine)"/>
+      <circle cx="100" cy="95" r="5" fill="${spot}" opacity="0.4"/>
+      <circle cx="140" cy="110" r="4" fill="${spot}" opacity="0.4"/>
+      <circle cx="115" cy="150" r="5" fill="${spot}" opacity="0.4"/>
+      <circle cx="145" cy="160" r="3.5" fill="${spot}" opacity="0.4"/>
+      <ellipse cx="98" cy="90" rx="16" ry="22" fill="rgba(255,255,255,0.25)"/>
+      ${cracks}
+    `;
+  }
+
+  const scale = state.stage==="pup" ? 0.8 : state.stage==="juvenile" ? 0.93 : 1.05;
+  return `
+    <g transform="translate(120 128) scale(${scale}) translate(-120 -128)">
+      <ellipse cx="122" cy="206" rx="70" ry="12" fill="rgba(0,0,0,0.18)"/>
+
+      <!-- rear body / tail bump -->
+      <ellipse cx="192" cy="152" rx="32" ry="25" fill="${coat}"/>
+      <path class="flipper-r" d="M205 158 Q227 152 224 176 Q209 178 198 168 Z" fill="${coat}"/>
+      <rect x="197" y="170" width="7" height="11" rx="1.5" fill="#fff" opacity="0.85" transform="rotate(18 200 175)"/>
+
+      <!-- main chubby body -->
+      <ellipse cx="130" cy="142" rx="90" ry="67" fill="${coat}"/>
+      <ellipse cx="118" cy="106" rx="56" ry="26" fill="rgba(255,255,255,0.16)"/>
+
+      <!-- back spots -->
+      <ellipse cx="152" cy="103" rx="5" ry="4" fill="${spot}" opacity="0.85"/>
+      <ellipse cx="178" cy="120" rx="4.5" ry="6" fill="${spot}" opacity="0.85"/>
+      <ellipse cx="141" cy="150" rx="4.5" ry="5.5" fill="${spot}" opacity="0.8"/>
+      <ellipse cx="167" cy="161" rx="5.5" ry="4.5" fill="${spot}" opacity="0.8"/>
+      <ellipse cx="188" cy="146" rx="3.5" ry="5" fill="${spot}" opacity="0.75"/>
+      <ellipse cx="157" cy="131" rx="3.2" ry="4.2" fill="${spot}" opacity="0.75"/>
+
+      <!-- white face + belly patch -->
+      <ellipse cx="74" cy="152" rx="54" ry="49" fill="#F7F4EA"/>
+      <ellipse cx="104" cy="197" rx="58" ry="27" fill="#F7F4EA"/>
+
+      <!-- little belly flipper peeking out -->
+      <path class="flipper-l" d="M72 197 Q54 207 60 224 Q80 220 90 204 Z" fill="#EDE9DC"/>
+
+      <!-- snout + nose -->
+      <ellipse cx="40" cy="157" rx="25" ry="20" fill="${coat}"/>
+      <ellipse cx="27" cy="152" rx="10" ry="7.5" fill="#171B22"/>
+      <ellipse cx="24" cy="149" rx="2.4" ry="1.6" fill="rgba(255,255,255,0.5)"/>
+
+      ${eyeL}${eyeR}
+    </g>
+  `;
+}
+
+function eyeMarkup(cx,cy,mood){
+  if(mood==="sick"){
+    return `<g stroke="#2B2018" stroke-width="2.4" stroke-linecap="round"><path d="M${cx-6} ${cy-6} L${cx+6} ${cy+6}"/><path d="M${cx-6} ${cy+6} L${cx+6} ${cy-6}"/></g>`;
+  }
+  const curve = mood==="sleepy" ? 3 : 6;
+  return `<path d="M${cx-7.5} ${cy} Q${cx} ${cy+curve} ${cx+7.5} ${cy}" stroke="#20262E" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
+}
+
+function renderStage(){
+  const wrap = document.getElementById("seal-wrap");
+  wrap.classList.toggle("sick", state.sick);
+  wrap.innerHTML = `
+    <svg viewBox="0 0 240 240" width="100%" height="100%">
+      <defs>
+        <radialGradient id="eggShine" cx="35%" cy="25%" r="70%">
+          <stop offset="0%" stop-color="rgba(255,255,255,0.35)"/>
+          <stop offset="60%" stop-color="rgba(255,255,255,0)"/>
+        </radialGradient>
+      </defs>
+      ${sealSVGInner()}
+    </svg>
+  `;
+
+  document.getElementById("seal-name-display").textContent = state.sealName;
+  document.getElementById("seal-stage-display").textContent = STAGE_LABEL[state.stage] + (state.asleep?" · sleeping":"");
+  document.getElementById("zzz-el").classList.toggle("show", state.asleep);
+
+  document.getElementById("bar-hunger").style.width = state.hunger+"%";
+  document.getElementById("bar-happiness").style.width = state.happiness+"%";
+  document.getElementById("bar-energy").style.width = state.energy+"%";
+  document.getElementById("bar-clean").style.width = state.clean+"%";
+  document.getElementById("bar-health").style.width = state.health+"%";
+
+  document.getElementById("status-tag").style.display = state.sick ? "block" : "none";
+
+  const isEgg = state.stage==="egg";
+  document.getElementById("swim-btn").disabled = isEgg || state.asleep;
+  document.getElementById("wave-btn").disabled = isEgg;
+  document.getElementById("spin-btn").disabled = isEgg || state.asleep;
+
+  const warmBtn = document.getElementById("warm-btn");
+  warmBtn.style.display = state.stage==="egg" ? "block" : "none";
+
+  const returnBtn = document.getElementById("return-btn");
+  returnBtn.style.display = state.stage==="ready" ? "block" : "none";
+
+  const growthLabel = document.getElementById("growth-label");
+  const growthPct = document.getElementById("growth-pct");
+  const growthFill = document.getElementById("growth-fill");
+  if(state.stage==="ready"){
+    growthLabel.textContent = STAGE_LABEL.ready+" · Ready!";
+    growthPct.textContent = "100%";
+    growthFill.style.width = "100%";
+  } else {
+    const target = GROWTH_TARGET[state.stage];
+    const pct = Math.round((state.growth/target)*100);
+    growthLabel.textContent = STAGE_LABEL[state.stage]+" · Growth";
+    growthPct.textContent = pct+"%";
+    growthFill.style.width = pct+"%";
+  }
+}
+
+function renderTopbar(){
+  document.getElementById("coin-display").textContent = state.coins;
+  document.getElementById("gen-display").textContent = state.generation;
+  document.getElementById("level-display").textContent = state.trainerLevel;
+  document.getElementById("sound-toggle").textContent = state.soundOn ? "🔊" : "🔇";
+}
+
+function renderCare(){
+  const feedList = document.getElementById("feed-list");
+  feedList.innerHTML = Object.keys(FOODS).map(key=>{
+    const f = FOODS[key];
+    const qty = state.inventory[key]||0;
+    return `<div class="item-card">
+      <div class="emoji">${f.emoji}</div>
+      <div class="info"><div class="nm">${f.name}</div><div class="dsc">${f.desc} · +${f.hunger} hunger</div></div>
+      <span class="qty">x${qty}</span>
+      <button class="action-btn" data-feed="${key}" ${qty<=0?"disabled":""}>Feed</button>
+    </div>`;
+  }).join("");
+  feedList.querySelectorAll("[data-feed]").forEach(btn=>{
+    btn.onclick = ()=>feedItem(btn.getAttribute("data-feed"));
+  });
+
+  document.getElementById("medicine-btn").disabled = state.inventory.medicine<=0;
+  document.getElementById("quick-clean-btn").disabled = state.inventory.soap<=0;
+}
+
+function renderPlayArea(){
+  const el = document.getElementById("play-area");
+  if(state.stage==="egg"){
+    el.innerHTML = `<div class="mini-game-box"><p>Your seal is still an egg. Warm it up on the beach first!</p></div>
+      <div class="section-title" style="margin-top:16px;">🛁 Bath Time</div>
+      <div class="mini-game-box"><p>Available once hatched.</p></div>`;
+    return;
+  }
+  el.innerHTML = `
+    <div class="mini-game-box">
+      <div style="font-size:13px;opacity:.85;">Energy needed: 10 ⚡ (you have ${Math.round(state.energy)})</div>
+      <div class="catch-track"><div class="catch-zone"></div><div class="catch-marker" id="catch-marker"></div></div>
+      <button class="action-btn gold" id="catch-btn" style="padding:10px 26px;">🎾 Catch!</button>
+      <div id="catch-result"></div>
+    </div>
+    <div class="section-title" style="margin-top:18px;">🛁 Bath Time</div>
+    <div class="mini-game-box">
+      <p style="font-size:12px;opacity:.8;margin-top:0;">Pop bubbles as they appear to scrub your seal clean!</p>
+      <div class="bath-area" id="bath-target-area"><div id="bath-progress" style="position:absolute;bottom:6px;left:8px;font-size:11px;opacity:.8;">Tap Start to begin</div></div>
+      <button class="action-btn" id="bath-btn">🛁 Start Bath</button>
+      <div id="bath-result"></div>
+    </div>
+  `;
+  const catchBtn = document.getElementById("catch-btn");
+  catchBtn.onclick = ()=>{
+    if(!catchGameActive) startCatchGame();
+    else resolveCatch();
+  };
+  document.getElementById("bath-btn").onclick = ()=>{ if(!bathActive) startBathGame(); };
+}
+
+function renderPlayResult(tier, h, g, c){
+  const box = document.getElementById("catch-result");
+  if(!box) return;
+  box.innerHTML = `<div class="result-banner">${tier}</div><div style="font-size:11px;opacity:.8;">+${h} happy · +${Math.round(g)} growth · +${c} 🐚</div>
+    <button class="action-btn secondary" id="catch-again" style="margin-top:8px;">Play Again</button>`;
+  document.getElementById("catch-again").onclick = ()=>startCatchGame();
+}
+function renderBathArea(popped,total){
+  const progress = document.getElementById("bath-progress");
+  if(progress) progress.textContent = `${popped}/${total} bubbles popped`;
+  const result = document.getElementById("bath-result");
+  if(result) result.innerHTML = "";
+}
+function renderBathResult(popped,total,cleanGain){
+  const box = document.getElementById("bath-result");
+  if(!box) return;
+  box.innerHTML = `<div class="result-banner">Sparkling clean! ✨</div><div style="font-size:11px;opacity:.8;">Popped ${popped}/${total} · +${cleanGain} clean</div>`;
+}
+
+function renderShop(){
+  const el = document.getElementById("shop-list");
+  const rows = [];
+  Object.keys(FOODS).forEach(key=>{
+    const f = FOODS[key];
+    rows.push({key, name:f.name, emoji:f.emoji, desc:`+${f.hunger} hunger, +${f.happiness} happy`, price:f.price});
+  });
+  ["soap","medicine","toyBall"].forEach(key=>{
+    const it = SHOP_ITEMS[key];
+    rows.push({key, name:it.name, emoji:it.emoji, desc:it.desc, price:it.price, oneTime:it.oneTime});
+  });
+  el.innerHTML = rows.map(r=>{
+    const owned = r.oneTime && state.upgrades[r.key];
+    return `<div class="item-card">
+      <div class="emoji">${r.emoji}</div>
+      <div class="info"><div class="nm">${r.name}</div><div class="dsc">${r.desc}</div></div>
+      <button class="action-btn ${owned?'secondary':''}" data-buy="${r.key}" ${owned?"disabled":""}>${owned?"Owned":r.price+" 🐚"}</button>
+    </div>`;
+  }).join("");
+  el.querySelectorAll("[data-buy]").forEach(btn=>{
+    btn.onclick = ()=>buyItem(btn.getAttribute("data-buy"));
+  });
+}
+
+function renderCollection(){
+  document.getElementById("gift-total").textContent = GIFT_POOL.length;
+  document.getElementById("gift-count").textContent = Object.keys(state.gifts).length;
+  const grid = document.getElementById("gift-grid");
+  grid.innerHTML = GIFT_POOL.map(g=>{
+    const owned = state.gifts[g.id]||0;
+    if(owned<=0){
+      return `<div class="gift-slot locked">❓</div>`;
+    }
+    return `<div class="gift-slot rarity-${g.rarity}" data-gift="${g.id}">${g.emoji}<span class="count">x${owned}</span></div>`;
+  }).join("");
+  grid.querySelectorAll("[data-gift]").forEach(slot=>{
+    slot.onclick = ()=>{
+      const g = GIFT_POOL.find(x=>x.id===slot.getAttribute("data-gift"));
+      showGiftModal(g, true);
+    };
+  });
+}
+
+function renderJournal(){
+  const achEl = document.getElementById("ach-list");
+  achEl.innerHTML = ACHIEVEMENTS.map(a=>{
+    const unlocked = !!state.unlockedAch[a.id];
+    return `<div class="ach-row ${unlocked?'':'locked'}"><div class="ic">${unlocked?a.icon:"🔒"}</div><div><div class="an">${a.name}</div><div class="ad">${a.desc}</div></div></div>`;
+  }).join("");
+  const logEl = document.getElementById("log-list");
+  logEl.innerHTML = state.log.map(l=>`<div class="log-entry"><span class="t">${l.time}</span>${l.msg}</div>`).join("") || `<div class="log-entry">Nothing yet — go take care of your seal!</div>`;
+}
+
+function showGiftModal(gift, browsing){
+  const modal = document.getElementById("gift-modal");
+  modal.innerHTML = `
+    ${browsing?"":`<h2>Your seal left you a gift! 🎁</h2>`}
+    <div class="rarity-tag ${gift.rarity}">${gift.rarity}</div>
+    <div class="gift-reveal">${gift.emoji}</div>
+    <h2 style="margin-top:0;">${gift.name}</h2>
+    <p>${gift.desc}</p>
+    ${browsing?"":`<p style="opacity:.8;">A brand new egg has washed up — Generation ${state.generation}, Trainer Level ${state.trainerLevel}!</p>`}
+    <button class="action-btn gold" id="close-gift-btn" style="width:100%;padding:12px;margin-top:6px;">${browsing?"Close":"Meet your new egg 🥚"}</button>
+  `;
+  document.getElementById("gift-overlay").classList.remove("hidden");
+  document.getElementById("close-gift-btn").onclick = ()=>{
+    document.getElementById("gift-overlay").classList.add("hidden");
+  };
+}
+
+function render(){
+  renderStage();
+  renderTopbar();
+  renderCare();
+  renderShop();
+  renderCollection();
+  renderJournal();
+  const playTab = document.getElementById("tab-play");
+  if(playTab.classList.contains("active")) renderPlayArea();
+}
+
+/* ============================= BUBBLES AMBIENT ============================= */
+function spawnAmbientBubble(){
+  const layer = document.getElementById("bubbles-layer");
+  const b = document.createElement("div");
+  const size = rand(4,10);
+  b.className = "bubble";
+  b.style.width = size+"px"; b.style.height = size+"px";
+  b.style.left = rand(5,95)+"%";
+  b.style.animationDuration = rand(6,11)+"s";
+  layer.appendChild(b);
+  setTimeout(()=>b.remove(), 11000);
+}
+setInterval(spawnAmbientBubble, 1400);
+
+/* ============================= EVENTS ============================= */
+
+document.querySelectorAll(".tab-btn").forEach(btn=>{
+  btn.onclick = ()=>{
+    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("tab-"+btn.getAttribute("data-tab")).classList.add("active");
+    if(btn.getAttribute("data-tab")==="play") renderPlayArea();
+  };
+});
+
+document.getElementById("warm-btn").onclick = warmEgg;
+document.getElementById("return-btn").onclick = returnToSea;
+document.getElementById("quick-feed-btn").onclick = quickFeed;
+document.getElementById("quick-clean-btn").onclick = quickClean;
+document.getElementById("rest-btn").onclick = restAction;
+document.getElementById("medicine-btn").onclick = useMedicine;
+
+document.getElementById("sound-toggle").onclick = ()=>{
+  state.soundOn = !state.soundOn;
+  renderTopbar();
+  if(state.soundOn) playBeep(440,0.1,"sine");
+};
+document.getElementById("help-btn").onclick = ()=>document.getElementById("help-overlay").classList.remove("hidden");
+document.getElementById("close-help-btn").onclick = ()=>document.getElementById("help-overlay").classList.add("hidden");
+
+document.getElementById("start-btn").onclick = ()=>{
+  const name = document.getElementById("name-input").value.trim();
+  if(name) state.sealName = name.slice(0,16);
+  started = true;
+  document.getElementById("welcome-overlay").classList.add("hidden");
+  addLog(`🥚 A new adventure begins with ${state.sealName}'s egg.`);
+  render();
+};
+document.getElementById("name-input").addEventListener("keydown", e=>{
+  if(e.key==="Enter") document.getElementById("start-btn").click();
+});
+
+document.getElementById("swim-btn").onclick = swimAction;
+document.getElementById("wave-btn").onclick = waveAction;
+document.getElementById("spin-btn").onclick = spinAction;
+document.getElementById("seal-wrap").addEventListener("click", (e)=>{
+  if(state.stage!=="egg"){ e.stopPropagation(); pokeSeal(); }
+});
+
+/* stage click also warms the egg for convenience */
+document.getElementById("stage-panel").addEventListener("click", (e)=>{
+  if(state.stage==="egg" && !e.target.closest(".warm-btn") && !e.target.closest(".stage-actions")){
+    warmEgg();
+  }
+});
+
+/* ============================= INIT ============================= */
+render();
+
+})();
+</script>
+</body>
+</html>
