@@ -5,6 +5,9 @@ A collection of games focused on light, lasers, reflections, and visual puzzle m
 https://translate.google.com/website?sl=en&tl=vi&hl=vi&client=srp&u=https://github.com/godotengine/godot-demo-projects/tree/master/2d/dodge_the_creeps
 ---
 
+[dodge_the_creeps_2d_assets.zip
+](https://translate.google.com/website?sl=en&tl=vi&hl=vi&client=srp&u=https://github.com/godotengine/godot-docs-project-starters/releases/download/latest-4.x/dodge_the_creeps_2d_assets.zip)
+
 ## 🔦 Light & Reflection Games
 
 ### ❤️ Heart Workshop
