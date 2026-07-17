@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Máy Làm Nhạc</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FBF5E9;
+    --ink:#20263B;
+    --coral:#FF6B54;
+    --teal:#1E9E92;
+    --amber:#F4B740;
+    --violet:#7C5CFC;
+    --pink:#FF4FA3;
+    --sky:#3EA6FF;
+    --paper:#FFFFFF;
+    --line:#E7DFCC;
+    --shadow: 4px 4px 0 rgba(32,38,59,0.12);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Nunito',sans-serif;
+    min-height:100vh;
+  }
+  h1,h2,.display{font-family:'Baloo 2',sans-serif;}
+  .wrap{max-width:1000px;margin:0 auto;padding:20px 16px 60px;}
+
+  header.top{display:flex;align-items:center;gap:14px;padding:22px 4px 6px;}
+  .logo-badge{
+    width:56px;height:56px;border-radius:16px;
+    background:linear-gradient(135deg,var(--coral),var(--violet));
+    display:flex;align-items:center;justify-content:center;
+    font-size:28px;flex:none;box-shadow:var(--shadow);
+  }
+  header.top h1{margin:0;font-size:1.8rem;}
+  header.top p{margin:2px 0 0;font-size:0.95rem;color:#6b7290;font-weight:700;}
+
+  .card{
+    background:var(--paper);border:2.5px solid var(--ink);border-radius:20px;
+    padding:20px;margin-bottom:18px;box-shadow:var(--shadow);
+  }
+  .card h2{margin-top:0;font-size:1.3rem;}
+  .card h2 .eyebrow{
+    display:block;font-family:'Nunito';font-size:.78rem;font-weight:800;
+    letter-spacing:.06em;text-transform:uppercase;color:var(--coral);margin-bottom:2px;
+  }
+
+  .howto{display:flex;gap:14px;flex-wrap:wrap;}
+  .howto .step-card{
+    flex:1;min-width:150px;background:var(--cream);border:2px solid var(--line);
+    border-radius:16px;padding:14px;text-align:center;
+  }
+  .howto .num{
+    width:34px;height:34px;border-radius:50%;background:var(--ink);color:var(--amber);
+    font-family:'Baloo 2';font-weight:800;font-size:1.1rem;display:flex;align-items:center;justify-content:center;
+    margin:0 auto 8px;
+  }
+  .howto .emoji{font-size:1.8rem;margin-bottom:4px;}
+  .howto p{margin:0;font-weight:800;font-size:0.95rem;}
+
+  .legend{display:flex;flex-wrap:wrap;gap:10px;}
+  .legend .item{
+    display:flex;align-items:center;gap:8px;background:var(--cream);
+    border:2px solid var(--line);border-radius:12px;padding:10px 14px;font-weight:800;font-size:1rem;
+  }
+  .legend .sym{font-size:1.5rem;width:1.4em;text-align:center;}
+  .legend.notes .item{background:#EFEAFB;border-color:#d8cdf7;}
+
+  .master{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+  .master button{
+    font-family:'Baloo 2';font-weight:800;font-size:1.05rem;padding:13px 22px;
+    border-radius:14px;border:2.5px solid var(--ink);cursor:pointer;
+  }
+  .btn-play-all{background:var(--teal);color:white;}
+  .btn-stop-all{background:var(--paper);}
+  .btn-add-perc{background:var(--amber);color:var(--ink);}
+  .btn-add-inst{background:var(--violet);color:white;}
+  .tempo-wrap{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1rem;}
+  input[type=range]{accent-color:var(--coral);}
+  .beat-counter{
+    font-family:'Baloo 2';font-size:1.2rem;background:var(--ink);color:var(--amber);
+    padding:9px 16px;border-radius:10px;min-width:80px;text-align:center;
+  }
+
+  /* Song length control */
+  .lengthbar{
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    background:var(--cream);border:2px solid var(--line);border-radius:14px;padding:12px 16px;
+  }
+  .lengthbar .lenbtn{
+    font-family:'Baloo 2';font-weight:800;font-size:1.2rem;width:42px;height:42px;border-radius:12px;
+    border:2.5px solid var(--ink);background:var(--paper);cursor:pointer;
+  }
+  .lengthbar .lenbtn:disabled{opacity:.35;cursor:not-allowed;}
+  .lengthbar .lentext{font-weight:800;font-size:1rem;}
+  .lengthbar .lentext b{color:var(--coral);}
+
+  #layers{display:flex;flex-direction:column;gap:14px;margin-top:16px;}
+  .layer{
+    border:2.5px solid var(--ink);border-radius:16px;padding:14px 16px;
+    background:var(--cream);position:relative;
+  }
+  .layer.kind-inst{background:#F3EEFC;}
+  .layer-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+  .layer-dot{width:18px;height:18px;border-radius:5px;flex:none;border:2px solid var(--ink);}
+  .layer-title{font-family:'Baloo 2';font-weight:800;font-size:1.1rem;flex:none;}
+  .layer-tag{
+    font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;
+    padding:3px 9px;border-radius:8px;background:var(--ink);color:var(--cream);
+  }
+  .layer-controls{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;}
+  .layer-controls select{
+    font-weight:800;font-size:.85rem;border-radius:9px;border:2px solid var(--ink);
+    padding:6px 8px;background:var(--paper);cursor:pointer;
+  }
+  .layer-controls button{
+    font-weight:800;font-size:.85rem;border-radius:9px;border:2px solid var(--ink);
+    padding:6px 11px;cursor:pointer;background:var(--paper);
+  }
+  .layer-controls button.mute-on{background:#c9c9c9;color:#666;}
+  .layer-controls button.remove-btn{background:var(--coral);color:white;}
+
+  .segment{margin-bottom:8px;}
+  .segment:last-child{margin-bottom:0;}
+  .segment-label{
+    font-size:.7rem;font-weight:800;color:#8a8fa6;text-transform:uppercase;
+    letter-spacing:.06em;margin-bottom:4px;
+  }
+
+  /* percussion steps */
+  .steps{display:grid;grid-template-columns:repeat(8,1fr);gap:7px;}
+  .step{
+    aspect-ratio:1;border:2.5px solid var(--ink);border-radius:12px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.5rem;background:var(--paper);cursor:pointer;user-select:none;
+    transition:transform .08s ease, background .12s ease;
+  }
+  .step:hover{transform:scale(1.08);}
+  .step.playing{background:var(--coral);color:white;border-color:var(--coral);}
+  .layer.muted .steps, .layer.muted .note-steps{opacity:0.35;}
+
+  /* instrument (melodic) steps */
+  .note-steps{display:grid;grid-template-columns:repeat(8,1fr);gap:7px;height:100px;}
+  .note-step{
+    position:relative;border:2.5px solid var(--ink);border-radius:12px;
+    background:var(--paper);cursor:pointer;overflow:hidden;user-select:none;
+  }
+  .note-step .pill{
+    position:absolute;left:6px;right:6px;height:24px;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:.78rem;font-weight:800;color:white;
+    transition:top .1s ease;
+  }
+  .note-step .rest-mark{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    color:#c3c7d6;font-weight:800;font-size:1.1rem;
+  }
+  .note-step.playing{background:#fff2e0;border-color:var(--coral);}
+
+  footer.note{font-size:.8rem;color:#8a8fa6;text-align:center;margin-top:20px;}
+
+  @media(max-width:520px){
+    .steps,.note-steps{grid-template-columns:repeat(8,1fr);}
+    .step{font-size:1.15rem;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="logo-badge">🥁</div>
+    <div>
+      <h1>Máy Làm Nhạc</h1>
+      <p>Ghép nhịp gõ và giai điệu lại với nhau</p>
+    </div>
+  </header>
+
+  <div class="card">
+    <h2><span class="eyebrow">Hướng dẫn nhanh</span>Chơi theo 3 bước</h2>
+    <div class="howto">
+      <div class="step-card">
+        <div class="num">1</div>
+        <div class="emoji">👆</div>
+        <p>Bấm vào từng ô để đổi âm thanh</p>
+      </div>
+      <div class="step-card">
+        <div class="num">2</div>
+        <div class="emoji">➕</div>
+        <p>Thêm lớp Gõ Đệm hoặc Giai Điệu mới</p>
+      </div>
+      <div class="step-card">
+        <div class="num">3</div>
+        <div class="emoji">▶️</div>
+        <p>Bấm "Phát Tất Cả" để nghe mọi lớp cùng lúc</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="eyebrow">Lớp Gõ Đệm</span>Âm thanh cơ thể</h2>
+    <div class="legend">
+      <div class="item"><span class="sym">●</span> Vỗ tay</div>
+      <div class="item"><span class="sym">○</span> Im lặng</div>
+      <div class="item"><span class="sym">■</span> Dậm chân</div>
+      <div class="item"><span class="sym">▲</span> Búng tay</div>
+      <div class="item"><span class="sym">★</span> Gõ bàn</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="eyebrow">Lớp Giai Điệu</span>Thang âm Đô – Rê – Mi</h2>
+    <p style="margin-top:-4px;font-weight:700;">Nốt nhạc luôn hoà hợp với nhau, xếp thế nào cũng nghe hay! Bấm vào ô để chuyển nốt: – → Đô → Rê → Mi → Sol → La → Đô' → quay lại –. Mỗi lớp Giai Điệu có 7 loại nhạc cụ để chọn: Đàn Bass, Mộc Cầm, Đàn Gõ, Chuông, Sáo, Guitar, Đàn Synth.</p>
+    <div class="legend notes">
+      <div class="item">Đô</div><div class="item">Rê</div><div class="item">Mi</div>
+      <div class="item">Sol</div><div class="item">La</div><div class="item">Đô'</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="eyebrow">Cho các bạn lớn hơn</span>Làm bài hát dài hơn</h2>
+    <p style="margin-top:-4px;font-weight:700;">Mỗi đoạn có 8 nhịp. Bấm "+" để nối thêm một đoạn mới vào cuối mọi lớp — bài hát sẽ dài hơn mà vẫn khớp nhịp với nhau.</p>
+    <div class="lengthbar">
+      <button class="lenbtn" id="lenMinus">−</button>
+      <div class="lentext">Độ dài bài hát: <b id="lenSegs">1</b> đoạn (<b id="lenBeats">8</b> nhịp)</div>
+      <button class="lenbtn" id="lenPlus">＋</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="eyebrow">Trộn nhạc</span>Tạo lớp rồi phát cùng lúc</h2>
+    <div class="master">
+      <button class="btn-play-all" id="playAll">▶ Phát Tất Cả</button>
+      <button class="btn-stop-all" id="stopAll">■ Dừng</button>
+      <button class="btn-add-perc" id="addPerc">＋ Lớp Gõ Đệm</button>
+      <button class="btn-add-inst" id="addInst">＋ Lớp Giai Điệu</button>
+      <div class="tempo-wrap">Tốc độ <input type="range" min="60" max="160" value="100" id="tempo"> <span id="tempoVal">100</span> nhịp/phút</div>
+      <div class="beat-counter" id="beatCounter">nhịp –</div>
+    </div>
+  </div>
+
+  <div id="layers"></div>
+
+  <footer class="note">Dùng cho lớp học Logiscool · Âm thanh được tạo trực tiếp trên trình duyệt, không cần file nhạc.</footer>
+</div>
+
+<script>
+// ================= AUDIO: PERCUSSION =================
+let actx=null;
+function ctx(){ if(!actx) actx=new (window.AudioContext||window.webkitAudioContext)(); return actx; }
+
+function playClap(t){
+  const c=ctx(); const bufferSize=c.sampleRate*0.08;
+  const buffer=c.createBuffer(1,bufferSize,c.sampleRate);
+  const data=buffer.getChannelData(0);
+  for(let i=0;i<bufferSize;i++){ data[i]=(Math.random()*2-1)*(1-i/bufferSize); }
+  const src=c.createBufferSource(); src.buffer=buffer;
+  const filt=c.createBiquadFilter(); filt.type='bandpass'; filt.frequency.value=1500;
+  const gain=c.createGain(); gain.gain.setValueAtTime(0.8,t); gain.gain.exponentialRampToValueAtTime(0.01,t+0.09);
+  src.connect(filt).connect(gain).connect(c.destination);
+  src.start(t); src.stop(t+0.09);
+}
+function playStomp(t){
+  const c=ctx(); const osc=c.createOscillator(); osc.type='sine';
+  osc.frequency.setValueAtTime(120,t); osc.frequency.exponentialRampToValueAtTime(45,t+0.2);
+  const gain=c.createGain(); gain.gain.setValueAtTime(0.9,t); gain.gain.exponentialRampToValueAtTime(0.01,t+0.22);
+  osc.connect(gain).connect(c.destination); osc.start(t); osc.stop(t+0.22);
+}
+function playSnap(t){
+  const c=ctx(); const osc=c.createOscillator(); osc.type='square'; osc.frequency.setValueAtTime(2200,t);
+  const gain=c.createGain(); gain.gain.setValueAtTime(0.3,t); gain.gain.exponentialRampToValueAtTime(0.01,t+0.045);
+  osc.connect(gain).connect(c.destination); osc.start(t); osc.stop(t+0.05);
+}
+function playTap(t){
+  const c=ctx(); const osc=c.createOscillator(); osc.type='triangle'; osc.frequency.setValueAtTime(700,t);
+  const gain=c.createGain(); gain.gain.setValueAtTime(0.45,t); gain.gain.exponentialRampToValueAtTime(0.01,t+0.06);
+  osc.connect(gain).connect(c.destination); osc.start(t); osc.stop(t+0.07);
+}
+function playSymbol(sym,t){
+  if(sym==='●') playClap(t);
+  else if(sym==='■') playStomp(t);
+  else if(sym==='▲') playSnap(t);
+  else if(sym==='★') playTap(t);
+}
+
+// ================= AUDIO: INSTRUMENTS =================
+const DEGREES=[
+  {name:'–',   semi:null, color:null},
+  {name:'Đô',  semi:0,  color:'#FF6B54'},
+  {name:'Rê',  semi:2,  color:'#F4B740'},
+  {name:'Mi',  semi:4,  color:'#1E9E92'},
+  {name:'Sol', semi:7,  color:'#3EA6FF'},
+  {name:'La',  semi:9,  color:'#7C5CFC'},
+  {name:"Đô'", semi:12, color:'#FF4FA3'}
+];
+const VOICES={
+  bass:      {label:'Đàn Bass (Trầm)', baseMidi:36, wave:'sine',     decay:0.38, gain:0.9},
+  marimba:   {label:'Mộc Cầm',         baseMidi:60, wave:'triangle', decay:0.5,  gain:0.7},
+  xylophone: {label:'Đàn Gõ (Cao)',    baseMidi:72, wave:'triangle', decay:0.22, gain:0.55},
+  bell:      {label:'Chuông',          baseMidi:84, wave:'sine',     decay:0.9,  gain:0.4},
+  flute:     {label:'Sáo',             baseMidi:76, wave:'sine',     decay:0.55, gain:0.5},
+  guitar:    {label:'Guitar',          baseMidi:52, wave:'sawtooth', decay:0.4,  gain:0.45},
+  synth:     {label:'Đàn Synth',       baseMidi:65, wave:'square',   decay:0.45, gain:0.35}
+};
+function midiToFreq(midi){ return 440*Math.pow(2,(midi-69)/12); }
+function playNote(voiceKey, degreeIndex, t){
+  const deg=DEGREES[degreeIndex];
+  if(!deg || deg.semi===null) return;
+  const voice=VOICES[voiceKey];
+  const freq=midiToFreq(voice.baseMidi+deg.semi);
+  const c=ctx();
+  const osc=c.createOscillator(); osc.type=voice.wave; osc.frequency.setValueAtTime(freq,t);
+  const gain=c.createGain();
+  gain.gain.setValueAtTime(voice.gain,t);
+  gain.gain.exponentialRampToValueAtTime(0.01,t+voice.decay);
+  osc.connect(gain).connect(c.destination);
+  osc.start(t); osc.stop(t+voice.decay+0.02);
+}
+
+// ================= SHARED STATE =================
+const SEGMENT_SIZE=8;
+const MIN_SEGMENTS=1, MAX_SEGMENTS=4;
+let songLength=SEGMENT_SIZE; // total beats, always a multiple of SEGMENT_SIZE
+
+const COLORS=['#FF6B54','#1E9E92','#7C5CFC','#F4B740','#FF4FA3','#3EA6FF','#8BC34A','#B84AFF'];
+const PERC_PRESETS={
+  blank:    Array(SEGMENT_SIZE).fill('○'),
+  easy:     ['●','■','●','■','●','■','●','■'],
+  medium:   ['●','●','■','▲','●','●','■','▲'],
+  advanced: ['●','▲','■','○','▲','●','●','▲'],
+  heartbeat:['●','○','●','○','○','○','●','○'],
+  rain:     ['★','○','▲','★','○','▲','★','▲']
+};
+const PERC_SYMS=['●','○','■','▲','★'];
+
+let layerId=0;
+const layers=[]; // {id, kind:'perc'|'inst', color, symbols[]|notes[], voice, muted}
+const layersEl=document.getElementById('layers');
+
+function randomPercPattern(len){
+  return Array.from({length:len},()=>PERC_SYMS[Math.floor(Math.random()*PERC_SYMS.length)]);
+}
+function randomNotePattern(len){
+  const pool=[0,0,1,2,3,4,5,6];
+  return Array.from({length:len},()=>pool[Math.floor(Math.random()*pool.length)]);
+}
+function tileToLength(base, len){
+  // repeats an 8-beat preset to fill the full song length (matches "repeat N times")
+  const out=[];
+  for(let i=0;i<len;i++) out.push(base[i % base.length]);
+  return out;
+}
+
+// ================= LAYER: PERCUSSION =================
+function addPercLayer(initialSymbols){
+  const id=layerId++;
+  const color=COLORS[layers.length % COLORS.length];
+  const symbols=(initialSymbols||randomPercPattern(songLength)).slice();
+  const layer={id,kind:'perc',color,symbols,muted:false};
+  layers.push(layer);
+  renderPercLayer(layer);
+  renumberLayers();
+}
+function renderPercLayer(layer){
+  const div=document.createElement('div');
+  div.className='layer kind-perc';
+  div.dataset.id=layer.id;
+  div.innerHTML=`
+    <div class="layer-head">
+      <div class="layer-dot" style="background:${layer.color}"></div>
+      <div class="layer-title">Lớp</div>
+      <span class="layer-tag">Gõ Đệm</span>
+      <div class="layer-controls">
+        <select data-role="preset">
+          <option value="">Chọn mẫu…</option>
+          <option value="blank">Xóa</option>
+          <option value="easy">Mẫu Dễ</option>
+          <option value="medium">Mẫu Trung Bình</option>
+          <option value="advanced">Mẫu Nâng Cao</option>
+          <option value="heartbeat">Nhịp Tim</option>
+          <option value="rain">Mưa Rơi</option>
+          <option value="random">🎲 Ngẫu Nhiên</option>
+        </select>
+        <button data-role="mute">Tắt tiếng</button>
+        <button data-role="remove" class="remove-btn">✕</button>
+      </div>
+    </div>
+    <div class="segments"></div>
+  `;
+  layersEl.appendChild(div);
+  buildPercGrid(div, layer);
+
+  div.querySelector('[data-role="preset"]').addEventListener('change',(e)=>{
+    const val=e.target.value; if(!val) return;
+    if(val==='random') layer.symbols=randomPercPattern(songLength);
+    else if(val==='blank') layer.symbols=Array(songLength).fill('○');
+    else layer.symbols=tileToLength(PERC_PRESETS[val], songLength);
+    buildPercGrid(div, layer);
+    e.target.value='';
+  });
+  wireCommonControls(div, layer);
+}
+function buildPercGrid(container, layer){
+  const wrap=container.querySelector('.segments');
+  wrap.innerHTML='';
+  const segCount=layer.symbols.length/SEGMENT_SIZE;
+  for(let s=0;s<segCount;s++){
+    const segDiv=document.createElement('div');
+    segDiv.className='segment';
+    segDiv.innerHTML = segCount>1 ? `<div class="segment-label">Đoạn ${s+1}</div>` : '';
+    const stepsEl=document.createElement('div');
+    stepsEl.className='steps';
+    for(let k=0;k<SEGMENT_SIZE;k++){
+      const i=s*SEGMENT_SIZE+k;
+      const cell=document.createElement('div');
+      cell.className='step';
+      cell.textContent=layer.symbols[i];
+      cell.addEventListener('click',()=>{
+        const idx=PERC_SYMS.indexOf(layer.symbols[i]);
+        layer.symbols[i]=PERC_SYMS[(idx+1)%PERC_SYMS.length];
+        cell.textContent=layer.symbols[i];
+      });
+      stepsEl.appendChild(cell);
+    }
+    segDiv.appendChild(stepsEl);
+    wrap.appendChild(segDiv);
+  }
+}
+
+// ================= LAYER: INSTRUMENT =================
+function addInstLayer(voiceKey, initialNotes){
+  const id=layerId++;
+  const color=COLORS[layers.length % COLORS.length];
+  const notes=(initialNotes||randomNotePattern(songLength)).slice();
+  const layer={id,kind:'inst',color,notes,voice:voiceKey||'marimba',muted:false};
+  layers.push(layer);
+  renderInstLayer(layer);
+  renumberLayers();
+}
+function renderInstLayer(layer){
+  const div=document.createElement('div');
+  div.className='layer kind-inst';
+  div.dataset.id=layer.id;
+  const voiceOptions=Object.keys(VOICES).map(k=>`<option value="${k}" ${k===layer.voice?'selected':''}>${VOICES[k].label}</option>`).join('');
+  div.innerHTML=`
+    <div class="layer-head">
+      <div class="layer-dot" style="background:${layer.color}"></div>
+      <div class="layer-title">Lớp</div>
+      <span class="layer-tag">Giai Điệu</span>
+      <div class="layer-controls">
+        <select data-role="voice">${voiceOptions}</select>
+        <button data-role="random">🎲 Ngẫu Nhiên</button>
+        <button data-role="clear">Xóa</button>
+        <button data-role="mute">Tắt tiếng</button>
+        <button data-role="remove" class="remove-btn">✕</button>
+      </div>
+    </div>
+    <div class="segments"></div>
+  `;
+  layersEl.appendChild(div);
+  buildNoteGrid(div, layer);
+
+  div.querySelector('[data-role="voice"]').addEventListener('change',(e)=>{ layer.voice=e.target.value; });
+  div.querySelector('[data-role="random"]').addEventListener('click',()=>{
+    layer.notes=randomNotePattern(songLength); buildNoteGrid(div, layer);
+  });
+  div.querySelector('[data-role="clear"]').addEventListener('click',()=>{
+    layer.notes=Array(songLength).fill(0); buildNoteGrid(div, layer);
+  });
+  wireCommonControls(div, layer);
+}
+function buildNoteGrid(container, layer){
+  const wrap=container.querySelector('.segments');
+  wrap.innerHTML='';
+  const segCount=layer.notes.length/SEGMENT_SIZE;
+  for(let s=0;s<segCount;s++){
+    const segDiv=document.createElement('div');
+    segDiv.className='segment';
+    segDiv.innerHTML = segCount>1 ? `<div class="segment-label">Đoạn ${s+1}</div>` : '';
+    const stepsEl=document.createElement('div');
+    stepsEl.className='note-steps';
+    for(let k=0;k<SEGMENT_SIZE;k++){
+      const i=s*SEGMENT_SIZE+k;
+      const cell=document.createElement('div');
+      cell.className='note-step';
+      renderNoteCell(cell, layer.notes[i]);
+      cell.addEventListener('click',()=>{
+        layer.notes[i]=(layer.notes[i]+1)%DEGREES.length;
+        renderNoteCell(cell, layer.notes[i]);
+      });
+      stepsEl.appendChild(cell);
+    }
+    segDiv.appendChild(stepsEl);
+    wrap.appendChild(segDiv);
+  }
+}
+function renderNoteCell(cell, degIdx){
+  cell.innerHTML='';
+  const deg=DEGREES[degIdx];
+  if(deg.semi===null){
+    const rest=document.createElement('div');
+    rest.className='rest-mark';
+    rest.textContent='–';
+    cell.appendChild(rest);
+    return;
+  }
+  const pill=document.createElement('div');
+  pill.className='pill';
+  pill.textContent=deg.name;
+  pill.style.background=deg.color;
+  const maxSemi=12;
+  const topPct = 74 - (deg.semi/maxSemi)*64;
+  pill.style.top = topPct+'%';
+  cell.appendChild(pill);
+}
+
+// ================= COMMON =================
+function wireCommonControls(div, layer){
+  div.querySelector('[data-role="mute"]').addEventListener('click',(e)=>{
+    layer.muted=!layer.muted;
+    div.classList.toggle('muted', layer.muted);
+    e.target.classList.toggle('mute-on', layer.muted);
+    e.target.textContent = layer.muted ? 'Đã tắt' : 'Tắt tiếng';
+  });
+  div.querySelector('[data-role="remove"]').addEventListener('click',()=>{
+    const idx=layers.findIndex(l=>l.id===layer.id);
+    if(idx>-1) layers.splice(idx,1);
+    div.remove();
+    renumberLayers();
+  });
+}
+function renumberLayers(){
+  document.querySelectorAll('.layer').forEach((div,idx)=>{
+    div.querySelector('.layer-title').textContent='Lớp '+(idx+1);
+  });
+}
+
+// ================= SONG LENGTH (extend for longer songs) =================
+const lenSegsEl=document.getElementById('lenSegs');
+const lenBeatsEl=document.getElementById('lenBeats');
+const lenMinusBtn=document.getElementById('lenMinus');
+const lenPlusBtn=document.getElementById('lenPlus');
+
+function updateLengthUI(){
+  const segs=songLength/SEGMENT_SIZE;
+  lenSegsEl.textContent=segs;
+  lenBeatsEl.textContent=songLength;
+  lenMinusBtn.disabled = segs<=MIN_SEGMENTS;
+  lenPlusBtn.disabled = segs>=MAX_SEGMENTS;
+}
+function rerenderAllLayers(){
+  layersEl.innerHTML='';
+  layers.forEach(layer=>{
+    if(layer.kind==='perc') renderPercLayer(layer);
+    else renderInstLayer(layer);
+  });
+  renumberLayers();
+}
+function extendSong(){
+  const segs=songLength/SEGMENT_SIZE;
+  if(segs>=MAX_SEGMENTS) return;
+  songLength+=SEGMENT_SIZE;
+  layers.forEach(layer=>{
+    if(layer.kind==='perc') layer.symbols=layer.symbols.concat(Array(SEGMENT_SIZE).fill('○'));
+    else layer.notes=layer.notes.concat(Array(SEGMENT_SIZE).fill(0));
+  });
+  rerenderAllLayers();
+  updateLengthUI();
+}
+function shortenSong(){
+  const segs=songLength/SEGMENT_SIZE;
+  if(segs<=MIN_SEGMENTS) return;
+  songLength-=SEGMENT_SIZE;
+  layers.forEach(layer=>{
+    if(layer.kind==='perc') layer.symbols=layer.symbols.slice(0,songLength);
+    else layer.notes=layer.notes.slice(0,songLength);
+  });
+  rerenderAllLayers();
+  updateLengthUI();
+}
+lenPlusBtn.addEventListener('click', extendSong);
+lenMinusBtn.addEventListener('click', shortenSong);
+updateLengthUI();
+
+// seed with starter layers
+addPercLayer(PERC_PRESETS.easy.slice());
+addInstLayer('bass', [1,0,0,1,0,4,0,0]);
+addInstLayer('marimba', [1,2,3,4,3,2,1,0]);
+
+document.getElementById('addPerc').addEventListener('click',()=>{
+  if(layers.length>=10) return;
+  addPercLayer(Array(songLength).fill('○'));
+});
+const VOICE_KEYS=Object.keys(VOICES);
+document.getElementById('addInst').addEventListener('click',()=>{
+  if(layers.length>=10) return;
+  const instCount=layers.filter(l=>l.kind==='inst').length;
+  const nextVoice=VOICE_KEYS[instCount % VOICE_KEYS.length];
+  addInstLayer(nextVoice, Array(songLength).fill(0));
+});
+
+// ================= TRANSPORT =================
+const tempoInput=document.getElementById('tempo');
+const tempoVal=document.getElementById('tempoVal');
+tempoInput.addEventListener('input',()=>tempoVal.textContent=tempoInput.value);
+
+let playing=false, timeoutId=null, beatIndex=0;
+const beatCounter=document.getElementById('beatCounter');
+
+function stopAll(){
+  playing=false;
+  if(timeoutId){ clearTimeout(timeoutId); timeoutId=null; }
+  document.querySelectorAll('.step, .note-step').forEach(s=>s.classList.remove('playing'));
+  beatCounter.textContent='nhịp –';
+}
+
+function playAll(){
+  stopAll();
+  if(ctx().state==='suspended') ctx().resume();
+  playing=true;
+  beatIndex=0;
+  const tick=()=>{
+    if(!playing) return;
+    const bpm=parseInt(tempoInput.value,10);
+    const beatMs=60000/bpm;
+    // Bigger lookahead so that scheduling every layer's sound never gets
+    // pushed later than the others by DOM work happening in between.
+    const t=ctx().currentTime+0.06;
+
+    const layerDivs=document.querySelectorAll('.layer');
+
+    // Pass 1: schedule every layer's sound FIRST, all at the same time t,
+    // before touching the DOM at all. This is what keeps layers in sync.
+    layerDivs.forEach((div, layerPos)=>{
+      const layer=layers[layerPos];
+      if(!layer || layer.muted) return;
+      if(layer.kind==='perc') playSymbol(layer.symbols[beatIndex], t);
+      else playNote(layer.voice, layer.notes[beatIndex], t);
+    });
+
+    // Pass 2: now update the visual highlight for every layer.
+    layerDivs.forEach((div, layerPos)=>{
+      const layer=layers[layerPos];
+      if(!layer) return;
+      const selector = layer.kind==='perc' ? '.step' : '.note-step';
+      const cells=div.querySelectorAll(selector);
+      cells.forEach(c=>c.classList.remove('playing'));
+      const cell=cells[beatIndex];
+      if(cell) cell.classList.add('playing');
+    });
+
+    beatCounter.textContent='nhịp '+(beatIndex+1);
+    beatIndex=(beatIndex+1)%songLength;
+    timeoutId=setTimeout(tick, beatMs);
+  };
+  tick();
+}
+
+document.getElementById('playAll').addEventListener('click', playAll);
+document.getElementById('stopAll').addEventListener('click', stopAll);
+</script>
+</body>
+</html>
