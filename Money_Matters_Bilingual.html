@@ -1,0 +1,2632 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Money Matters · Round 2 · Logiscool Vietnam</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Fraunces:opsz,wght,SOFT,WONK@9..144,400;9..144,500;9..144,600;9..144,700;9..144,800&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAF6E9;
+    --bg-2: #F4EFDB;
+    --ink: #1A1F1B;
+    --ink-2: #4A5250;
+    --ink-3: #7B837F;
+    --jade: #0F4C3A;
+    --jade-2: #1D6650;
+    --jade-soft: #E4EEE6;
+    --jade-line: #C6D6C8;
+    --lixi: #C8102E;
+    --lixi-soft: #F5DDE0;
+    --gold: #B48A2E;
+    --gold-soft: #F0E4C3;
+    --shadow-sm: 0 1px 2px rgba(26, 31, 27, 0.05);
+    --shadow-md: 0 4px 12px rgba(26, 31, 27, 0.08);
+    --shadow-lg: 0 12px 32px rgba(26, 31, 27, 0.12);
+    --radius-sm: 6px;
+    --radius: 10px;
+    --radius-lg: 18px;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter Tight', 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(180, 138, 46, 0.04) 0%, transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(15, 76, 58, 0.03) 0%, transparent 40%);
+  }
+  body[data-lang="vi"] { font-family: 'Be Vietnam Pro', 'Inter Tight', sans-serif; }
+  body[data-lang="vi"] .serif, body[data-lang="vi"] h1, body[data-lang="vi"] h2, body[data-lang="vi"] h3, body[data-lang="vi"] h4 {
+    font-family: 'Be Vietnam Pro', 'Fraunces', Georgia, serif;
+  }
+  body[data-lang="vi"] .u-serif-italic { font-style: italic; font-family: 'Be Vietnam Pro', sans-serif; }
+
+  .mono { font-family: 'JetBrains Mono', monospace; font-feature-settings: "tnum"; }
+  .serif { font-family: 'Fraunces', Georgia, serif; }
+
+  /* ─── NAV BAR ─── */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(250, 246, 233, 0.94);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--jade-line);
+  }
+  .nav-inner {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 17px;
+    color: var(--jade);
+    letter-spacing: -0.01em;
+  }
+  body[data-lang="vi"] .brand { font-family: 'Be Vietnam Pro', sans-serif; }
+  .brand-mark {
+    width: 28px;
+    height: 28px;
+    background: var(--jade);
+    color: var(--bg);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 15px;
+    font-style: italic;
+    font-variation-settings: "SOFT" 100, "WONK" 1;
+  }
+
+  .nav-tabs {
+    display: flex;
+    gap: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink-2);
+  }
+  .nav-tabs a {
+    padding: 8px 14px;
+    color: inherit;
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    transition: background 0.15s, color 0.15s;
+  }
+  .nav-tabs a:hover { background: var(--jade-soft); color: var(--jade); }
+
+  .nav-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .lang-toggle {
+    display: flex;
+    background: transparent;
+    border: 1px solid var(--jade-line);
+    border-radius: 999px;
+    padding: 2px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .lang-toggle button {
+    border: 0;
+    background: transparent;
+    padding: 5px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    color: var(--ink-3);
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    transition: all 0.15s;
+  }
+  .lang-toggle button.active { background: var(--jade); color: var(--bg); }
+
+  .role-toggle {
+    display: flex;
+    background: var(--bg-2);
+    border-radius: 999px;
+    padding: 3px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.04);
+    position: relative;
+  }
+  .role-toggle button {
+    border: 0;
+    background: transparent;
+    padding: 7px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    color: var(--ink-3);
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.01em;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .role-toggle button.active {
+    background: var(--ink);
+    color: var(--bg);
+    box-shadow: var(--shadow-sm);
+  }
+  .role-toggle button:not(.active):hover { color: var(--ink); }
+  .role-toggle button .lock { font-size: 11px; opacity: 0.7; }
+  body[data-role="teacher"] .role-toggle button[data-role="teacher"] .lock { display: none; }
+
+  /* ─── HERO ─── */
+  .hero {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 80px 32px 60px;
+    position: relative;
+  }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--jade);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 32px;
+    height: 1px;
+    background: var(--jade);
+  }
+  .hero h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: clamp(48px, 8vw, 96px);
+    line-height: 0.94;
+    letter-spacing: -0.03em;
+    margin: 0 0 24px;
+    color: var(--ink);
+    font-variation-settings: "opsz" 144, "SOFT" 30;
+  }
+  body[data-lang="vi"] .hero h1 { font-family: 'Be Vietnam Pro', sans-serif; font-weight: 700; letter-spacing: -0.02em; }
+  .hero h1 .accent {
+    color: var(--jade);
+    font-style: italic;
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+    font-weight: 400;
+  }
+  body[data-lang="vi"] .hero h1 .accent { font-style: normal; font-weight: 700; }
+  .hero-lede {
+    max-width: 620px;
+    font-size: 20px;
+    color: var(--ink-2);
+    line-height: 1.55;
+    margin: 0 0 40px;
+  }
+
+  .hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    padding: 28px 0 0;
+    border-top: 1px solid var(--jade-line);
+    max-width: 720px;
+  }
+  .hero-meta .item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .hero-meta .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .hero-meta .value {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  body[data-lang="vi"] .hero-meta .value { font-family: 'Be Vietnam Pro', sans-serif; font-weight: 600; }
+
+  .hero-tag {
+    position: absolute;
+    top: 90px;
+    right: 40px;
+    width: 200px;
+    padding: 14px 18px 16px;
+    background: var(--lixi);
+    color: #FAE7D9;
+    border-radius: 4px;
+    box-shadow: var(--shadow-md);
+    transform: rotate(4deg);
+    display: none;
+  }
+  @media (min-width: 900px) {
+    .hero-tag { display: block; }
+  }
+  .hero-tag .amount {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #FAE7D9;
+  }
+  .hero-tag .caption {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.75;
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+  .hero-tag::before {
+    content: "";
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--bg);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+  }
+
+  /* ─── SECTION FRAMEWORK ─── */
+  .container {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+  section { padding: 60px 0; scroll-margin-top: 80px; }
+
+  .section-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 40px;
+    padding-bottom: 32px;
+    margin-bottom: 40px;
+    border-bottom: 1px solid var(--jade-line);
+  }
+  .section-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: clamp(32px, 4vw, 48px);
+    letter-spacing: -0.02em;
+    margin: 0;
+    color: var(--ink);
+    line-height: 1.05;
+    font-variation-settings: "opsz" 96;
+  }
+  body[data-lang="vi"] .section-head h2 { font-family: 'Be Vietnam Pro', sans-serif; font-weight: 700; }
+  .section-head .meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px 5px 18px;
+    background: var(--jade);
+    color: var(--bg);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: 3px;
+    position: relative;
+  }
+  .tag::before {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 5px;
+    height: 5px;
+    background: var(--bg);
+    border-radius: 50%;
+  }
+  .tag.tag-lixi { background: var(--lixi); }
+  .tag.tag-gold { background: var(--gold); color: var(--ink); }
+
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .activity-card {
+    background: #FDFBF3;
+    border: 1px solid var(--jade-line);
+    border-radius: var(--radius-lg);
+    padding: 28px 24px 24px;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .activity-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--jade);
+  }
+  .activity-card .num {
+    font-family: 'Fraunces', serif;
+    font-size: 56px;
+    line-height: 1;
+    font-weight: 400;
+    color: var(--jade);
+    font-variation-settings: "opsz" 144, "SOFT" 80, "WONK" 1;
+    font-style: italic;
+    letter-spacing: -0.03em;
+  }
+  .activity-card h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+    margin: 0;
+    line-height: 1.15;
+  }
+  body[data-lang="vi"] .activity-card h3 { font-family: 'Be Vietnam Pro', sans-serif; font-weight: 600; }
+  .activity-card p {
+    font-size: 14px;
+    color: var(--ink-2);
+    margin: 0;
+    line-height: 1.5;
+  }
+  .activity-card .card-meta {
+    display: flex;
+    gap: 16px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--jade-line);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-top: auto;
+  }
+  .activity-card .card-meta span::before { content: "· "; margin-right: 3px; opacity: 0.4; }
+
+  .activity {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  @media (min-width: 900px) {
+    .activity { grid-template-columns: 260px 1fr; gap: 60px; }
+  }
+
+  .activity-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: sticky;
+    top: 90px;
+    align-self: start;
+    height: fit-content;
+  }
+  .side-block {
+    padding: 18px 20px;
+    background: var(--jade-soft);
+    border-radius: var(--radius);
+    border-left: 3px solid var(--jade);
+  }
+  .side-block h4 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--jade);
+    margin: 0 0 8px;
+  }
+  .side-block p {
+    font-size: 14px;
+    color: var(--ink);
+    margin: 0;
+    line-height: 1.5;
+  }
+  .side-block ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 14px;
+  }
+  .side-block ul li {
+    padding: 4px 0;
+    border-bottom: 1px dashed rgba(15, 76, 58, 0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .side-block ul li:last-child { border-bottom: 0; }
+  .side-block ul li .k { color: var(--ink-2); font-size: 13px; }
+  .side-block ul li .v { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 13px; }
+
+  .activity-body { max-width: 780px; }
+  .body-block { margin-bottom: 40px; }
+  .body-block h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 24px;
+    letter-spacing: -0.01em;
+    margin: 0 0 14px;
+    line-height: 1.2;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  body[data-lang="vi"] .body-block h3 { font-family: 'Be Vietnam Pro', sans-serif; font-weight: 600; }
+  .body-block h3 .num-inline {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--jade);
+    background: var(--jade-soft);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+  .body-block p { color: var(--ink); line-height: 1.6; margin: 0 0 12px; }
+  .body-block ul, .body-block ol { padding-left: 22px; margin: 12px 0; color: var(--ink); line-height: 1.6; }
+  .body-block ul li, .body-block ol li { margin-bottom: 6px; }
+
+  .teacher-only, .student-only { display: none; }
+  body[data-role="teacher"] .teacher-only { display: block; }
+  body[data-role="student"] .student-only { display: block; }
+
+  .teacher-panel {
+    background: #F2F5EC;
+    border: 1px solid #D5DEC5;
+    border-left: 4px solid var(--jade);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    margin: 24px 0;
+    position: relative;
+  }
+  .teacher-panel::before {
+    content: attr(data-label);
+    position: absolute;
+    top: -12px;
+    left: 20px;
+    background: var(--jade);
+    color: var(--bg);
+    padding: 4px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: 3px;
+    font-weight: 500;
+  }
+  .teacher-panel > *:first-child { margin-top: 0; }
+  .teacher-panel > *:last-child { margin-bottom: 0; }
+
+  .answer-panel {
+    background: var(--gold-soft);
+    border: 1px solid #E1CE99;
+    border-left: 4px solid var(--gold);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    margin: 24px 0;
+    position: relative;
+  }
+  .answer-panel::before {
+    content: attr(data-label);
+    position: absolute;
+    top: -12px;
+    left: 20px;
+    background: var(--gold);
+    color: var(--ink);
+    padding: 4px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: 3px;
+    font-weight: 600;
+  }
+  .answer-panel > *:first-child { margin-top: 0; }
+  .answer-panel > *:last-child { margin-bottom: 0; }
+
+  .discussion {
+    background: transparent;
+    border-top: 2px dashed var(--jade-line);
+    border-bottom: 2px dashed var(--jade-line);
+    padding: 18px 0 4px;
+    margin: 20px 0;
+  }
+  .discussion .disc-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--lixi);
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+  .discussion ul { padding-left: 18px; }
+  .discussion li { font-family: 'Fraunces', serif; font-weight: 500; color: var(--ink); font-size: 17px; letter-spacing: -0.005em; line-height: 1.4; margin-bottom: 10px; }
+  body[data-lang="vi"] .discussion li { font-family: 'Be Vietnam Pro', sans-serif; font-weight: 500; }
+
+  /* ─── DICE ─── */
+  .dice-zone {
+    background: linear-gradient(135deg, #FDFBF3 0%, #F4EFDB 100%);
+    border: 1px solid var(--jade-line);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    margin: 24px 0 32px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .dice-zone h4 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 20px;
+    margin: 0 0 8px;
+    letter-spacing: -0.01em;
+  }
+  body[data-lang="vi"] .dice-zone h4 { font-family: 'Be Vietnam Pro', sans-serif; }
+  .dice-zone .dice-hint {
+    font-size: 14px;
+    color: var(--ink-3);
+    margin: 0 0 20px;
+  }
+  .dice-container {
+    display: inline-block;
+    perspective: 600px;
+    margin: 8px 0 16px;
+  }
+  .dice {
+    width: 80px;
+    height: 80px;
+    background: white;
+    border-radius: 12px;
+    display: inline-grid;
+    place-items: center;
+    box-shadow: 0 4px 0 rgba(15, 76, 58, 0.3), 0 10px 20px rgba(0,0,0,0.15);
+    cursor: pointer;
+    transition: transform 0.15s;
+    position: relative;
+    user-select: none;
+    border: 2px solid var(--ink);
+  }
+  .dice:hover { transform: translateY(-2px); }
+  .dice.rolling {
+    animation: rollDice 0.6s cubic-bezier(.6,.05,.28,.91);
+  }
+  @keyframes rollDice {
+    0%   { transform: rotate(0deg) scale(1); }
+    25%  { transform: rotate(90deg) scale(1.1); }
+    50%  { transform: rotate(180deg) scale(0.95); }
+    75%  { transform: rotate(270deg) scale(1.1); }
+    100% { transform: rotate(360deg) scale(1); }
+  }
+  .dice-face {
+    width: 60px;
+    height: 60px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 4px;
+    padding: 4px;
+  }
+  .dice-dot {
+    width: 10px;
+    height: 10px;
+    background: var(--ink);
+    border-radius: 50%;
+    align-self: center;
+    justify-self: center;
+  }
+  .dice-btn {
+    background: var(--jade);
+    color: var(--bg);
+    border: 0;
+    padding: 12px 28px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: background 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dice-btn:hover { background: var(--jade-2); }
+  .dice-btn:active { transform: translateY(1px); }
+  .dice-result {
+    margin-top: 20px;
+    min-height: 60px;
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 20px;
+    color: var(--ink);
+    display: none;
+  }
+  body[data-lang="vi"] .dice-result { font-family: 'Be Vietnam Pro', sans-serif; }
+  .dice-result.shown { display: block; animation: fadeUp 0.4s ease; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .dice-result .r-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--jade);
+    margin-bottom: 4px;
+  }
+  .dice-result.negative .r-num { color: var(--lixi); }
+  .dice-result.positive .r-num { color: var(--jade); }
+
+  /* worksheet + trap etc — copied from v1 */
+  .worksheet {
+    background: #FDFBF3;
+    border-radius: var(--radius-lg);
+    padding: 28px 32px;
+    margin: 24px 0;
+    border: 1px solid var(--jade-line);
+    box-shadow: var(--shadow-sm);
+  }
+  .worksheet-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+    padding-bottom: 16px;
+    border-bottom: 1px dashed var(--jade-line);
+  }
+  .worksheet-head h4 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 19px;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  body[data-lang="vi"] .worksheet-head h4 { font-family: 'Be Vietnam Pro', sans-serif; }
+  .worksheet-head .save-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .worksheet-head .save-badge::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--jade);
+    box-shadow: 0 0 6px var(--jade);
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 4px;
+    margin-bottom: 14px;
+  }
+  .field-row label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  input[type="text"], input[type="number"], input[type="password"], textarea, select {
+    background: transparent;
+    border: 0;
+    border-bottom: 1.5px solid var(--jade-line);
+    padding: 8px 2px;
+    font-family: 'Fraunces', serif;
+    font-size: 17px;
+    color: var(--ink);
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s;
+    font-weight: 500;
+  }
+  body[data-lang="vi"] input[type="text"], body[data-lang="vi"] textarea { font-family: 'Be Vietnam Pro', sans-serif; }
+  input[type="number"] { font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 600; }
+  input[type="password"] { font-family: 'JetBrains Mono', monospace; font-size: 16px; letter-spacing: 0.1em; }
+  textarea { resize: vertical; min-height: 60px; line-height: 1.5; font-size: 16px; font-family: 'Fraunces', serif; }
+  body[data-lang="vi"] textarea { font-family: 'Be Vietnam Pro', sans-serif; }
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--jade);
+  }
+  select {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 15px;
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    padding-right: 22px;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3e%3cpath d='M3 5l3 3 3-3' stroke='%230F4C3A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 4px center;
+    cursor: pointer;
+  }
+  body[data-lang="vi"] select { font-family: 'Be Vietnam Pro', sans-serif; }
+
+  .field-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; }
+  .field-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 20px; }
+  @media (max-width: 640px) {
+    .field-grid-2, .field-grid-3 { grid-template-columns: 1fr; }
+  }
+
+  .allocation-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 4px 0;
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 20px;
+  }
+  body[data-lang="vi"] .allocation-total { font-family: 'Be Vietnam Pro', sans-serif; }
+  .allocation-total .total-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: var(--jade-soft);
+    color: var(--jade);
+  }
+  .allocation-total.over .total-value { background: var(--lixi-soft); color: var(--lixi); }
+  .allocation-total.exact .total-value { background: var(--jade); color: var(--bg); }
+
+  /* trap list */
+  .trap-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    margin: 20px 0 30px;
+  }
+  .trap {
+    background: #FDFBF3;
+    border: 1px solid var(--jade-line);
+    border-radius: var(--radius);
+    padding: 22px 22px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+  }
+  .trap-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .trap-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    background: var(--lixi);
+    color: var(--bg);
+    border-radius: 50%;
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 16px;
+    font-style: italic;
+    flex-shrink: 0;
+  }
+  .trap h4 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 18px;
+    margin: 0;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  body[data-lang="vi"] .trap h4 { font-family: 'Be Vietnam Pro', sans-serif; }
+  .trap-name-real { display: none; }
+  .trap-name-mystery { color: var(--ink-3); font-style: italic; font-weight: 500; }
+  body[data-role="teacher"] .trap-name-real { display: inline; }
+  body[data-role="teacher"] .trap-name-mystery { display: none; }
+
+  .trap .trap-scenario {
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.55;
+    padding: 12px 16px;
+    background: var(--bg-2);
+    border-left: 2px solid var(--gold);
+    border-radius: 3px;
+  }
+  .trap-answer {
+    display: none;
+    padding-top: 8px;
+    border-top: 1px dashed var(--jade-line);
+    margin-top: 6px;
+  }
+  .trap-answer .a-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 4px;
+    font-weight: 700;
+  }
+  .trap-answer p { font-size: 13px; color: var(--ink-2); margin: 3px 0; line-height: 1.5; }
+  body[data-role="teacher"] .trap-answer { display: block; }
+
+  /* stock market */
+  .stock-list { display: grid; gap: 10px; margin: 20px 0; }
+  .stock-row {
+    display: grid;
+    grid-template-columns: 32px 1.4fr 120px 100px;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    background: #FDFBF3;
+    border: 1px solid var(--jade-line);
+    border-radius: var(--radius-sm);
+  }
+  .stock-row .s-icon { font-size: 22px; text-align: center; }
+  .stock-row .s-info { display: flex; flex-direction: column; gap: 2px; }
+  .stock-row .s-name { font-family: 'Fraunces', serif; font-weight: 600; font-size: 15px; line-height: 1.2; }
+  body[data-lang="vi"] .stock-row .s-name { font-family: 'Be Vietnam Pro', sans-serif; }
+  .stock-row .s-industry { font-size: 12px; color: var(--ink-3); }
+  .stock-row .s-price { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--ink-2); text-align: right; }
+  .stock-row input { text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 14px; }
+  @media (max-width: 640px) {
+    .stock-row { grid-template-columns: 32px 1fr 90px; }
+    .stock-row .s-price { display: none; }
+  }
+
+  .news-reveal {
+    background: transparent;
+    border: 1.5px dashed var(--lixi);
+    color: var(--lixi);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 12px 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    margin: 8px 0;
+    display: block;
+  }
+  .news-reveal:hover { background: var(--lixi); color: var(--bg); }
+
+  .news-card {
+    display: none;
+    background: linear-gradient(135deg, #F2ECDF 0%, #E8DCC1 100%);
+    border: 1px solid var(--gold);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 4px 0 14px;
+    box-shadow: var(--shadow-md);
+    position: relative;
+  }
+  .news-card.shown { display: block; animation: fadeUp 0.35s ease; }
+  .news-card .n-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--lixi);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .news-card .n-headline {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+    margin-bottom: 6px;
+    line-height: 1.15;
+  }
+  body[data-lang="vi"] .news-card .n-headline { font-family: 'Be Vietnam Pro', sans-serif; }
+  .news-card .n-effect {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--jade);
+    font-weight: 600;
+  }
+  .news-card .n-effect.negative { color: var(--lixi); }
+
+  /* gift */
+  .gift-picker {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin: 20px 0;
+  }
+  .gift-target {
+    background: #FDFBF3;
+    border: 1.5px solid var(--jade-line);
+    border-radius: var(--radius);
+    padding: 18px 12px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .gift-target:hover { border-color: var(--jade); }
+  .gift-target.picked { background: var(--lixi); color: var(--bg); border-color: var(--lixi); }
+  .gift-target .gt-icon { font-size: 28px; }
+  .gift-target .gt-name { font-family: 'Fraunces', serif; font-weight: 600; font-size: 15px; }
+  body[data-lang="vi"] .gift-target .gt-name { font-family: 'Be Vietnam Pro', sans-serif; }
+
+  /* invest cards row */
+  .invest-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin: 20px 0;
+  }
+  .invest-card {
+    background: #FDFBF3;
+    border: 1px solid var(--jade-line);
+    border-radius: var(--radius);
+    padding: 18px 18px 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .invest-card .invest-icon { font-size: 32px; }
+  .invest-card .invest-name { font-family: 'Fraunces', serif; font-weight: 600; font-size: 16px; }
+  body[data-lang="vi"] .invest-card .invest-name { font-family: 'Be Vietnam Pro', sans-serif; }
+  .invest-card .invest-desc { font-size: 12px; color: var(--ink-3); line-height: 1.4; min-height: 32px; }
+  .invest-card .invest-year { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--gold); font-weight: 600; letter-spacing: 0.05em; }
+
+  /* game */
+  .game-section {
+    background: var(--ink);
+    color: #E9E6D8;
+    border-radius: var(--radius-lg);
+    padding: 48px 40px;
+    margin: 40px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .game-section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(180, 138, 46, 0.15) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .game-section h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 44px;
+    letter-spacing: -0.02em;
+    margin: 16px 0 16px;
+    line-height: 1;
+    font-variation-settings: "opsz" 144;
+  }
+  body[data-lang="vi"] .game-section h3 { font-family: 'Be Vietnam Pro', sans-serif; font-weight: 700; }
+  .game-section h3 .accent {
+    font-style: italic;
+    color: var(--gold);
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+    font-weight: 400;
+  }
+  body[data-lang="vi"] .game-section h3 .accent { font-style: normal; font-weight: 700; }
+  .game-section p { max-width: 620px; color: #C4C0AF; line-height: 1.55; }
+  .game-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--gold);
+    color: var(--ink);
+    text-decoration: none;
+    padding: 14px 24px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 15px;
+    margin-top: 20px;
+    transition: background 0.15s;
+  }
+  .game-cta:hover { background: #C9A045; }
+
+  .game-tracker {
+    background: #FDFBF3;
+    color: var(--ink);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-top: 32px;
+  }
+  .game-tracker h4 { font-family: 'Fraunces', serif; font-weight: 600; margin: 0 0 16px; font-size: 20px; }
+  body[data-lang="vi"] .game-tracker h4 { font-family: 'Be Vietnam Pro', sans-serif; }
+  .game-tracker table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .game-tracker th {
+    text-align: left;
+    padding: 10px 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    border-bottom: 1.5px solid var(--jade-line);
+    font-weight: 500;
+  }
+  .game-tracker td { padding: 4px 6px; border-bottom: 1px solid var(--jade-line); }
+  .game-tracker td:first-child { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--jade); }
+  .game-tracker input {
+    border-bottom: 0;
+    padding: 8px 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  /* footer */
+  .footer {
+    background: var(--jade);
+    color: #DCE9DE;
+    padding: 60px 32px;
+    margin-top: 80px;
+  }
+  .footer-inner { max-width: 1240px; margin: 0 auto; display: grid; gap: 40px; }
+  @media (min-width: 800px) { .footer-inner { grid-template-columns: 1.2fr 1fr; } }
+  .footer h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 36px;
+    letter-spacing: -0.02em;
+    color: #F9E6D3;
+    margin: 12px 0 16px;
+    line-height: 1.05;
+    font-variation-settings: "opsz" 144;
+  }
+  body[data-lang="vi"] .footer h3 { font-family: 'Be Vietnam Pro', sans-serif; font-weight: 700; }
+  .footer h3 em { color: #F5A47A; font-style: italic; font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1; font-weight: 400; }
+  body[data-lang="vi"] .footer h3 em { font-style: normal; font-weight: 700; }
+  .footer p { color: #B2C7B7; line-height: 1.55; margin: 0 0 20px; }
+  .footer ol { padding-left: 20px; color: #DCE9DE; margin: 0; }
+  .footer ol li { margin-bottom: 10px; line-height: 1.5; }
+  .footer .credit {
+    padding-top: 32px;
+    margin-top: 32px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* password modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(26, 31, 27, 0.7);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.shown { display: flex; animation: fadeIn 0.2s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal {
+    background: var(--bg);
+    border-radius: var(--radius-lg);
+    padding: 36px 40px;
+    max-width: 440px;
+    width: 100%;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.3);
+    animation: modalRise 0.25s cubic-bezier(0.2, 0.9, 0.4, 1);
+  }
+  @keyframes modalRise { from { opacity: 0; transform: translateY(20px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  .modal .m-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--jade);
+    color: var(--bg);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+  .modal h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    letter-spacing: -0.01em;
+    margin: 0 0 8px;
+  }
+  body[data-lang="vi"] .modal h3 { font-family: 'Be Vietnam Pro', sans-serif; }
+  .modal p {
+    color: var(--ink-2);
+    margin: 0 0 24px;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 24px;
+  }
+  .modal-btn {
+    padding: 10px 22px;
+    border-radius: 999px;
+    border: 0;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .modal-btn.primary { background: var(--jade); color: var(--bg); }
+  .modal-btn.primary:hover { background: var(--jade-2); }
+  .modal-btn.ghost { background: transparent; color: var(--ink-3); }
+  .modal-btn.ghost:hover { color: var(--ink); background: var(--bg-2); }
+  .modal-error {
+    display: none;
+    padding: 10px 14px;
+    background: var(--lixi-soft);
+    color: var(--lixi);
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 12px;
+  }
+  .modal-error.shown { display: block; animation: shakeErr 0.4s ease; }
+  @keyframes shakeErr {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-4px); }
+    40% { transform: translateX(4px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+
+  .u-serif-italic { font-family: 'Fraunces', serif; font-style: italic; font-variation-settings: "SOFT" 100, "WONK" 1; }
+  .u-mt-lg { margin-top: 32px; }
+
+  @media print {
+    .nav, .role-toggle, .lang-toggle, .news-reveal, .footer, .modal-overlay { display: none !important; }
+    .teacher-only, .student-only, .trap-answer, .trap-name-real { display: block !important; }
+    body { background: white; }
+    section { break-inside: avoid; padding: 20px 0; }
+    .activity-sidebar { position: static; }
+  }
+
+  @media (max-width: 800px) {
+    .nav-tabs { display: none; }
+    .hero { padding: 60px 24px 40px; }
+    .container { padding: 0 24px; }
+    .worksheet { padding: 20px; }
+  }
+</style>
+</head>
+
+<body data-role="student" data-lang="en">
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="brand">
+      <div class="brand-mark">₫</div>
+      <span data-t="brand"></span>
+    </div>
+    <div class="nav-tabs">
+      <a href="#overview" data-t="nav_overview"></a>
+      <a href="#activity-1" data-t="nav_a1"></a>
+      <a href="#activity-2" data-t="nav_a2"></a>
+      <a href="#activity-3" data-t="nav_a3"></a>
+      <a href="#activity-4" data-t="nav_a4"></a>
+      <a href="#game" data-t="nav_game"></a>
+    </div>
+    <div class="nav-controls">
+      <div class="lang-toggle" role="group" aria-label="Language">
+        <button class="active" data-lang="en">EN</button>
+        <button data-lang="vi">VI</button>
+      </div>
+      <div class="role-toggle" role="tablist" aria-label="Switch view">
+        <button class="active" data-role="student"><span data-t="role_student"></span></button>
+        <button data-role="teacher"><span data-t="role_teacher"></span><span class="lock">🔒</span></button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="eyebrow" data-t="hero_eyebrow"></div>
+  <h1><span data-t="hero_h1_a"></span> <span class="accent" data-t="hero_h1_b"></span><br><span data-t="hero_h1_c"></span></h1>
+  <p class="hero-lede" data-t="hero_lede"></p>
+  <div class="hero-meta">
+    <div class="item"><div class="label" data-t="meta_ages"></div><div class="value">7–12</div></div>
+    <div class="item"><div class="label" data-t="meta_length"></div><div class="value" data-t="meta_length_v"></div></div>
+    <div class="item"><div class="label" data-t="meta_group"></div><div class="value" data-t="meta_group_v"></div></div>
+    <div class="item"><div class="label" data-t="meta_materials"></div><div class="value" data-t="meta_materials_v"></div></div>
+  </div>
+  <div class="hero-tag">
+    <div class="amount" data-t="hero_tag_amount"></div>
+    <div class="caption" data-t="hero_tag_caption"></div>
+  </div>
+</div>
+
+<!-- OVERVIEW -->
+<section id="overview" class="container">
+  <div class="section-head">
+    <h2><span data-t="ov_h2_a"></span> <em class="u-serif-italic" data-t="ov_h2_b"></em></h2>
+    <div class="meta" data-t-html="ov_meta"></div>
+  </div>
+
+  <div class="overview-grid">
+    <a href="#activity-1" class="activity-card">
+      <span class="tag" data-t="card1_tag"></span>
+      <div class="num">01</div>
+      <h3 data-t="card1_title"></h3>
+      <p data-t="card1_desc"></p>
+      <div class="card-meta"><span data-t="card1_meta1"></span><span data-t="card1_meta2"></span></div>
+    </a>
+    <a href="#activity-2" class="activity-card">
+      <span class="tag tag-lixi" data-t="card2_tag"></span>
+      <div class="num">02</div>
+      <h3 data-t="card2_title"></h3>
+      <p data-t="card2_desc"></p>
+      <div class="card-meta"><span data-t="card2_meta1"></span><span data-t="card2_meta2"></span></div>
+    </a>
+    <a href="#activity-3" class="activity-card">
+      <span class="tag tag-gold" data-t="card3_tag"></span>
+      <div class="num">03</div>
+      <h3 data-t="card3_title"></h3>
+      <p data-t="card3_desc"></p>
+      <div class="card-meta"><span data-t="card3_meta1"></span><span data-t="card3_meta2"></span></div>
+    </a>
+    <a href="#activity-4" class="activity-card">
+      <span class="tag" data-t="card4_tag"></span>
+      <div class="num">04</div>
+      <h3 data-t="card4_title"></h3>
+      <p data-t="card4_desc"></p>
+      <div class="card-meta"><span data-t="card4_meta1"></span><span data-t="card4_meta2"></span></div>
+    </a>
+  </div>
+
+  <div class="teacher-only">
+    <div class="teacher-panel u-mt-lg" data-label-key="teacher_notes">
+      <h3 style="font-family:'Fraunces',serif;font-weight:600;font-size:20px;margin:0 0 12px;" data-t="run_title"></h3>
+      <p style="margin:0 0 10px;" data-t="run_intro"></p>
+      <ul style="margin:0;padding-left:20px;line-height:1.7;">
+        <li><strong data-t="run_li1_a"></strong> <span data-t="run_li1_b"></span></li>
+        <li><strong data-t="run_li2_a"></strong> <span data-t="run_li2_b"></span></li>
+        <li><strong data-t="run_li3_a"></strong> <span data-t="run_li3_b"></span></li>
+        <li><strong data-t="run_li4_a"></strong> <span data-t="run_li4_b"></span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ACTIVITY 1 -->
+<section id="activity-1" class="container">
+  <div class="section-head">
+    <h2><em class="u-serif-italic" data-t="a1_h2_a"></em> <span data-t="a1_h2_b"></span></h2>
+    <div class="meta" data-t-html="a1_meta"></div>
+  </div>
+
+  <div class="activity">
+    <aside class="activity-sidebar">
+      <div class="side-block"><h4 data-t="learning_goal"></h4><p data-t="a1_goal"></p></div>
+      <div class="side-block"><h4 data-t="math_concepts"></h4><p data-t="a1_math"></p></div>
+      <div class="side-block"><h4 data-t="materials_side"></h4>
+        <ul>
+          <li><span class="k" data-t="a1_mat_dice"></span><span class="v" data-t="a1_mat_dice_v"></span></li>
+          <li><span class="k" data-t="a1_mat_paper"></span><span class="v" data-t="a1_mat_paper_v"></span></li>
+          <li><span class="k" data-t="a1_mat_pen"></span><span class="v" data-t="a1_mat_pen_v"></span></li>
+        </ul>
+      </div>
+    </aside>
+
+    <div class="activity-body">
+      <div class="body-block">
+        <h3><span class="num-inline">01 · A</span> <span data-t="a1_setup_h"></span></h3>
+        <p data-t-html="a1_setup_p"></p>
+      </div>
+
+      <div class="body-block">
+        <h3><span class="num-inline">01 · B</span> <span data-t="a1_places_h"></span></h3>
+        <div class="invest-grid">
+          <div class="invest-card">
+            <div class="invest-icon">🛏️</div>
+            <div class="invest-name" data-t="a1_place1_name"></div>
+            <div class="invest-desc" data-t="a1_place1_desc"></div>
+            <div class="invest-year" data-t="a1_place1_rate"></div>
+          </div>
+          <div class="invest-card">
+            <div class="invest-icon">🏦</div>
+            <div class="invest-name" data-t="a1_place2_name"></div>
+            <div class="invest-desc" data-t="a1_place2_desc"></div>
+            <div class="invest-year" data-t="a1_place2_rate"></div>
+          </div>
+          <div class="invest-card">
+            <div class="invest-icon">🚀</div>
+            <div class="invest-name" data-t="a1_place3_name"></div>
+            <div class="invest-desc" data-t="a1_place3_desc"></div>
+            <div class="invest-year" data-t="a1_place3_rate"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="teacher-only">
+        <div class="teacher-panel" data-label-key="teacher_notes">
+          <h4 style="font-family:'Fraunces',serif;font-weight:600;margin-top:0;" data-t="how_to_run"></h4>
+          <ol style="margin:0;padding-left:20px;line-height:1.7;">
+            <li data-t="a1_run_step1"></li>
+            <li>
+              <span data-t="a1_run_step2"></span>
+              <ul style="margin:6px 0;">
+                <li data-t-html="a1_run_pillow"></li>
+                <li data-t-html="a1_run_savings"></li>
+                <li>
+                  <span data-t-html="a1_run_business"></span>
+                  <ul>
+                    <li data-t="a1_run_roll_low"></li>
+                    <li data-t="a1_run_roll_mid"></li>
+                    <li data-t="a1_run_roll_high"></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li data-t="a1_run_step3"></li>
+            <li data-t="a1_run_step4"></li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- DICE -->
+      <div class="dice-zone">
+        <h4 data-t="a1_dice_h"></h4>
+        <p class="dice-hint" data-t="a1_dice_hint"></p>
+        <div class="dice-container">
+          <div class="dice" id="dice">
+            <div class="dice-face" id="dice-face">
+              <div></div><div></div><div></div>
+              <div></div><div class="dice-dot"></div><div></div>
+              <div></div><div></div><div></div>
+            </div>
+          </div>
+        </div>
+        <div><button class="dice-btn" id="dice-btn">🎲 <span data-t="a1_dice_btn"></span></button></div>
+        <div class="dice-result" id="dice-result">
+          <div class="r-num" id="dice-result-num"></div>
+          <div id="dice-result-text"></div>
+        </div>
+      </div>
+
+      <div class="body-block student-only">
+        <div class="worksheet">
+          <div class="worksheet-head">
+            <h4 data-t="a1_ws_title"></h4>
+            <span class="save-badge" data-t="a1_ws_saves"></span>
+          </div>
+          <div class="field-grid-2">
+            <div class="field-row"><label data-t="a1_ws_name"></label><input type="text" data-key="a1_name"></div>
+            <div class="field-row"><label data-t="a1_ws_choice"></label>
+              <select data-key="a1_choice">
+                <option value="" data-t="a1_ws_pick"></option>
+                <option data-t="a1_ws_pillow_opt"></option>
+                <option data-t="a1_ws_savings_opt"></option>
+                <option data-t="a1_ws_business_opt"></option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-top:20px;">
+            <div style="display:grid;grid-template-columns:1fr 1.5fr 1fr;gap:12px;padding:10px 4px;border-bottom:1.5px solid var(--jade-line);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-3);">
+              <span data-t="a1_ws_col_year"></span><span data-t="a1_ws_col_event"></span><span style="text-align:right;" data-t="a1_ws_col_total"></span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1.5fr 1fr;gap:12px;padding:10px 4px;align-items:center;border-bottom:1px solid var(--jade-line);">
+              <span style="font-family:'Fraunces',serif;font-weight:600;" data-t="a1_ws_start"></span>
+              <span style="color:var(--ink-3);font-size:14px;" data-t="a1_ws_start_desc"></span>
+              <input type="number" value="1000000" data-key="a1_y0" style="text-align:right;">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1.5fr 1fr;gap:12px;padding:10px 4px;align-items:center;border-bottom:1px solid var(--jade-line);">
+              <span style="font-family:'Fraunces',serif;font-weight:600;"><span data-t="a1_ws_year"></span> 1</span>
+              <input type="text" data-t-ph="a1_ws_event_ph" data-key="a1_e1" style="font-size:14px;">
+              <input type="number" data-key="a1_y1" style="text-align:right;">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1.5fr 1fr;gap:12px;padding:10px 4px;align-items:center;border-bottom:1px solid var(--jade-line);">
+              <span style="font-family:'Fraunces',serif;font-weight:600;"><span data-t="a1_ws_year"></span> 2</span>
+              <input type="text" data-t-ph="a1_ws_event_ph" data-key="a1_e2" style="font-size:14px;">
+              <input type="number" data-key="a1_y2" style="text-align:right;">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1.5fr 1fr;gap:12px;padding:10px 4px;align-items:center;border-bottom:1px solid var(--jade-line);">
+              <span style="font-family:'Fraunces',serif;font-weight:600;"><span data-t="a1_ws_year"></span> 3</span>
+              <input type="text" data-t-ph="a1_ws_event_ph" data-key="a1_e3" style="font-size:14px;">
+              <input type="number" data-key="a1_y3" style="text-align:right;">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1.5fr 1fr;gap:12px;padding:10px 4px;align-items:center;border-bottom:1px solid var(--jade-line);">
+              <span style="font-family:'Fraunces',serif;font-weight:600;"><span data-t="a1_ws_year"></span> 4</span>
+              <input type="text" data-t-ph="a1_ws_event_ph" data-key="a1_e4" style="font-size:14px;">
+              <input type="number" data-key="a1_y4" style="text-align:right;">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1.5fr 1fr;gap:12px;padding:10px 4px;align-items:center;">
+              <span style="font-family:'Fraunces',serif;font-weight:700;color:var(--jade);"><span data-t="a1_ws_year"></span> 5</span>
+              <input type="text" data-t-ph="a1_ws_event_ph" data-key="a1_e5" style="font-size:14px;">
+              <input type="number" data-key="a1_y5" style="text-align:right;font-weight:700;color:var(--jade);">
+            </div>
+          </div>
+          <div class="field-row" style="margin-top:24px;">
+            <label data-t="a1_ws_surprise"></label>
+            <textarea data-key="a1_surprise" data-t-ph="a1_ws_write"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="discussion">
+        <div class="disc-label">→ <span data-t="talk_about"></span></div>
+        <ul>
+          <li data-t-html="a1_talk_1"></li>
+          <li data-t-html="a1_talk_2"></li>
+          <li data-t-html="a1_talk_3"></li>
+          <li data-t-html="a1_talk_4"></li>
+        </ul>
+      </div>
+
+      <div class="teacher-only">
+        <div class="answer-panel" data-label-key="answer_key">
+          <p style="margin:0 0 8px;"><strong data-t="a1_ans_intro"></strong></p>
+          <ul style="margin:0;padding-left:20px;line-height:1.7;">
+            <li>🛏️ <span data-t="a1_ans_pillow"></span> <span class="mono" data-t="a1_ans_pillow_v"></span></li>
+            <li>🏦 <span data-t="a1_ans_savings"></span> <span class="mono" data-t="a1_ans_savings_v"></span></li>
+            <li>🚀 <span data-t-html="a1_ans_biz"></span></li>
+          </ul>
+          <p style="margin:12px 0 0;" data-t-html="a1_ans_vocab"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ACTIVITY 2 -->
+<section id="activity-2" class="container">
+  <div class="section-head">
+    <h2><span data-t="a2_h2_a"></span> <em class="u-serif-italic" data-t="a2_h2_b"></em></h2>
+    <div class="meta" data-t-html="a2_meta"></div>
+  </div>
+
+  <div class="activity">
+    <aside class="activity-sidebar">
+      <div class="side-block"><h4 data-t="learning_goal"></h4><p data-t="a2_goal"></p></div>
+      <div class="side-block"><h4 data-t="math_concepts"></h4><p data-t="a2_math"></p></div>
+      <div class="side-block"><h4 data-t="how_to_play"></h4><p data-t="a2_how"></p></div>
+    </aside>
+
+    <div class="activity-body">
+      <div class="body-block">
+        <h3><span class="num-inline">02</span> <span data-t="a2_intro_h"></span></h3>
+        <p data-t="a2_intro_p"></p>
+      </div>
+
+      <div class="teacher-only">
+        <div class="teacher-panel" data-label-key="teacher_notes">
+          <h4 style="font-family:'Fraunces',serif;font-weight:600;margin-top:0;" data-t="how_to_run"></h4>
+          <ol style="margin:0;padding-left:20px;line-height:1.7;">
+            <li data-t="a2_run_1"></li>
+            <li>
+              <span data-t="a2_run_2"></span>
+              <ul>
+                <li data-t="a2_run_2a"></li>
+                <li data-t="a2_run_2b"></li>
+                <li data-t="a2_run_2c"></li>
+              </ul>
+            </li>
+            <li data-t="a2_run_3"></li>
+            <li data-t="a2_run_4"></li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="trap-list">
+
+        <div class="trap">
+          <div class="trap-header">
+            <div class="trap-badge">1</div>
+            <h4>
+              <span class="trap-name-real" data-t="trap1_name"></span>
+              <span class="trap-name-mystery" data-t="a2_unknown"></span>
+            </h4>
+          </div>
+          <div class="trap-scenario" data-t="trap1_scen"></div>
+          <div class="trap-answer">
+            <div class="a-label" data-t="a2_a_label"></div>
+            <p data-t-html="trap1_trick"></p>
+            <p data-t-html="trap1_smart"></p>
+          </div>
+        </div>
+        <div class="trap">
+          <div class="trap-header">
+            <div class="trap-badge">2</div>
+            <h4>
+              <span class="trap-name-real" data-t="trap2_name"></span>
+              <span class="trap-name-mystery" data-t="a2_unknown"></span>
+            </h4>
+          </div>
+          <div class="trap-scenario" data-t="trap2_scen"></div>
+          <div class="trap-answer">
+            <div class="a-label" data-t="a2_a_label"></div>
+            <p data-t-html="trap2_trick"></p>
+            <p data-t-html="trap2_smart"></p>
+          </div>
+        </div>
+        <div class="trap">
+          <div class="trap-header">
+            <div class="trap-badge">3</div>
+            <h4>
+              <span class="trap-name-real" data-t="trap3_name"></span>
+              <span class="trap-name-mystery" data-t="a2_unknown"></span>
+            </h4>
+          </div>
+          <div class="trap-scenario" data-t="trap3_scen"></div>
+          <div class="trap-answer">
+            <div class="a-label" data-t="a2_a_label"></div>
+            <p data-t-html="trap3_trick"></p>
+            <p data-t-html="trap3_smart"></p>
+          </div>
+        </div>
+        <div class="trap">
+          <div class="trap-header">
+            <div class="trap-badge">4</div>
+            <h4>
+              <span class="trap-name-real" data-t="trap4_name"></span>
+              <span class="trap-name-mystery" data-t="a2_unknown"></span>
+            </h4>
+          </div>
+          <div class="trap-scenario" data-t="trap4_scen"></div>
+          <div class="trap-answer">
+            <div class="a-label" data-t="a2_a_label"></div>
+            <p data-t-html="trap4_trick"></p>
+            <p data-t-html="trap4_smart"></p>
+          </div>
+        </div>
+        <div class="trap">
+          <div class="trap-header">
+            <div class="trap-badge">5</div>
+            <h4>
+              <span class="trap-name-real" data-t="trap5_name"></span>
+              <span class="trap-name-mystery" data-t="a2_unknown"></span>
+            </h4>
+          </div>
+          <div class="trap-scenario" data-t="trap5_scen"></div>
+          <div class="trap-answer">
+            <div class="a-label" data-t="a2_a_label"></div>
+            <p data-t-html="trap5_trick"></p>
+            <p data-t-html="trap5_smart"></p>
+          </div>
+        </div>
+        <div class="trap">
+          <div class="trap-header">
+            <div class="trap-badge">6</div>
+            <h4>
+              <span class="trap-name-real" data-t="trap6_name"></span>
+              <span class="trap-name-mystery" data-t="a2_unknown"></span>
+            </h4>
+          </div>
+          <div class="trap-scenario" data-t="trap6_scen"></div>
+          <div class="trap-answer">
+            <div class="a-label" data-t="a2_a_label"></div>
+            <p data-t-html="trap6_trick"></p>
+            <p data-t-html="trap6_smart"></p>
+          </div>
+        </div>
+        <div class="trap">
+          <div class="trap-header">
+            <div class="trap-badge">7</div>
+            <h4>
+              <span class="trap-name-real" data-t="trap7_name"></span>
+              <span class="trap-name-mystery" data-t="a2_unknown"></span>
+            </h4>
+          </div>
+          <div class="trap-scenario" data-t="trap7_scen"></div>
+          <div class="trap-answer">
+            <div class="a-label" data-t="a2_a_label"></div>
+            <p data-t-html="trap7_trick"></p>
+            <p data-t-html="trap7_smart"></p>
+          </div>
+        </div>
+        <div class="trap">
+          <div class="trap-header">
+            <div class="trap-badge">8</div>
+            <h4>
+              <span class="trap-name-real" data-t="trap8_name"></span>
+              <span class="trap-name-mystery" data-t="a2_unknown"></span>
+            </h4>
+          </div>
+          <div class="trap-scenario" data-t="trap8_scen"></div>
+          <div class="trap-answer">
+            <div class="a-label" data-t="a2_a_label"></div>
+            <p data-t-html="trap8_trick"></p>
+            <p data-t-html="trap8_smart"></p>
+          </div>
+        </div>
+        <div class="trap">
+          <div class="trap-header">
+            <div class="trap-badge">9</div>
+            <h4>
+              <span class="trap-name-real" data-t="trap9_name"></span>
+              <span class="trap-name-mystery" data-t="a2_unknown"></span>
+            </h4>
+          </div>
+          <div class="trap-scenario" data-t="trap9_scen"></div>
+          <div class="trap-answer">
+            <div class="a-label" data-t="a2_a_label"></div>
+            <p data-t-html="trap9_trick"></p>
+            <p data-t-html="trap9_smart"></p>
+          </div>
+        </div>
+        <div class="trap">
+          <div class="trap-header">
+            <div class="trap-badge">10</div>
+            <h4>
+              <span class="trap-name-real" data-t="trap10_name"></span>
+              <span class="trap-name-mystery" data-t="a2_unknown"></span>
+            </h4>
+          </div>
+          <div class="trap-scenario" data-t="trap10_scen"></div>
+          <div class="trap-answer">
+            <div class="a-label" data-t="a2_a_label"></div>
+            <p data-t-html="trap10_trick"></p>
+            <p data-t-html="trap10_smart"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="student-only">
+        <div class="worksheet">
+          <div class="worksheet-head">
+            <h4 data-t="a2_ws_title"></h4>
+            <span class="save-badge" data-t="a1_ws_saves"></span>
+          </div>
+          <p style="font-size:14px;color:var(--ink-2);margin-top:0;" data-t="a2_ws_intro"></p>
+          <div class="field-row"><label data-t="a2_ws_seen"></label><input type="text" data-key="a2_seen"></div>
+          <div class="field-row"><label data-t="a2_ws_where"></label><input type="text" data-key="a2_where"></div>
+          <div class="field-row"><label data-t="a2_ws_next"></label><textarea data-key="a2_next" data-t-ph="a1_ws_write"></textarea></div>
+        </div>
+      </div>
+
+      <div class="discussion">
+        <div class="disc-label">→ <span data-t="talk_about"></span></div>
+        <ul>
+          <li data-t="a2_talk_1"></li>
+          <li data-t="a2_talk_2"></li>
+          <li data-t="a2_talk_3"></li>
+          <li data-t-html="a2_talk_4"></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ACTIVITY 3 -->
+<section id="activity-3" class="container">
+  <div class="section-head">
+    <h2><span data-t="a3_h2_a"></span> <em class="u-serif-italic" data-t="a3_h2_b"></em> <span data-t="a3_h2_c"></span></h2>
+    <div class="meta" data-t-html="a3_meta"></div>
+  </div>
+
+  <div class="activity">
+    <aside class="activity-sidebar">
+      <div class="side-block"><h4 data-t="learning_goal"></h4><p data-t="a3_goal"></p></div>
+      <div class="side-block"><h4 data-t="math_concepts"></h4><p data-t="a3_math"></p></div>
+      <div class="side-block"><h4 data-t="the_rules"></h4>
+        <ul>
+          <li><span class="k" data-t="a3_rule_budget"></span><span class="v">100,000 ₫</span></li>
+          <li><span class="k" data-t="a3_rule_bonus"></span><span class="v" data-t="a3_rule_bonus_v"></span></li>
+          <li><span class="k" data-t="a3_rule_pitch"></span><span class="v" data-t="a3_rule_pitch_v"></span></li>
+        </ul>
+      </div>
+    </aside>
+
+    <div class="activity-body">
+      <div class="body-block">
+        <h3><span class="num-inline">03</span> <span data-t="a3_mission_h"></span></h3>
+        <p data-t-html="a3_mission_p"></p>
+      </div>
+
+      <div class="teacher-only">
+        <div class="teacher-panel" data-label-key="teacher_notes">
+          <h4 style="font-family:'Fraunces',serif;font-weight:600;margin-top:0;" data-t="how_to_run"></h4>
+          <ol style="margin:0;padding-left:20px;line-height:1.7;">
+            <li data-t="a3_run_1"></li>
+            <li data-t="a3_run_2"></li>
+            <li data-t-html="a3_run_3"></li>
+            <li data-t-html="a3_run_4"></li>
+            <li data-t="a3_run_5"></li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="body-block">
+        <h3><span class="num-inline">03 · A</span> <span data-t="a3_pick_h"></span></h3>
+        <div class="gift-picker">
+          <div class="gift-target" data-gift="mom"><div class="gt-icon">👩</div><div class="gt-name" data-t="a3_gift_mom"></div></div>
+          <div class="gift-target" data-gift="dad"><div class="gt-icon">👨</div><div class="gt-name" data-t="a3_gift_dad"></div></div>
+          <div class="gift-target" data-gift="friend"><div class="gt-icon">👥</div><div class="gt-name" data-t="a3_gift_friend"></div></div>
+          <div class="gift-target" data-gift="teacher"><div class="gt-icon">🎓</div><div class="gt-name" data-t="a3_gift_teacher"></div></div>
+          <div class="gift-target" data-gift="grandparent"><div class="gt-icon">👵</div><div class="gt-name" data-t="a3_gift_grand"></div></div>
+          <div class="gift-target" data-gift="sibling"><div class="gt-icon">🧒</div><div class="gt-name" data-t="a3_gift_sibling"></div></div>
+        </div>
+      </div>
+
+      <div class="student-only">
+        <div class="worksheet">
+          <div class="worksheet-head">
+            <h4 data-t="a3_ws_title"></h4>
+            <span class="save-badge" data-t="a1_ws_saves"></span>
+          </div>
+          <div class="field-grid-2">
+            <div class="field-row"><label data-t="a3_ws_for"></label><input type="text" data-key="a3_for" data-t-ph="a3_ws_for_ph"></div>
+            <div class="field-row"><label data-t="a3_ws_love"></label><input type="text" data-key="a3_love"></div>
+          </div>
+          <div class="field-row"><label data-t="a3_ws_buy"></label><textarea data-key="a3_buy" data-t-ph="a3_ws_buy_ph"></textarea></div>
+          <div class="field-row"><label data-t="a3_ws_make"></label><textarea data-key="a3_make" data-t-ph="a3_ws_make_ph"></textarea></div>
+          <div class="field-grid-2">
+            <div class="field-row"><label data-t="a3_ws_total"></label><input type="number" data-key="a3_total" placeholder="0"></div>
+            <div class="field-row"><label data-t="a3_ws_left"></label><input type="text" data-key="a3_left" data-t-ph="a3_ws_left_ph"></div>
+          </div>
+          <div class="field-row"><label data-t="a3_ws_pitch"></label><textarea data-key="a3_pitch" data-t-ph="a3_ws_pitch_ph" style="min-height:100px;"></textarea></div>
+        </div>
+      </div>
+
+      <div class="discussion">
+        <div class="disc-label">→ <span data-t="talk_about"></span></div>
+        <ul>
+          <li data-t="a3_talk_1"></li>
+          <li data-t="a3_talk_2"></li>
+          <li data-t-html="a3_talk_3"></li>
+          <li data-t-html="a3_talk_4"></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ACTIVITY 4 -->
+<section id="activity-4" class="container">
+  <div class="section-head">
+    <h2><span data-t="a4_h2_a"></span> <em class="u-serif-italic" data-t="a4_h2_b"></em></h2>
+    <div class="meta" data-t-html="a4_meta"></div>
+  </div>
+
+  <div class="activity">
+    <aside class="activity-sidebar">
+      <div class="side-block"><h4 data-t="learning_goal"></h4><p data-t="a4_goal"></p></div>
+      <div class="side-block"><h4 data-t="math_concepts"></h4><p data-t="a4_math"></p></div>
+      <div class="side-block"><h4 data-t="starting_cash"></h4>
+        <ul>
+          <li><span class="k" data-t="a4_start_per"></span><span class="v" data-t="a4_start_per_v"></span></li>
+          <li><span class="k" data-t="a4_start_share"></span><span class="v" data-t="a4_start_share_v"></span></li>
+          <li><span class="k" data-t="a4_start_rounds"></span><span class="v" data-t="a4_start_rounds_v"></span></li>
+        </ul>
+      </div>
+    </aside>
+
+    <div class="activity-body">
+      <div class="body-block">
+        <h3><span class="num-inline">04</span> <span data-t="a4_market_h"></span></h3>
+        <p data-t-html="a4_market_p"></p>
+      </div>
+
+      <div class="teacher-only">
+        <div class="teacher-panel" data-label-key="teacher_notes">
+          <h4 style="font-family:'Fraunces',serif;font-weight:600;margin-top:0;" data-t="how_to_run"></h4>
+          <ol style="margin:0;padding-left:20px;line-height:1.7;">
+            <li data-t="a4_run_1"></li>
+            <li data-t-html="a4_run_2"></li>
+            <li data-t="a4_run_3"></li>
+            <li data-t="a4_run_4"></li>
+            <li data-t-html="a4_run_5"></li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="body-block">
+        <h3><span class="num-inline">04 · A</span> <span data-t="a4_companies_h"></span></h3>
+        <div class="stock-list">
+          <div class="stock-row"><div class="s-icon">🧋</div><div class="s-info"><div class="s-name" data-t="a4_c_boba_name"></div><div class="s-industry" data-t="a4_c_boba_ind"></div></div><div class="s-price" data-t="a4_share"></div><input type="number" min="0" step="100" placeholder="0" data-key="a4_boba" data-stock="boba"></div>
+          <div class="stock-row"><div class="s-icon">📱</div><div class="s-info"><div class="s-name" data-t="a4_c_ray_name"></div><div class="s-industry" data-t="a4_c_ray_ind"></div></div><div class="s-price" data-t="a4_share"></div><input type="number" min="0" step="100" placeholder="0" data-key="a4_ray" data-stock="ray"></div>
+          <div class="stock-row"><div class="s-icon">🎮</div><div class="s-info"><div class="s-name" data-t="a4_c_pixel_name"></div><div class="s-industry" data-t="a4_c_pixel_ind"></div></div><div class="s-price" data-t="a4_share"></div><input type="number" min="0" step="100" placeholder="0" data-key="a4_pixel" data-stock="pixel"></div>
+          <div class="stock-row"><div class="s-icon">🛵</div><div class="s-info"><div class="s-name" data-t="a4_c_zoom_name"></div><div class="s-industry" data-t="a4_c_zoom_ind"></div></div><div class="s-price" data-t="a4_share"></div><input type="number" min="0" step="100" placeholder="0" data-key="a4_zoom" data-stock="zoom"></div>
+          <div class="stock-row"><div class="s-icon">🥐</div><div class="s-info"><div class="s-name" data-t="a4_c_bake_name"></div><div class="s-industry" data-t="a4_c_bake_ind"></div></div><div class="s-price" data-t="a4_share"></div><input type="number" min="0" step="100" placeholder="0" data-key="a4_bake" data-stock="bake"></div>
+        </div>
+        <div class="allocation-total" id="a4-total">
+          <span data-t="a4_invested"></span>
+          <span class="total-value"><span id="a4-invested">0</span> / 1,000</span>
+        </div>
+      </div>
+
+      <div class="body-block">
+        <h3><span class="num-inline">04 · B</span> <span data-t="a4_news_h"></span></h3>
+
+        <button class="news-reveal" data-news="1" data-t="news1_btn"></button>
+        <div class="news-card" data-news-card="1">
+          <div class="n-label" data-t="news1_label"></div>
+          <div class="n-headline" data-t="news1_head"></div>
+          <div class="n-effect" data-t="news1_eff"></div>
+        </div>
+
+        <button class="news-reveal" data-news="2" data-t="news2_btn"></button>
+        <div class="news-card" data-news-card="2">
+          <div class="n-label" data-t="news2_label"></div>
+          <div class="n-headline" data-t="news2_head"></div>
+          <div class="n-effect" data-t="news2_eff"></div>
+        </div>
+
+        <button class="news-reveal" data-news="3" data-t="news3_btn"></button>
+        <div class="news-card" data-news-card="3">
+          <div class="n-label" data-t="news3_label"></div>
+          <div class="n-headline" data-t="news3_head"></div>
+          <div class="n-effect" data-t="news3_eff"></div>
+        </div>
+
+        <button class="news-reveal" data-news="4" data-t="news4_btn"></button>
+        <div class="news-card" data-news-card="4">
+          <div class="n-label" data-t="news4_label"></div>
+          <div class="n-headline" data-t="news4_head"></div>
+          <div class="n-effect negative" data-t="news4_eff_neg"></div>
+        </div>
+
+        <button class="news-reveal" data-news="5" data-t="news5_btn"></button>
+        <div class="news-card" data-news-card="5">
+          <div class="n-label" data-t="news5_label"></div>
+          <div class="n-headline" data-t="news5_head"></div>
+          <div class="n-effect negative" data-t="news5_eff_neg"></div>
+        </div>
+
+        <button class="news-reveal" data-news="6" data-t="news6_btn"></button>
+        <div class="news-card" data-news-card="6">
+          <div class="n-label" data-t="news6_label"></div>
+          <div class="n-headline" data-t="news6_head"></div>
+          <div class="n-effect" data-t="news6_eff"></div>
+        </div>
+
+      </div>
+
+      <div class="student-only">
+        <div class="worksheet">
+          <div class="worksheet-head">
+            <h4 data-t="a4_ws_title"></h4>
+            <span class="save-badge" data-t="a1_ws_saves"></span>
+          </div>
+          <div class="field-grid-3">
+            <div class="field-row"><label data-t="a4_ws_start"></label><input type="number" value="1000" data-key="a4_start"></div>
+            <div class="field-row"><label data-t="a4_ws_end"></label><input type="number" data-key="a4_end"></div>
+            <div class="field-row"><label data-t="a4_ws_delta"></label><input type="number" data-key="a4_delta"></div>
+          </div>
+          <div class="field-row"><label data-t="a4_ws_reflect"></label><textarea data-key="a4_reflect" data-t-ph="a1_ws_write"></textarea></div>
+        </div>
+      </div>
+
+      <div class="discussion">
+        <div class="disc-label">→ <span data-t="talk_about"></span></div>
+        <ul>
+          <li data-t="a4_talk_1"></li>
+          <li data-t="a4_talk_2"></li>
+          <li data-t="a4_talk_3"></li>
+          <li data-t-html="a4_talk_4"></li>
+        </ul>
+      </div>
+
+      <div class="teacher-only">
+        <div class="answer-panel" data-label-key="answer_key">
+          <p style="margin:0 0 8px;"><strong data-t="a4_ans_intro"></strong></p>
+          <ul style="margin:0;padding-left:20px;line-height:1.7;">
+            <li data-t-html="a4_ans_boba"></li>
+            <li data-t-html="a4_ans_ray"></li>
+            <li data-t-html="a4_ans_pixel"></li>
+            <li data-t-html="a4_ans_zoom"></li>
+            <li data-t-html="a4_ans_bake"></li>
+          </ul>
+          <p style="margin:12px 0 0;" data-t-html="a4_ans_summary"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GAME -->
+<section id="game" class="container">
+  <div class="game-section">
+    <span class="tag tag-gold" data-t="game_tag"></span>
+    <h3><span data-t="game_h_a"></span> <span class="accent" data-t="game_h_b"></span></h3>
+    <p data-t="game_p"></p>
+    <a class="game-cta" href="https://www.coolmathgames.com/0-coffee-shop" target="_blank" rel="noopener" data-t="game_cta"></a>
+
+    <div class="teacher-only" style="margin-top:32px;">
+      <div style="background:rgba(255,255,255,0.06);border-left:3px solid var(--gold);border-radius:8px;padding:20px 24px;color:#DCE9DE;font-size:14px;line-height:1.6;">
+        <strong style="color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;" data-t="teacher_notes"></strong>
+        <ol style="margin:12px 0 0;padding-left:20px;">
+          <li data-t="game_run_1"></li>
+          <li data-t="game_run_2"></li>
+          <li data-t="game_run_3"></li>
+          <li data-t="game_run_4"></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="game-tracker student-only">
+      <h4 data-t="game_track_h"></h4>
+      <table>
+        <thead>
+          <tr>
+            <th data-t="game_col_day"></th>
+            <th data-t="game_col_weather"></th>
+            <th data-t="game_col_price"></th>
+            <th data-t="game_col_made"></th>
+            <th data-t="game_col_sold"></th>
+            <th data-t="game_col_profit"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td><input type="text" data-key="game_d1_w"></td><td><input type="text" data-key="game_d1_p"></td><td><input type="text" data-key="game_d1_m"></td><td><input type="text" data-key="game_d1_s"></td><td><input type="text" data-key="game_d1_pr"></td></tr>
+          <tr><td>2</td><td><input type="text" data-key="game_d2_w"></td><td><input type="text" data-key="game_d2_p"></td><td><input type="text" data-key="game_d2_m"></td><td><input type="text" data-key="game_d2_s"></td><td><input type="text" data-key="game_d2_pr"></td></tr>
+          <tr><td>3</td><td><input type="text" data-key="game_d3_w"></td><td><input type="text" data-key="game_d3_p"></td><td><input type="text" data-key="game_d3_m"></td><td><input type="text" data-key="game_d3_s"></td><td><input type="text" data-key="game_d3_pr"></td></tr>
+          <tr><td>4</td><td><input type="text" data-key="game_d4_w"></td><td><input type="text" data-key="game_d4_p"></td><td><input type="text" data-key="game_d4_m"></td><td><input type="text" data-key="game_d4_s"></td><td><input type="text" data-key="game_d4_pr"></td></tr>
+          <tr><td>5</td><td><input type="text" data-key="game_d5_w"></td><td><input type="text" data-key="game_d5_p"></td><td><input type="text" data-key="game_d5_m"></td><td><input type="text" data-key="game_d5_s"></td><td><input type="text" data-key="game_d5_pr"></td></tr>
+          <tr><td>6</td><td><input type="text" data-key="game_d6_w"></td><td><input type="text" data-key="game_d6_p"></td><td><input type="text" data-key="game_d6_m"></td><td><input type="text" data-key="game_d6_s"></td><td><input type="text" data-key="game_d6_pr"></td></tr>
+          <tr><td>7</td><td><input type="text" data-key="game_d7_w"></td><td><input type="text" data-key="game_d7_p"></td><td><input type="text" data-key="game_d7_m"></td><td><input type="text" data-key="game_d7_s"></td><td><input type="text" data-key="game_d7_pr"></td></tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <span class="tag" style="background:rgba(255,255,255,0.1);color:#F5A47A;" data-t="foot_tag"></span>
+      <h3><span data-t="foot_h_a"></span> <em data-t="foot_h_b"></em></h3>
+      <p data-t="foot_p"></p>
+    </div>
+    <div>
+      <ol>
+        <li data-t="foot_li1"></li>
+        <li data-t="foot_li2"></li>
+        <li data-t="foot_li3"></li>
+        <li data-t="foot_li4"></li>
+      </ol>
+    </div>
+  </div>
+  <div class="footer-inner credit" style="margin-top:32px;">
+    <span>Logiscool Vietnam · 2026</span>
+    <span>Money Matters · Workshop 2</span>
+  </div>
+</footer>
+
+<!-- Password Modal -->
+<div class="modal-overlay" id="pwModal">
+  <div class="modal">
+    <div class="m-icon">🔒</div>
+    <h3 data-t="pw_title"></h3>
+    <p data-t="pw_desc"></p>
+    <input type="password" id="pwInput" data-t-ph="pw_ph" autocomplete="off">
+    <div class="modal-error" id="pwError" data-t="pw_wrong"></div>
+    <div class="modal-actions">
+      <button class="modal-btn ghost" id="pwCancel" data-t="pw_cancel"></button>
+      <button class="modal-btn primary" id="pwSubmit" data-t="pw_submit"></button>
+    </div>
+  </div>
+</div>
+
+<script>
+const T = {
+  "brand": { en: "Money Matters · Round 2", vi: "Chuyện tiền bạc · Phần 2" },
+  "nav_overview": { en: "Overview", vi: "Tổng quan" },
+  "nav_a1": { en: "1 · Bank vs Pillow", vi: "1 · Gửi ngân hàng hay cất dưới gối?" },
+  "nav_a2": { en: "2 · Traps", vi: "2 · Bẫy chi tiêu" },
+  "nav_a3": { en: "3 · Gifts", vi: "3 · Quà tặng" },
+  "nav_a4": { en: "4 · Stocks", vi: "4 · Cổ phiếu" },
+  "nav_game": { en: "Coffee Shop", vi: "Quán cà phê" },
+  "role_teacher": { en: "Teacher", vi: "Giáo viên" },
+  "role_student": { en: "Student", vi: "Học sinh" },
+  "hero_eyebrow": { en: "Logiscool Vietnam · Workshop 2 · 90–120 mins", vi: "Logiscool Việt Nam · Workshop 2 · 90–120 phút" },
+  "hero_h1_a": { en: "The", vi: "Cùng" },
+  "hero_h1_b": { en: "second", vi: "hiểu thêm" },
+  "hero_h1_c": { en: "look at money.", vi: "về tiền." },
+  "hero_lede": { en: "For students who came back for more. Four fresh activities and a returning game — this time we go deeper: how money grows, why we fall for spending traps, what makes a gift meaningful, and how the stock market really works.", vi: "Dành cho những học sinh tiếp tục khám phá chủ đề tài chính. Với bốn hoạt động mới và một trò chơi quen thuộc, các em sẽ tìm hiểu tiền có thể sinh lời như thế nào, vì sao chúng ta dễ rơi vào bẫy chi tiêu, điều gì tạo nên một món quà ý nghĩa và thị trường chứng khoán vận hành ra sao." },
+  "meta_ages": { en: "Ages", vi: "Độ tuổi" },
+  "meta_length": { en: "Session length", vi: "Thời lượng" },
+  "meta_length_v": { en: "90–120 min", vi: "90–120 phút" },
+  "meta_group": { en: "Group size", vi: "Quy mô nhóm" },
+  "meta_group_v": { en: "2–3 / laptop", vi: "2–3 học sinh / laptop" },
+  "meta_materials": { en: "Materials", vi: "Vật dụng" },
+  "meta_materials_v": { en: "Paper · Pens · Laptop", vi: "Giấy · Bút · Laptop" },
+  "hero_tag_amount": { en: "100,000₫", vi: "100.000₫" },
+  "hero_tag_caption": { en: "Gift budget · used in Activity 3", vi: "Ngân sách quà tặng · dùng trong Hoạt động 3" },
+  "ov_h2_a": { en: "The workshop,", vi: "Toàn cảnh" },
+  "ov_h2_b": { en: "at a glance", vi: "buổi học" },
+  "ov_meta": { en: "Pick 3–4 activities<br>based on age & energy", vi: "Chọn 3–4 hoạt động<br>phù hợp với độ tuổi và không khí lớp" },
+  "card1_tag": { en: "01 · Bank vs Pillow", vi: "01 · Gửi ngân hàng hay cất dưới gối?" },
+  "card1_title": { en: "Bank vs Under the Pillow", vi: "Gửi ngân hàng hay cất dưới gối?" },
+  "card1_desc": { en: "Money under the pillow feels safe — but is it? Students choose where to store their savings and roll through five years of events.", vi: "Cất tiền dưới gối có vẻ an toàn, nhưng liệu có thật sự như vậy? Học sinh chọn một cách giữ tiền và theo dõi số tiền thay đổi qua 5 năm." },
+  "card1_meta1": { en: "20 min", vi: "20 phút" },
+  "card1_meta2": { en: "ages 10–12", vi: "10–12 tuổi" },
+  "card2_tag": { en: "02 · Spending Traps", vi: "02 · Bẫy chi tiêu" },
+  "card2_title": { en: "Spending Trap Detective", vi: "Thám tử bẫy chi tiêu" },
+  "card2_desc": { en: "Ten real-world tricks shops and apps use to make people spend more. Students learn to spot them and escape them.", vi: "Mười cách cửa hàng và ứng dụng thường dùng để khuyến khích người mua chi nhiều hơn. Học sinh sẽ học cách nhận diện và tránh những bẫy này." },
+  "card2_meta1": { en: "20 min", vi: "20 phút" },
+  "card2_meta2": { en: "ages 9–12", vi: "9–12 tuổi" },
+  "card3_tag": { en: "03 · Gift Giving", vi: "03 · Tặng quà" },
+  "card3_title": { en: "Gift Giving Challenge", vi: "Thử thách tặng quà" },
+  "card3_desc": { en: "100,000₫ and someone you love. Students discover that thoughtful beats expensive — and prove it in a pitch.", vi: "Với 100.000₫, học sinh sẽ lên kế hoạch tặng quà cho một người mình yêu quý và nhận ra rằng món quà ý nghĩa không nhất thiết phải đắt tiền." },
+  "card3_meta1": { en: "20 min", vi: "20 phút" },
+  "card3_meta2": { en: "ages 7–12", vi: "7–12 tuổi" },
+  "card4_tag": { en: "04 · Stock Market", vi: "04 · Chứng khoán" },
+  "card4_title": { en: "Little Investors", vi: "Nhà đầu tư nhí" },
+  "card4_desc": { en: "Five fictional companies. One market. Six surprise headlines. Students invest, react, and find out what diversification really means.", vi: "Năm công ty giả định, một thị trường và sáu bản tin bất ngờ. Học sinh lựa chọn cách đầu tư, theo dõi biến động và tìm hiểu ý nghĩa của việc đa dạng hóa danh mục." },
+  "card4_meta1": { en: "25 min", vi: "25 phút" },
+  "card4_meta2": { en: "ages 10–12", vi: "10–12 tuổi" },
+  "run_title": { en: "How to run this workshop", vi: "Hướng dẫn tổ chức buổi học" },
+  "run_intro": { en: "You do not need to run every activity. Pick 3–4 based on your group's age and energy on the day. Suggested combinations:", vi: "Giáo viên không cần triển khai toàn bộ hoạt động. Hãy chọn 3–4 hoạt động phù hợp với độ tuổi và mức độ tham gia của lớp trong ngày. Có thể tham khảo các cách kết hợp sau:" },
+  "run_li1_a": { en: "Younger-skewed group (7–9):", vi: "Nhóm nhỏ tuổi hơn (7–9):" },
+  "run_li1_b": { en: "Activity 3 → Coffee Shop game → Activity 2 (simplified)", vi: "Hoạt động 3 → Trò chơi Quán cà phê → Hoạt động 2 (phiên bản đơn giản)" },
+  "run_li2_a": { en: "Older-skewed group (10–12):", vi: "Nhóm lớn tuổi hơn (10–12):" },
+  "run_li2_b": { en: "Activity 1 → Activity 4 → Coffee Shop game", vi: "Hoạt động 1 → Hoạt động 4 → Trò chơi Quán cà phê" },
+  "run_li3_a": { en: "Mixed ages, full 120 min:", vi: "Nhóm nhiều độ tuổi, thời lượng 120 phút:" },
+  "run_li3_b": { en: "Activity 3 → Activity 2 → Activity 1 → Coffee Shop game", vi: "Hoạt động 3 → Hoạt động 2 → Hoạt động 1 → Trò chơi Quán cà phê" },
+  "run_li4_a": { en: "Focused / calm group:", vi: "Nhóm có khả năng tập trung tốt:" },
+  "run_li4_b": { en: "Activity 1 → Activity 4 → discussion", vi: "Hoạt động 1 → Hoạt động 4 → thảo luận" },
+  "learning_goal": { en: "Learning goal", vi: "Mục tiêu học tập" },
+  "math_concepts": { en: "Math concepts", vi: "Kiến thức toán học" },
+  "materials_side": { en: "Materials", vi: "Vật dụng" },
+  "how_to_run": { en: "How to run it", vi: "Cách tổ chức" },
+  "how_to_play": { en: "How to play", vi: "Cách chơi" },
+  "the_rules": { en: "The rules", vi: "Luật chơi" },
+  "starting_cash": { en: "Starting cash", vi: "Vốn ban đầu" },
+  "talk_about": { en: "Talk about it", vi: "Cùng thảo luận" },
+  "teacher_notes": { en: "Teacher notes", vi: "Ghi chú cho giáo viên" },
+  "answer_key": { en: "Answer key · teacher only", vi: "Đáp án · dành cho giáo viên" },
+  "a1_h2_a": { en: "Money grows,", vi: "Tiền có thể sinh lời," },
+  "a1_h2_b": { en: "and sometimes shrinks", vi: "nhưng cũng có thể mất giá" },
+  "a1_meta": { en: "Activity 01<br>20 min · ages 10–12", vi: "Hoạt động 01<br>20 phút · 10–12 tuổi" },
+  "a1_goal": { en: "Understand how interest, inflation, and risk affect money over time.", vi: "Hiểu cách lãi suất, lạm phát và rủi ro ảnh hưởng đến tiền theo thời gian." },
+  "a1_math": { en: "Percentages, compound growth, risk vs reward", vi: "Tỷ lệ phần trăm, lãi kép, mối quan hệ giữa rủi ro và lợi nhuận" },
+  "a1_mat_dice": { en: "Dice", vi: "Xúc xắc" },
+  "a1_mat_dice_v": { en: "Built-in ↓", vi: "Có sẵn ↓" },
+  "a1_mat_paper": { en: "Paper", vi: "Giấy" },
+  "a1_mat_paper_v": { en: "1 sheet", vi: "1 tờ" },
+  "a1_mat_pen": { en: "Pen", vi: "Bút" },
+  "a1_mat_pen_v": { en: "1 per student", vi: "1 cây / học sinh" },
+  "a1_setup_h": { en: "The setup", vi: "Bối cảnh" },
+  "a1_setup_p": { en: "Each student starts with <strong>1,000,000 VND</strong>. They must choose <em>one</em> place to keep their money for five years. The choice cannot be changed once made.", vi: "Mỗi học sinh bắt đầu với <strong>1.000.000 đồng</strong> và chọn <em>một</em> cách giữ tiền trong 5 năm. Sau khi quyết định, các em sẽ giữ nguyên lựa chọn đó đến cuối hoạt động." },
+  "a1_places_h": { en: "Three places to keep it", vi: "Ba nơi có thể cất tiền" },
+  "a1_place1_name": { en: "Under the pillow", vi: "Cất dưới gối" },
+  "a1_place1_desc": { en: "Feels safest. No one can steal it. But nothing grows.", vi: "Có vẻ an toàn và luôn ở trong tầm kiểm soát, nhưng số tiền không sinh lời." },
+  "a1_place1_rate": { en: "–2% / year (inflation)", vi: "–2% / năm (do lạm phát)" },
+  "a1_place2_name": { en: "Savings account", vi: "Tài khoản tiết kiệm" },
+  "a1_place2_desc": { en: "Safe, steady, small growth. The bank pays you a little.", vi: "Tương đối an toàn và ổn định. Số tiền tăng dần nhờ lãi suất ngân hàng." },
+  "a1_place2_rate": { en: "+5% / year", vi: "+5% / năm" },
+  "a1_place3_name": { en: "Small business", vi: "Kinh doanh nhỏ" },
+  "a1_place3_desc": { en: "Could grow fast — or fail. Roll the dice each year to see.", vi: "Có cơ hội sinh lời cao nhưng cũng có thể thua lỗ. Mỗi năm, hãy tung xúc xắc để xác định kết quả." },
+  "a1_place3_rate": { en: "Roll to decide", vi: "Tung xúc xắc" },
+  "a1_run_step1": { en: "Each student picks one place. Once picked, that's their choice for all 5 years.", vi: "Mỗi học sinh chọn một cách giữ tiền và giữ nguyên lựa chọn trong suốt 5 năm." },
+  "a1_run_step2": { en: "Every 'year' (about 1 minute), announce what happened:", vi: "Ở mỗi “năm” (khoảng 1 phút), giáo viên công bố kết quả:" },
+  "a1_run_pillow": { en: "<strong>Pillow:</strong> Prices went up. Your money lost 2% of its value.", vi: "<strong>Cất dưới gối:</strong> Giá cả tăng, khiến sức mua của số tiền giảm 2%." },
+  "a1_run_savings": { en: "<strong>Savings:</strong> The bank paid you 5% interest. Add it up.", vi: "<strong>Gửi tiết kiệm:</strong> Ngân hàng trả lãi 5%. Học sinh cộng phần lãi vào tổng số tiền." },
+  "a1_run_business": { en: "<strong>Business:</strong> Every student with a business rolls the dice below.", vi: "<strong>Kinh doanh:</strong> Những học sinh chọn phương án này sẽ tung xúc xắc bên dưới." },
+  "a1_run_roll_low": { en: "Roll 1 or 2: Business failed. Lost 30% this year.", vi: "Ra 1 hoặc 2: Hoạt động kinh doanh thua lỗ, số tiền giảm 30%." },
+  "a1_run_roll_mid": { en: "Roll 3 or 4: Slow year. +5%.", vi: "Ra 3 hoặc 4: Hoạt động kinh doanh chững lại, số tiền tăng 5%." },
+  "a1_run_roll_high": { en: "Roll 5 or 6: Great year! +25%.", vi: "Ra 5 hoặc 6: Hoạt động kinh doanh thuận lợi, số tiền tăng 25%." },
+  "a1_run_step3": { en: "Students record their total after each year on the worksheet below.", vi: "Học sinh ghi lại tổng số tiền sau mỗi năm vào bảng bên dưới." },
+  "a1_run_step4": { en: "After 5 years, compare final amounts across the class.", vi: "Sau 5 năm, so sánh kết quả cuối cùng của cả lớp." },
+  "a1_dice_h": { en: "Class dice · click to roll", vi: "Xúc xắc của lớp · nhấn để tung" },
+  "a1_dice_hint": { en: "Click the dice below to roll a random number from 1 to 6", vi: "Nhấn vào xúc xắc để tung một số ngẫu nhiên từ 1 đến 6" },
+  "a1_dice_btn": { en: "Roll the dice", vi: "Tung xúc xắc" },
+  "a1_dice_result_low": { en: "Business failed this year — lose 30%", vi: "Kinh doanh thua lỗ — số tiền giảm 30%" },
+  "a1_dice_result_mid": { en: "Slow year — gain 5%", vi: "Kinh doanh chững lại — số tiền tăng 5%" },
+  "a1_dice_result_high": { en: "Great year! — gain 25%", vi: "Kinh doanh thuận lợi — số tiền tăng 25%" },
+  "a1_ws_title": { en: "My 5-year money journey", vi: "Hành trình 5 năm của khoản tiền" },
+  "a1_ws_saves": { en: "Auto-saves", vi: "Tự động lưu" },
+  "a1_ws_name": { en: "My name", vi: "Tên của em" },
+  "a1_ws_choice": { en: "Where I put my money", vi: "Cách em chọn giữ tiền" },
+  "a1_ws_pick": { en: "Pick one...", vi: "Chọn một..." },
+  "a1_ws_pillow_opt": { en: "🛏️ Under the pillow", vi: "🛏️ Cất dưới gối" },
+  "a1_ws_savings_opt": { en: "🏦 Savings account", vi: "🏦 Tài khoản tiết kiệm" },
+  "a1_ws_business_opt": { en: "🚀 Small business", vi: "🚀 Kinh doanh nhỏ" },
+  "a1_ws_col_year": { en: "Year", vi: "Năm" },
+  "a1_ws_col_event": { en: "What happened", vi: "Chuyện gì xảy ra" },
+  "a1_ws_col_total": { en: "Total (₫)", vi: "Tổng (₫)" },
+  "a1_ws_start": { en: "Start", vi: "Bắt đầu" },
+  "a1_ws_start_desc": { en: "Starting amount", vi: "Số tiền ban đầu" },
+  "a1_ws_year": { en: "Year", vi: "Năm" },
+  "a1_ws_event_ph": { en: "What happened?", vi: "Chuyện gì xảy ra?" },
+  "a1_ws_surprise": { en: "My biggest surprise this activity", vi: "Điều khiến em bất ngờ nhất trong hoạt động này" },
+  "a1_ws_write": { en: "Write here...", vi: "Viết câu trả lời tại đây..." },
+  "a1_talk_1": { en: "Who ended up with the most money? What did they choose?", vi: "Ai có số tiền cao nhất sau 5 năm? Bạn đó đã chọn phương án nào?" },
+  "a1_talk_2": { en: "Did anyone with a business regret it? Why?", vi: "Có bạn nào muốn thay đổi lựa chọn kinh doanh không? Vì sao?" },
+  "a1_talk_3": { en: "What is the difference between <em>safe</em> and <em>growing</em>?", vi: "Sự khác biệt giữa <em>an toàn</em> và <em>tăng trưởng</em> là gì?" },
+  "a1_talk_4": { en: "Real-life link: This is why adults spread their money across different places instead of picking just one.", vi: "Liên hệ thực tế: Đây là lý do người lớn thường chia tiền vào nhiều nơi khác nhau thay vì bỏ vào một chỗ duy nhất." },
+  "a1_ans_intro": { en: "Typical outcomes after 5 years starting with 1,000,000₫:", vi: "Kết quả điển hình sau 5 năm với 1.000.000₫ ban đầu:" },
+  "a1_ans_pillow": { en: "Pillow: ends around", vi: "Cất dưới gối: còn khoảng" },
+  "a1_ans_pillow_v": { en: "904,000₫ (lost value to inflation)", vi: "904.000₫ (mất giá trị do lạm phát)" },
+  "a1_ans_savings": { en: "Savings account: ends around", vi: "Tài khoản tiết kiệm: đạt khoảng" },
+  "a1_ans_savings_v": { en: "1,276,000₫ (steady 5% compound growth)", vi: "1.276.000₫ (lãi kép 5% ổn định)" },
+  "a1_ans_biz": { en: "Business: highly variable — could be 400,000₫ or 3,000,000₫+. Great for showing risk vs reward.", vi: "Kinh doanh: kết quả biến động mạnh — số tiền có thể giảm còn 400.000₫ hoặc tăng lên hơn 3.000.000₫. Đây là ví dụ rõ về mối quan hệ giữa rủi ro và lợi nhuận." },
+  "a1_ans_vocab": { en: "Vocabulary to introduce: <strong>interest</strong> (money the bank pays you), <strong>inflation</strong> (prices going up over time), <strong>risk</strong> (chance of losing money), <strong>reward</strong> (chance of gaining more).", vi: "Từ vựng cần giới thiệu: <strong>lãi suất</strong> (khoản tiền ngân hàng trả cho người gửi), <strong>lạm phát</strong> (mức giá hàng hóa tăng theo thời gian), <strong>rủi ro</strong> (khả năng bị mất tiền) và <strong>lợi nhuận</strong> (phần tiền tăng thêm từ một lựa chọn đầu tư hoặc kinh doanh)." },
+  "a2_h2_a": { en: "Ten ways they get you to", vi: "Mười bẫy khiến chúng ta" },
+  "a2_h2_b": { en: "spend more", vi: "chi tiêu nhiều hơn" },
+  "a2_meta": { en: "Activity 02<br>20 min · ages 9–12", vi: "Hoạt động 02<br>20 phút · 9–12 tuổi" },
+  "a2_goal": { en: "Spot the clever tricks shops and apps use to make people spend more than they meant to.", vi: "Nhận diện những cách cửa hàng và ứng dụng thường dùng để khuyến khích người mua chi nhiều hơn dự định." },
+  "a2_math": { en: "Value analysis, unit pricing, percentages", vi: "So sánh giá trị, tính giá theo đơn vị và tỷ lệ phần trăm" },
+  "a2_how": { en: "Read each trap. Discuss in pairs. Try to figure out what the trap is before your teacher reveals it.", vi: "Đọc từng tình huống, thảo luận theo cặp và thử xác định bẫy chi tiêu trước khi giáo viên công bố đáp án." },
+  "a2_intro_h": { en: "Meet the traps", vi: "Nhận diện các bẫy chi tiêu" },
+  "a2_intro_p": { en: "Every trap below is real. Every adult has fallen for at least one. Read the scenario, discuss what the shop is trying to make you do — and then the smart shopper's escape.", vi: "Những tình huống dưới đây đều có thể xuất hiện trong thực tế. Hãy đọc từng tình huống, thảo luận xem người bán muốn người mua làm gì và tìm cách đưa ra quyết định tỉnh táo hơn." },
+  "a2_run_1": { en: "Working in pairs, students read each trap scenario together.", vi: "Học sinh làm việc theo cặp, cùng đọc từng tình huống." },
+  "a2_run_2": { en: "For each one, they answer three questions on paper:", vi: "Với mỗi tình huống, các em trả lời ba câu hỏi trên giấy:" },
+  "a2_run_2a": { en: "What is the shop trying to make you do?", vi: "Người bán đang muốn em làm gì?" },
+  "a2_run_2b": { en: "Why is this hard to resist?", vi: "Vì sao khó cưỡng lại?" },
+  "a2_run_2c": { en: "What would a smart shopper do instead?", vi: "Em có thể làm gì để tránh bẫy?" },
+  "a2_run_3": { en: "After discussion, reveal the answer (visible in your teacher view below each trap).", vi: "Sau phần thảo luận, giáo viên mở đáp án trong chế độ Giáo viên bên dưới mỗi tình huống." },
+  "a2_run_4": { en: "Big finish: 'Every adult falls for these too. Knowing them = you already beat 90% of shoppers.'", vi: "Kết thúc: “Người lớn cũng có thể rơi vào những bẫy này. Biết cách nhận diện chúng sẽ giúp các em đưa ra quyết định mua sắm tỉnh táo hơn.”" },
+  "a2_unknown": { en: "Unknown trap", vi: "Chưa mở đáp án" },
+  "a2_a_label": { en: "The escape", vi: "Cách tránh bẫy" },
+  "trap1_name": { en: "The Bundle Trap", vi: "Bẫy combo" },
+  "trap1_scen": { en: "You go to the cinema just to buy popcorn. At the counter: 'Combo deal! Popcorn + drink + candy = save 30,000₫!' You didn't want the drink or candy — but wow, saving 30,000₫ sounds great.", vi: "Em đến rạp chiếu phim và chỉ định mua bắp rang. Tại quầy có thông báo: “Combo bắp rang + nước + kẹo giúp tiết kiệm 30.000₫!” Dù không định mua nước và kẹo, em bắt đầu thấy combo này có vẻ hấp dẫn." },
+  "trap1_trick": { en: "<strong>The trick:</strong> Makes you spend MORE to 'save' on things you didn't want.", vi: "<strong>Bẫy nằm ở đâu?</strong> Em phải chi nhiều hơn để nhận mức “tiết kiệm” cho những món mình vốn không cần." },
+  "trap1_smart": { en: "<strong>Smart move:</strong> Ask yourself — did I want the extras before I saw this deal? If no, just buy what you came for.", vi: "<strong>Cách tránh bẫy:</strong> Hãy tự hỏi: “Trước khi nhìn thấy ưu đãi, em có muốn mua thêm những món này không?” Nếu không, chỉ nên mua món mình đã dự định." },
+  "trap2_name": { en: "The Urgency Trap", vi: "Bẫy thúc giục" },
+  "trap2_scen": { en: "You're scrolling Shopee for a t-shirt. On the page: 'Only 3 left in stock!' 'Sale ends in 8 minutes 42 seconds!' 'Someone in Hanoi just bought this.' Your heart starts racing — should I buy now?!", vi: "Khi em đang tìm một chiếc áo thun trên Shopee, màn hình liên tục hiện: “Chỉ còn 3 sản phẩm!”, “Ưu đãi kết thúc sau 8 phút 42 giây!” và “Một người ở Hà Nội vừa mua sản phẩm này”. Em bắt đầu lo mình sẽ bỏ lỡ và muốn mua ngay." },
+  "trap2_trick": { en: "<strong>The trick:</strong> Fear of missing out makes you decide fast instead of thinking clearly.", vi: "<strong>Bẫy nằm ở đâu?</strong> Cảm giác sợ bỏ lỡ khiến em quyết định vội vàng trước khi kịp cân nhắc." },
+  "trap2_smart": { en: "<strong>Smart move:</strong> Close the tab, wait 30 minutes. If you still want it, come back. Most 'urgent' timers reset.", vi: "<strong>Cách tránh bẫy:</strong> Hãy đóng trang và chờ 30 phút. Nếu sau đó vẫn muốn mua, em có thể quay lại. Nhiều đồng hồ đếm ngược sẽ bắt đầu lại khi mở trang lần sau." },
+  "trap3_name": { en: "The Anchor Trap", vi: "Bẫy neo giá" },
+  "trap3_scen": { en: "A jacket in the shop window: 'Was 1,500,000₫ — NOW only 599,000₫!' A big red slash goes through the old price. You feel like you're getting an amazing deal — you just saved 900,000₫!", vi: "Một chiếc áo khoác được niêm yết: “Giá cũ 1.500.000₫ — nay chỉ còn 599.000₫!” Giá cũ bị gạch đỏ nổi bật, khiến em cảm thấy mình sắp mua được một món hời và tiết kiệm tới 900.000₫." },
+  "trap3_trick": { en: "<strong>The trick:</strong> The high number sticks in your brain and makes the new price feel small — even if the original was never real.", vi: "<strong>Bẫy nằm ở đâu?</strong> Mức giá cao ban đầu trở thành mốc so sánh, khiến giá mới có vẻ rẻ hơn nhiều, ngay cả khi giá cũ không phản ánh đúng giá trị thực." },
+  "trap3_smart": { en: "<strong>Smart move:</strong> Ignore the 'was' price. Ask: would I pay this much for this thing if I'd never seen the deal?", vi: "<strong>Cách tránh bẫy:</strong> Tạm bỏ qua giá cũ và tự hỏi: “Nếu không nhìn thấy thông tin giảm giá, em có sẵn sàng trả 599.000₫ cho món đồ này không?”" },
+  "trap4_name": { en: "The Small Purchase Trap", vi: "Bẫy những khoản mua nhỏ" },
+  "trap4_scen": { en: "Your favourite mobile game asks: 'Buy 500 gems for just 25,000₫!' You do it. Then again next week. And again. After 3 months you check your parent's card statement — you spent 750,000₫ on gems.", vi: "Một trò chơi trên điện thoại mời em mua 500 đá quý với giá 25.000₫. Em mua một lần, rồi tiếp tục mua vào những tuần sau. Sau 3 tháng, tổng số tiền đã chi cho đá quý là 750.000₫." },
+  "trap4_trick": { en: "<strong>The trick:</strong> Small amounts feel harmless — until they add up.", vi: "<strong>Bẫy nằm ở đâu?</strong> Mỗi khoản chi có vẻ rất nhỏ, nhưng tổng số tiền có thể tăng lên đáng kể sau nhiều lần mua." },
+  "trap4_smart": { en: "<strong>Smart move:</strong> Set a monthly limit for tiny purchases. Track them. The total often shocks people.", vi: "<strong>Cách tránh bẫy:</strong> Đặt giới hạn cho các khoản mua nhỏ mỗi tháng và ghi lại từng lần chi để luôn biết tổng số tiền đã sử dụng." },
+  "trap5_name": { en: "The Free Shipping Trap", vi: "Bẫy miễn phí vận chuyển" },
+  "trap5_scen": { en: "Your cart on Lazada: 380,000₫. The shop says 'Free shipping when you spend over 500,000₫!' Shipping normally costs 30,000₫. You browse and add a phone case you kind of like for 150,000₫ to unlock free shipping.", vi: "Giỏ hàng của em trên Lazada đang có giá trị 380.000₫. Cửa hàng miễn phí vận chuyển cho đơn từ 500.000₫, trong khi phí vận chuyển thông thường là 30.000₫. Để đạt mức miễn phí, em thêm một chiếc ốp điện thoại giá 150.000₫ dù ban đầu không định mua." },
+  "trap5_trick": { en: "<strong>The trick:</strong> You spend 150,000₫ extra to save 30,000₫ in shipping. That's not saving — that's losing 120,000₫.", vi: "<strong>Bẫy nằm ở đâu?</strong> Em chi thêm 150.000₫ để tránh khoản phí 30.000₫. Như vậy, tổng chi tiêu thực tế tăng thêm 120.000₫." },
+  "trap5_smart": { en: "<strong>Smart move:</strong> Do the maths. Sometimes paying shipping is genuinely cheaper.", vi: "<strong>Cách tránh bẫy:</strong> Hãy tính tổng chi phí trước khi thêm sản phẩm. Trong trường hợp này, trả phí vận chuyển vẫn tiết kiệm hơn." },
+  "trap6_name": { en: "The Big Size Trap", vi: "Bẫy chọn cỡ lớn" },
+  "trap6_scen": { en: "At Highlands Coffee: Small drink 40,000₫. Medium 60,000₫. Large 65,000₫. Wait — the Large is only 5,000₫ more than the Medium?! What a deal! You order Large without even wanting that much.", vi: "Tại Highlands Coffee, đồ uống cỡ nhỏ giá 40.000₫, cỡ vừa 60.000₫ và cỡ lớn 65.000₫. Vì cỡ lớn chỉ đắt hơn cỡ vừa 5.000₫, em chọn cỡ lớn dù không thật sự muốn uống nhiều đến vậy." },
+  "trap6_trick": { en: "<strong>The trick:</strong> The medium exists just to make the large look cheap. This is called <em>decoy pricing</em>.", vi: "<strong>Bẫy nằm ở đâu?</strong> Mức giá của cỡ vừa khiến cỡ lớn trông hấp dẫn hơn. Cách sắp xếp giá này được gọi là <em>định giá mồi nhử</em>." },
+  "trap6_smart": { en: "<strong>Smart move:</strong> Decide what you want before looking at prices. If you wanted small, buy small.", vi: "<strong>Cách tránh bẫy:</strong> Hãy xác định lượng mình thực sự cần trước khi so sánh giá. Nếu cỡ nhỏ đã đủ, em không cần mua cỡ lớn." },
+  "trap7_name": { en: "The 99 Trap", vi: "Bẫy giá kết thúc bằng số 9" },
+  "trap7_scen": { en: "Two shoe shops next to each other. Shop A: 200,000₫. Shop B: 199,000₫. They look almost identical but Shop B feels so much cheaper. You buy from Shop B without checking anything else.", vi: "Hai cửa hàng cạnh nhau bán những đôi giày gần giống nhau. Cửa hàng A niêm yết 200.000₫, còn cửa hàng B niêm yết 199.000₫. Mức giá ở cửa hàng B tạo cảm giác rẻ hơn đáng kể, khiến em chọn mua mà chưa so sánh các yếu tố khác." },
+  "trap7_trick": { en: "<strong>The trick:</strong> Prices ending in 9 feel MUCH cheaper than round numbers — even though the real difference is tiny (1,000₫ here!).", vi: "<strong>Bẫy nằm ở đâu?</strong> Giá kết thúc bằng số 9 thường tạo cảm giác thấp hơn nhiều so với giá tròn, dù trong tình huống này mức chênh lệch chỉ là 1.000₫." },
+  "trap7_smart": { en: "<strong>Smart move:</strong> Round prices up in your head. 199,000₫ is really 200,000₫. Now compare fairly.", vi: "<strong>Cách tránh bẫy:</strong> Hãy làm tròn 199.000₫ thành 200.000₫ khi cân nhắc, sau đó so sánh chất lượng và giá trị của hai sản phẩm." },
+  "trap8_name": { en: "The Free Trial Trap", vi: "Bẫy dùng thử miễn phí" },
+  "trap8_scen": { en: "A streaming app: '30 days FREE! No payment now.' You sign up with your parent's card. You watch a few shows, forget about it. On day 31 they charge 250,000₫. You didn't even notice.", vi: "Một ứng dụng xem phim cho phép dùng thử miễn phí 30 ngày và yêu cầu thông tin thẻ khi đăng ký. Sau khi xem vài chương trình, em quên hủy dịch vụ. Đến ngày thứ 31, thẻ bị trừ 250.000₫." },
+  "trap8_trick": { en: "<strong>The trick:</strong> 'Free' feels risk-free — but they're counting on you forgetting to cancel.", vi: "<strong>Bẫy nằm ở đâu?</strong> Hai chữ “miễn phí” khiến dịch vụ có vẻ không có rủi ro, nhưng phí sẽ tự động phát sinh nếu người dùng quên hủy." },
+  "trap8_smart": { en: "<strong>Smart move:</strong> The day you sign up, set a phone reminder for 2 days BEFORE the trial ends. Decide then.", vi: "<strong>Cách tránh bẫy:</strong> Ngay khi đăng ký, hãy đặt lời nhắc trước ngày kết thúc dùng thử 2 ngày để quyết định tiếp tục hay hủy dịch vụ." },
+  "trap9_name": { en: "The Points Trap", vi: "Bẫy tích điểm" },
+  "trap9_scen": { en: "Your favourite bubble tea shop: 'Buy 9, get the 10th free!' You end up going 9 times when normally you'd only want to go 5 times — because that free one is right there. You spent extra just to earn 'free.'", vi: "Một cửa hàng trà sữa có chương trình “Mua 9 ly, tặng ly thứ 10”. Bình thường em chỉ định mua 5 lần, nhưng vì muốn nhận ly miễn phí nên em tiếp tục mua đủ 9 lần." },
+  "trap9_trick": { en: "<strong>The trick:</strong> The 'free reward' makes you buy things you didn't need — you spend MORE to earn a small gift.", vi: "<strong>Bẫy nằm ở đâu?</strong> Phần thưởng khiến em mua nhiều hơn nhu cầu thực tế. Số tiền chi thêm có thể lớn hơn giá trị của món được tặng." },
+  "trap9_smart": { en: "<strong>Smart move:</strong> Only 'earn' rewards from things you were going to buy anyway. Never buy extra just for points.", vi: "<strong>Cách tránh bẫy:</strong> Chỉ tích điểm từ những món em vốn đã có kế hoạch mua; không nên mua thêm chỉ để đạt mốc nhận thưởng." },
+  "trap10_name": { en: "The Pay Later Trap", vi: "Bẫy trả góp" },
+  "trap10_scen": { en: "A new phone costs 8,000,000₫. That's a lot! But the app says: 'Pay 400,000₫/month for 24 months.' That sounds so easy — just 400k a month! But 400k × 24 = 9,600,000₫. You paid 1,600,000₫ extra.", vi: "Một chiếc điện thoại có giá 8.000.000₫. Ứng dụng đề xuất trả góp 400.000₫ mỗi tháng trong 24 tháng, khiến khoản thanh toán có vẻ nhẹ hơn. Tuy nhiên, 400.000₫ × 24 = 9.600.000₫, cao hơn giá ban đầu 1.600.000₫." },
+  "trap10_trick": { en: "<strong>The trick:</strong> Small monthly payments hide the total. The bank makes you pay extra for the 'convenience.'", vi: "<strong>Bẫy nằm ở đâu?</strong> Khoản thanh toán nhỏ mỗi tháng khiến người mua ít chú ý đến tổng số tiền. Phần chênh lệch là chi phí hoặc lãi phát sinh khi lựa chọn hình thức trả góp." },
+  "trap10_smart": { en: "<strong>Smart move:</strong> Always ask: what's the TOTAL I'll pay, not the monthly? If you can't afford the total, don't buy it.", vi: "<strong>Cách tránh bẫy:</strong> Luôn tính tổng số tiền phải trả, không chỉ nhìn vào khoản thanh toán mỗi tháng. Nếu tổng chi phí vượt quá khả năng chi trả, hãy cân nhắc chưa mua." },
+  "a2_ws_title": { en: "Trap tracker — which have you seen?", vi: "Bảng theo dõi: Em đã gặp bẫy nào?" },
+  "a2_ws_intro": { en: "Have you seen any of these traps in real life? Write examples.", vi: "Hãy ghi lại một ví dụ thực tế về bẫy chi tiêu em từng nhìn thấy." },
+  "a2_ws_seen": { en: "Trap I have seen most", vi: "Bẫy em thường gặp nhất" },
+  "a2_ws_where": { en: "Where I saw it (shop, app, game...)", vi: "Em gặp bẫy này ở đâu? (cửa hàng, ứng dụng, trò chơi...)" },
+  "a2_ws_next": { en: "What would I do differently next time?", vi: "Lần sau em sẽ làm gì để tránh bẫy?" },
+  "a2_talk_1": { en: "Which trap have you fallen for before?", vi: "Em đã từng rơi vào bẫy chi tiêu nào?" },
+  "a2_talk_2": { en: "Which one do you see most in mobile games?", vi: "Em thường gặp bẫy nào nhất trong các trò chơi trên điện thoại?" },
+  "a2_talk_3": { en: "Why do you think shops design these on purpose?", vi: "Vì sao cửa hàng và ứng dụng sử dụng những cách này?" },
+  "a2_talk_4": { en: "Real-life link: The biggest companies in the world hire experts just to design these traps.", vi: "Liên hệ thực tế: Nhiều doanh nghiệp có đội ngũ chuyên nghiên cứu cách trình bày sản phẩm, giá và ưu đãi để tác động đến quyết định mua hàng." },
+  "a3_h2_a": { en: "Something", vi: "Món quà" },
+  "a3_h2_b": { en: "meaningful,", vi: "ý nghĩa" },
+  "a3_h2_c": { en: "not just expensive", vi: "không cần phải đắt tiền" },
+  "a3_meta": { en: "Activity 03<br>20 min · ages 7–12", vi: "Hoạt động 03<br>20 phút · 7–12 tuổi" },
+  "a3_goal": { en: "Discover that value is more than price. Plan a gift that means something.", vi: "Hiểu rằng giá trị của món quà không chỉ nằm ở giá tiền và lên kế hoạch cho một món quà phù hợp với người nhận." },
+  "a3_math": { en: "Budgeting, comparing value, cost vs meaning", vi: "Lập ngân sách, so sánh giá trị, cân nhắc giữa chi phí và ý nghĩa" },
+  "a3_rule_budget": { en: "Budget", vi: "Ngân sách" },
+  "a3_rule_bonus": { en: "Homemade bonus", vi: "Điểm cộng cho quà tự làm" },
+  "a3_rule_bonus_v": { en: "+50 pts", vi: "+50 điểm" },
+  "a3_rule_pitch": { en: "Pitch length", vi: "Thời lượng thuyết trình" },
+  "a3_rule_pitch_v": { en: "30 sec", vi: "30 giây" },
+  "a3_mission_h": { en: "Your mission", vi: "Nhiệm vụ của em" },
+  "a3_mission_p": { en: "Pick <em>one</em> person to gift. You have <strong>100,000 VND</strong>. Plan a gift that will mean something to them. If you include something homemade or thoughtful, you get a <strong>bonus</strong>. At the end, you'll pitch your gift to the class — but you won't be judged on price. You'll be judged on <em>meaning</em>.", vi: "Hãy chọn <em>một</em> người em muốn tặng quà. Với ngân sách <strong>100.000 đồng</strong>, em sẽ lên kế hoạch cho một món quà phù hợp và có ý nghĩa với người nhận. Nếu món quà có phần do em tự làm hoặc chuẩn bị riêng cho người đó, em sẽ được <strong>cộng điểm</strong>. Cuối hoạt động, em giới thiệu ý tưởng trước lớp; phần bình chọn dựa trên <em>ý nghĩa</em>, không dựa trên giá tiền." },
+  "a3_run_1": { en: "Each student picks (or is assigned) one 'gift target' — see cards below.", vi: "Mỗi học sinh chọn hoặc được phân một người nhận quà từ các thẻ bên dưới." },
+  "a3_run_2": { en: "Give them 8–10 minutes to plan on paper: what will they buy? What will they make? Why did they choose it?", vi: "Dành 8–10 phút để học sinh lập kế hoạch trên giấy: mua gì, tự làm hoặc bổ sung điều gì và vì sao lựa chọn món quà đó." },
+  "a3_run_3": { en: "Each student gives a 30-second pitch: <em>who</em> the gift is for, <em>what</em> it is, and <em>why</em> it matters.", vi: "Mỗi học sinh có 30 giây để trình bày món quà dành <em>cho ai</em>, món quà <em>gồm những gì</em> và <em>vì sao</em> nó phù hợp với người nhận." },
+  "a3_run_4": { en: "The class votes not on the most expensive or fanciest — but on the most <em>meaningful</em>.", vi: "Cả lớp bình chọn món quà <em>ý nghĩa nhất</em>, không nhất thiết là món đắt tiền hoặc cầu kỳ nhất." },
+  "a3_run_5": { en: "Debrief: what made the winning gift feel special? It's rarely the price.", vi: "Tổng kết: Điều gì khiến món quà được bình chọn trở nên đặc biệt? Giá tiền đóng vai trò như thế nào?" },
+  "a3_pick_h": { en: "Pick your person", vi: "Chọn người nhận quà" },
+  "a3_gift_mom": { en: "Mom", vi: "Mẹ" },
+  "a3_gift_dad": { en: "Dad", vi: "Bố" },
+  "a3_gift_friend": { en: "Best friend", vi: "Bạn thân" },
+  "a3_gift_teacher": { en: "Teacher", vi: "Thầy/cô" },
+  "a3_gift_grand": { en: "Grandparent", vi: "Ông/bà" },
+  "a3_gift_sibling": { en: "Sibling", vi: "Anh/chị/em" },
+  "a3_ws_title": { en: "My gift plan", vi: "Kế hoạch quà tặng của em" },
+  "a3_ws_for": { en: "Gift is for", vi: "Tặng cho" },
+  "a3_ws_for_ph": { en: "Their name", vi: "Tên của người đó" },
+  "a3_ws_love": { en: "What do they love?", vi: "Người đó yêu thích điều gì?" },
+  "a3_ws_buy": { en: "What I will buy (list items + cost)", vi: "Em sẽ mua gì? (ghi tên món và giá)" },
+  "a3_ws_buy_ph": { en: "Example: A small notebook — 25,000₫\nA nice pen — 40,000₫", vi: "Ví dụ: Một quyển sổ nhỏ — 25.000₫\nMột cây bút đẹp — 40.000₫" },
+  "a3_ws_make": { en: "What I will make or add (homemade / thoughtful)", vi: "Em sẽ tự làm hoặc chuẩn bị thêm điều gì?" },
+  "a3_ws_make_ph": { en: "Example: A handwritten letter about my favourite memory of them", vi: "Ví dụ: Viết một lá thư tay kể về kỷ niệm em yêu thích với người đó" },
+  "a3_ws_total": { en: "Total cost (₫)", vi: "Tổng chi phí (₫)" },
+  "a3_ws_left": { en: "Money left", vi: "Số tiền còn lại" },
+  "a3_ws_left_ph": { en: "Calculate", vi: "Tự tính" },
+  "a3_ws_pitch": { en: "My 30-second pitch: why this gift matters to them", vi: "Phần giới thiệu 30 giây: Vì sao món quà này có ý nghĩa với người nhận?" },
+  "a3_ws_pitch_ph": { en: "Write your pitch here...", vi: "Viết phần giới thiệu của em tại đây..." },
+  "a3_talk_1": { en: "Which gifts made you feel something? Why?", vi: "Món quà nào khiến em ấn tượng nhất? Vì sao?" },
+  "a3_talk_2": { en: "Did the most expensive gift also feel the most meaningful?", vi: "Món quà đắt tiền nhất có phải cũng là món ý nghĩa nhất không?" },
+  "a3_talk_3": { en: "What's a gift someone once gave <em>you</em> that meant a lot? Was it expensive?", vi: "Em từng nhận món quà nào rất có ý nghĩa? Món quà đó có đắt tiền không?" },
+  "a3_talk_4": { en: "Real-life link: The best gifts almost never cost the most. They cost the most <em>thought</em>.", vi: "Liên hệ thực tế: Một món quà trở nên đáng nhớ nhờ sự quan tâm và mức độ phù hợp với người nhận, không chỉ nhờ giá tiền." },
+  "a4_h2_a": { en: "The stock market,", vi: "Thị trường chứng khoán" },
+  "a4_h2_b": { en: "simplified", vi: "hiểu theo cách đơn giản" },
+  "a4_meta": { en: "Activity 04<br>25 min · ages 10–12", vi: "Hoạt động 04<br>25 phút · 10–12 tuổi" },
+  "a4_goal": { en: "Get a first taste of investing — and why smart investors don't put all their eggs in one basket.", vi: "Làm quen với hoạt động đầu tư và hiểu vì sao nên phân bổ tiền vào nhiều khoản khác nhau thay vì chỉ chọn một nơi." },
+  "a4_math": { en: "Percentages, gains/losses, diversification", vi: "Tỷ lệ phần trăm, lãi và lỗ, đa dạng hóa danh mục" },
+  "a4_start_per": { en: "Per student", vi: "Mỗi học sinh" },
+  "a4_start_per_v": { en: "1,000 pts", vi: "1.000 điểm" },
+  "a4_start_share": { en: "Share price", vi: "Giá 1 cổ phiếu" },
+  "a4_start_share_v": { en: "100 pts", vi: "100 điểm" },
+  "a4_start_rounds": { en: "Rounds", vi: "Số lượt" },
+  "a4_start_rounds_v": { en: "6 headlines", vi: "6 bản tin" },
+  "a4_market_h": { en: "The market", vi: "Thị trường" },
+  "a4_market_p": { en: "You have <strong>1,000 points</strong> to invest. Every company's shares cost <strong>100 points each</strong>. You can spread your money across as many companies as you like — or put it all in one. Then, six news headlines will change everything.", vi: "Em có <strong>1.000 điểm</strong> để đầu tư. Mỗi cổ phiếu có giá <strong>100 điểm</strong>. Em có thể phân bổ điểm vào nhiều công ty hoặc tập trung vào một công ty. Sau đó, sáu bản tin sẽ làm giá trị các khoản đầu tư thay đổi." },
+  "a4_run_1": { en: "Each student allocates their 1,000 points across the 5 companies (using the inputs below).", vi: "Mỗi học sinh phân bổ 1.000 điểm cho 5 công ty (dùng ô nhập bên dưới)." },
+  "a4_run_2": { en: "Reveal the news headlines <em>one at a time</em> — click each 'Reveal news' button below when ready.", vi: "Mở <em>lần lượt</em> từng bản tin bằng nút “Mở bản tin” bên dưới." },
+  "a4_run_3": { en: "After each headline, students recalculate their portfolio value on paper.", vi: "Sau mỗi bản tin, học sinh tính lại giá trị danh mục trên giấy." },
+  "a4_run_4": { en: "At the end, class discussion: who made the most? Who lost? Was it luck or strategy?", vi: "Cuối hoạt động, cả lớp thảo luận: Ai có lợi nhuận cao nhất? Ai bị thua lỗ? Kết quả đến từ may mắn hay chiến lược?" },
+  "a4_run_5": { en: "Introduce the word <strong>diversification</strong> — spreading money across many companies so one bad headline doesn't ruin you.", vi: "Giới thiệu khái niệm <strong>đa dạng hóa</strong>: phân bổ tiền vào nhiều công ty để giảm ảnh hưởng khi một khoản đầu tư gặp bất lợi." },
+  "a4_companies_h": { en: "The five companies", vi: "Năm công ty" },
+  "a4_c_boba_name": { en: "BobaMax", vi: "BobaMax" },
+  "a4_c_boba_ind": { en: "Bubble tea chain — 200 stores", vi: "Chuỗi trà sữa — 200 cửa hàng" },
+  "a4_c_ray_name": { en: "RayPhone", vi: "RayPhone" },
+  "a4_c_ray_ind": { en: "Phone maker — new launch soon", vi: "Hãng điện thoại — sắp ra mắt sản phẩm mới" },
+  "a4_c_pixel_name": { en: "PixelPlay", vi: "PixelPlay" },
+  "a4_c_pixel_ind": { en: "Mobile game studio", vi: "Công ty phát triển trò chơi di động" },
+  "a4_c_zoom_name": { en: "ZoomDash", vi: "ZoomDash" },
+  "a4_c_zoom_ind": { en: "Delivery app", vi: "Ứng dụng giao hàng" },
+  "a4_c_bake_name": { en: "FreshBake", vi: "FreshBake" },
+  "a4_c_bake_ind": { en: "Bakery chain — famous croissants", vi: "Chuỗi bánh — nổi tiếng bánh sừng bò" },
+  "a4_share": { en: "100 pts / share", vi: "100 điểm / cổ phiếu" },
+  "a4_invested": { en: "Points invested", vi: "Điểm đã đầu tư" },
+  "a4_news_h": { en: "The news", vi: "Bản tin" },
+  "news1_btn": { en: "▶ Reveal headline 1", vi: "▶ Mở bản tin 1" },
+  "news1_label": { en: "Headline 1", vi: "Bản tin 1" },
+  "news1_head": { en: "BobaMax opens 50 new stores across Vietnam!", vi: "BobaMax mở thêm 50 cửa hàng khắp Việt Nam!" },
+  "news1_eff": { en: "🧋 BobaMax: +50% · everyone else: no change", vi: "🧋 BobaMax: +50% · các công ty khác: không đổi" },
+  "news2_btn": { en: "▶ Reveal headline 2", vi: "▶ Mở bản tin 2" },
+  "news2_label": { en: "Headline 2", vi: "Bản tin 2" },
+  "news2_head": { en: "RayPhone new model wins design award!", vi: "Mẫu điện thoại mới của RayPhone giành giải thiết kế!" },
+  "news2_eff": { en: "📱 RayPhone: +30% · others: no change", vi: "📱 RayPhone: +30% · các công ty khác: không đổi" },
+  "news3_btn": { en: "▶ Reveal headline 3", vi: "▶ Mở bản tin 3" },
+  "news3_label": { en: "Headline 3", vi: "Bản tin 3" },
+  "news3_head": { en: "PixelPlay releases smash-hit mobile game — millions of downloads in a week!", vi: "PixelPlay ra mắt trò chơi di động mới và đạt hàng triệu lượt tải chỉ trong một tuần!" },
+  "news3_eff": { en: "🎮 PixelPlay: +40% · others: no change", vi: "🎮 PixelPlay: +40% · các công ty khác: không đổi" },
+  "news4_btn": { en: "▶ Reveal headline 4", vi: "▶ Mở bản tin 4" },
+  "news4_label": { en: "Headline 4", vi: "Bản tin 4" },
+  "news4_head": { en: "Food safety scandal shakes BobaMax and FreshBake", vi: "Sự cố an toàn thực phẩm ảnh hưởng đến BobaMax và FreshBake" },
+  "news4_eff_neg": { en: "🧋 BobaMax: −40% · 🥐 FreshBake: −30% · others: no change", vi: "🧋 BobaMax: −40% · 🥐 FreshBake: −30% · các công ty khác: không đổi" },
+  "news5_btn": { en: "▶ Reveal headline 5", vi: "▶ Mở bản tin 5" },
+  "news5_label": { en: "Headline 5", vi: "Bản tin 5" },
+  "news5_head": { en: "ZoomDash drivers go on strike — deliveries stop for 3 days!", vi: "Tài xế ZoomDash đình công — dịch vụ giao hàng dừng 3 ngày!" },
+  "news5_eff_neg": { en: "🛵 ZoomDash: −25% · others: no change", vi: "🛵 ZoomDash: −25% · các công ty khác: không đổi" },
+  "news6_btn": { en: "▶ Reveal headline 6", vi: "▶ Mở bản tin 6" },
+  "news6_label": { en: "Headline 6", vi: "Bản tin 6" },
+  "news6_head": { en: "FreshBake croissant goes viral on TikTok — queues around the block!", vi: "Bánh sừng bò của FreshBake được chú ý trên TikTok, thu hút nhiều khách xếp hàng!" },
+  "news6_eff": { en: "🥐 FreshBake: +60% · others: no change", vi: "🥐 FreshBake: +60% · các công ty khác: không đổi" },
+  "a4_ws_title": { en: "My portfolio results", vi: "Kết quả danh mục đầu tư của em" },
+  "a4_ws_start": { en: "Started with", vi: "Bắt đầu với" },
+  "a4_ws_end": { en: "Ended with", vi: "Kết thúc với" },
+  "a4_ws_delta": { en: "Gain / Loss", vi: "Lãi / Lỗ" },
+  "a4_ws_reflect": { en: "What would I do differently?", vi: "Lần sau em sẽ điều chỉnh cách đầu tư như thế nào?" },
+  "a4_talk_1": { en: "Who put all 1,000 points in one company? How did that turn out?", vi: "Ai dồn hết 1.000 điểm vào một công ty? Kết quả ra sao?" },
+  "a4_talk_2": { en: "Who split their money across many? How did that turn out?", vi: "Ai phân bổ điểm vào nhiều công ty? Kết quả của lựa chọn đó như thế nào?" },
+  "a4_talk_3": { en: "What if the last headlines had been swapped? Would your answer change?", vi: "Nếu thứ tự hoặc nội dung các bản tin cuối thay đổi, kết quả của em có thể khác như thế nào?" },
+  "a4_talk_4": { en: "Vocabulary: <em>diversification</em> — the strategy of spreading money across many investments so a single bad event doesn't ruin you.", vi: "Từ vựng: <em>đa dạng hóa</em> — chiến lược phân bổ tiền vào nhiều khoản đầu tư để giảm tác động của một sự kiện bất lợi." },
+  "a4_ans_intro": { en: "Portfolio outcome calculation (per 100 pts invested in each):", vi: "Kết quả (nếu đầu tư 100 điểm vào mỗi công ty):" },
+  "a4_ans_boba": { en: "🧋 BobaMax: 100 → 150 → 150 → 150 → 90 → 90 → 90 (final: <span class='mono'>90 pts</span> — lost 10%)", vi: "🧋 BobaMax: 100 → 150 → 150 → 150 → 90 → 90 → 90 (cuối: <span class='mono'>90 điểm</span> — lỗ 10%)" },
+  "a4_ans_ray": { en: "📱 RayPhone: 100 → 100 → 130 → 130 → 130 → 130 → 130 (final: <span class='mono'>130 pts</span> — gained 30%)", vi: "📱 RayPhone: 100 → 100 → 130 → 130 → 130 → 130 → 130 (cuối: <span class='mono'>130 điểm</span> — lãi 30%)" },
+  "a4_ans_pixel": { en: "🎮 PixelPlay: 100 → 100 → 100 → 140 → 140 → 140 → 140 (final: <span class='mono'>140 pts</span> — gained 40%)", vi: "🎮 PixelPlay: 100 → 100 → 100 → 140 → 140 → 140 → 140 (cuối: <span class='mono'>140 điểm</span> — lãi 40%)" },
+  "a4_ans_zoom": { en: "🛵 ZoomDash: 100 → 100 → 100 → 100 → 100 → 75 → 75 (final: <span class='mono'>75 pts</span> — lost 25%)", vi: "🛵 ZoomDash: 100 → 100 → 100 → 100 → 100 → 75 → 75 (cuối: <span class='mono'>75 điểm</span> — lỗ 25%)" },
+  "a4_ans_bake": { en: "🥐 FreshBake: 100 → 100 → 100 → 100 → 70 → 70 → 112 (final: <span class='mono'>112 pts</span> — gained 12%)", vi: "🥐 FreshBake: 100 → 100 → 100 → 100 → 70 → 70 → 112 (cuối: <span class='mono'>112 điểm</span> — lãi 12%)" },
+  "a4_ans_summary": { en: "<strong>Full diversification</strong> (200 pts in each): 180 + 260 + 280 + 150 + 224 = <span class='mono'>1,094 pts</span> — a healthy gain, no crushing loss. That's the whole point of diversification.", vi: "<strong>Phân bổ đều</strong> (200 điểm cho mỗi công ty): 180 + 260 + 280 + 150 + 224 = <span class='mono'>1.094 điểm</span>. Danh mục vẫn tăng giá trị và không bị ảnh hưởng quá lớn bởi khoản đầu tư thua lỗ. Đây là lợi ích của việc đa dạng hóa." },
+  "game_tag": { en: "Game · every session", vi: "Trò chơi · mỗi buổi" },
+  "game_h_a": { en: "Run the", vi: "Thử sức quản lý" },
+  "game_h_b": { en: "Coffee Shop", vi: "Quán cà phê" },
+  "game_p": { en: "Set the recipe. Set the price. Buy the beans. Watch the weather. Miss a single choice and the day's a bust. Get it right and profit stacks up. This is every activity you did today — but now you're on the other side of the counter.", vi: "Chọn công thức, đặt giá bán, mua nguyên liệu và theo dõi thời tiết. Mỗi quyết định đều có thể ảnh hưởng đến kết quả kinh doanh trong ngày. Trò chơi giúp em vận dụng những điều vừa học trong vai trò người quản lý quán cà phê." },
+  "game_cta": { en: "Open Coffee Shop ↗", vi: "Mở trò chơi Quán cà phê ↗" },
+  "game_run_1": { en: "Groups of 2–3 share one laptop. Assign roles: CEO, Numbers person, Weather watcher.", vi: "Mỗi nhóm gồm 2–3 học sinh dùng chung một laptop. Phân công các vai trò: quản lý chung, phụ trách tính toán và theo dõi thời tiết." },
+  "game_run_2": { en: "Goal: end with the most profit after 7 in-game days.", vi: "Mục tiêu: đạt lợi nhuận cao nhất sau 7 ngày trong trò chơi." },
+  "game_run_3": { en: "After each day, groups explain one decision: 'why did we set the price at that?'", vi: "Sau mỗi ngày, nhóm giải thích một quyết định, chẳng hạn: “Vì sao nhóm chọn mức giá này?”" },
+  "game_run_4": { en: "Wrap-up: which group made the most? Which strategy worked? What went wrong on losing days?", vi: "Tổng kết: Nhóm nào đạt lợi nhuận cao nhất? Chiến lược nào hiệu quả? Những quyết định nào dẫn đến thua lỗ?" },
+  "game_track_h": { en: "7-day tracker", vi: "Bảng theo dõi 7 ngày" },
+  "game_col_day": { en: "Day", vi: "Ngày" },
+  "game_col_weather": { en: "Weather", vi: "Thời tiết" },
+  "game_col_price": { en: "Price", vi: "Giá" },
+  "game_col_made": { en: "Made", vi: "Số lượng pha" },
+  "game_col_sold": { en: "Sold", vi: "Số lượng bán" },
+  "game_col_profit": { en: "Profit", vi: "Lợi nhuận" },
+  "foot_tag": { en: "Take home", vi: "Thử thách tại nhà" },
+  "foot_h_a": { en: "Try one this", vi: "Chọn một thử thách" },
+  "foot_h_b": { en: "week.", vi: "trong tuần này." },
+  "foot_p": { en: "Money lessons stick when they meet real life. Pick one — and tell us next session how it went.", vi: "Kiến thức về tài chính sẽ dễ nhớ hơn khi được áp dụng vào thực tế. Em hãy chọn một thử thách và chia sẻ kết quả trong buổi học tiếp theo." },
+  "foot_li1": { en: "Ask a family member how they decide what to buy each month. Note three things they say.", vi: "Hỏi một người thân cách họ quyết định những món cần mua mỗi tháng và ghi lại ba điều em học được." },
+  "foot_li2": { en: "Next time you're in a shop, compare two similar items. Which won? Why?", vi: "Trong lần mua sắm tiếp theo, hãy so sánh hai sản phẩm tương tự. Em sẽ chọn sản phẩm nào và vì sao?" },
+  "foot_li3": { en: "Save 10,000₫ every day for a week. Count it Sunday. What could you buy?", vi: "Tiết kiệm 10.000₫ mỗi ngày trong một tuần. Cuối tuần, hãy tính tổng số tiền và nghĩ xem em có thể dùng khoản đó cho mục tiêu nào." },
+  "foot_li4": { en: "Design your dream business on paper. What would you sell? What would you charge?", vi: "Phác thảo ý tưởng kinh doanh mơ ước trên giấy: Em sẽ bán sản phẩm hoặc dịch vụ gì và đặt mức giá bao nhiêu?" },
+  "pw_title": { en: "Teacher access", vi: "Truy cập dành cho giáo viên" },
+  "pw_desc": { en: "Enter the teacher password to unlock facilitator notes and answer keys.", vi: "Nhập mật khẩu để mở phần ghi chú và đáp án dành cho giáo viên." },
+  "pw_ph": { en: "Enter password", vi: "Nhập mật khẩu" },
+  "pw_submit": { en: "Unlock", vi: "Mở khóa" },
+  "pw_cancel": { en: "Cancel", vi: "Hủy" },
+  "pw_wrong": { en: "Wrong password. Try again.", vi: "Sai mật khẩu. Thử lại." },
+  "lang_label": { en: "Language", vi: "Ngôn ngữ" },
+};
+
+
+const TEACHER_PASSWORD = "logiscool4ever";
+const body = document.body;
+
+function applyLang(lang) {
+  body.setAttribute('data-lang', lang);
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-t]').forEach(el => {
+    const key = el.getAttribute('data-t');
+    if (T[key] && T[key][lang] !== undefined) el.textContent = T[key][lang];
+  });
+  document.querySelectorAll('[data-t-html]').forEach(el => {
+    const key = el.getAttribute('data-t-html');
+    if (T[key] && T[key][lang] !== undefined) el.innerHTML = T[key][lang];
+  });
+  document.querySelectorAll('[data-t-ph]').forEach(el => {
+    const key = el.getAttribute('data-t-ph');
+    if (T[key] && T[key][lang] !== undefined) el.setAttribute('placeholder', T[key][lang]);
+  });
+  // Panels with dynamic label
+  document.querySelectorAll('[data-label-key]').forEach(el => {
+    const key = el.getAttribute('data-label-key');
+    if (T[key] && T[key][lang] !== undefined) el.setAttribute('data-label', T[key][lang]);
+  });
+  localStorage.setItem('mm_lang', lang);
+  document.querySelectorAll('.lang-toggle button').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === lang);
+  });
+}
+
+// Language toggle
+document.querySelectorAll('.lang-toggle button').forEach(btn => {
+  btn.addEventListener('click', () => applyLang(btn.dataset.lang));
+});
+
+// Initial language
+const savedLang = localStorage.getItem('mm_lang') || 'en';
+applyLang(savedLang);
+
+// Role toggle with password gate
+const roleBtns = document.querySelectorAll('.role-toggle button');
+const modal = document.getElementById('pwModal');
+const pwInput = document.getElementById('pwInput');
+const pwError = document.getElementById('pwError');
+const pwSubmit = document.getElementById('pwSubmit');
+const pwCancel = document.getElementById('pwCancel');
+
+function setRole(role) {
+  body.setAttribute('data-role', role);
+  roleBtns.forEach(b => b.classList.toggle('active', b.dataset.role === role));
+  if (role === 'teacher') {
+    sessionStorage.setItem('mm_teacher_unlocked', '1');
+  } else {
+    localStorage.setItem('mm_role', role);
+  }
+}
+
+roleBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const role = btn.dataset.role;
+    if (role === 'teacher') {
+      if (sessionStorage.getItem('mm_teacher_unlocked') === '1') {
+        setRole('teacher');
+      } else {
+        modal.classList.add('shown');
+        pwInput.value = '';
+        pwError.classList.remove('shown');
+        setTimeout(() => pwInput.focus(), 100);
+      }
+    } else {
+      setRole('student');
+    }
+  });
+});
+
+function tryUnlock() {
+  if (pwInput.value === TEACHER_PASSWORD) {
+    modal.classList.remove('shown');
+    setRole('teacher');
+    pwInput.value = '';
+    pwError.classList.remove('shown');
+  } else {
+    pwError.classList.add('shown');
+    pwInput.value = '';
+    pwInput.focus();
+  }
+}
+pwSubmit.addEventListener('click', tryUnlock);
+pwInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') tryUnlock(); });
+pwCancel.addEventListener('click', () => { modal.classList.remove('shown'); });
+modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('shown'); });
+
+// Initial role — student by default; only teacher if unlocked in session
+const savedRole = localStorage.getItem('mm_role');
+if (sessionStorage.getItem('mm_teacher_unlocked') === '1') {
+  setRole('teacher');
+} else {
+  setRole(savedRole === 'teacher' ? 'student' : (savedRole || 'student'));
+}
+
+// Auto-save fields
+document.querySelectorAll('[data-key]').forEach(el => {
+  const key = 'mm_' + el.dataset.key;
+  const saved = localStorage.getItem(key);
+  if (saved !== null) el.value = saved;
+  el.addEventListener('input', () => localStorage.setItem(key, el.value));
+  el.addEventListener('change', () => localStorage.setItem(key, el.value));
+});
+
+// Gift target picker
+document.querySelectorAll('.gift-target').forEach(g => {
+  g.addEventListener('click', () => {
+    document.querySelectorAll('.gift-target').forEach(x => x.classList.remove('picked'));
+    g.classList.add('picked');
+    const nameField = document.querySelector('[data-key="a3_for"]');
+    if (nameField && !nameField.value) {
+      nameField.value = g.querySelector('.gt-name').textContent;
+      localStorage.setItem('mm_a3_for', nameField.value);
+    }
+  });
+});
+
+// News reveal
+document.querySelectorAll('.news-reveal').forEach(b => {
+  b.addEventListener('click', () => {
+    const n = b.dataset.news;
+    const card = document.querySelector(`[data-news-card="${n}"]`);
+    card.classList.add('shown');
+    b.style.display = 'none';
+  });
+});
+
+// Stock allocation tracker
+const stockInputs = document.querySelectorAll('[data-stock]');
+const invested = document.getElementById('a4-invested');
+const totalEl = document.getElementById('a4-total');
+function updateStockTotal() {
+  let sum = 0;
+  stockInputs.forEach(i => { sum += Number(i.value) || 0; });
+  invested.textContent = sum.toLocaleString();
+  totalEl.classList.toggle('over', sum > 1000);
+  totalEl.classList.toggle('exact', sum === 1000);
+}
+stockInputs.forEach(i => i.addEventListener('input', updateStockTotal));
+updateStockTotal();
+
+// ─── DICE ─────────────────────────────────────
+const DICE_PATTERNS = {
+  1: [4],
+  2: [0, 8],
+  3: [0, 4, 8],
+  4: [0, 2, 6, 8],
+  5: [0, 2, 4, 6, 8],
+  6: [0, 2, 3, 5, 6, 8]
+};
+
+const diceEl = document.getElementById('dice');
+const diceFace = document.getElementById('dice-face');
+const diceBtn = document.getElementById('dice-btn');
+const diceResult = document.getElementById('dice-result');
+const diceResultNum = document.getElementById('dice-result-num');
+const diceResultText = document.getElementById('dice-result-text');
+
+function renderDiceFace(num) {
+  const pattern = DICE_PATTERNS[num];
+  const cells = Array.from({length: 9}, (_, i) => pattern.includes(i) ? '<div class="dice-dot"></div>' : '<div></div>');
+  diceFace.innerHTML = cells.join('');
+}
+
+function rollDice() {
+  if (diceEl.classList.contains('rolling')) return;
+  diceEl.classList.add('rolling');
+  diceResult.classList.remove('shown');
+
+  // Show rapid random faces during roll
+  let flips = 0;
+  const flipTimer = setInterval(() => {
+    renderDiceFace(Math.floor(Math.random() * 6) + 1);
+    flips++;
+    if (flips > 5) clearInterval(flipTimer);
+  }, 80);
+
+  setTimeout(() => {
+    diceEl.classList.remove('rolling');
+    clearInterval(flipTimer);
+    const result = Math.floor(Math.random() * 6) + 1;
+    renderDiceFace(result);
+    diceResultNum.textContent = result;
+
+    let msgKey, cls;
+    if (result <= 2) { msgKey = 'a1_dice_result_low'; cls = 'negative'; }
+    else if (result <= 4) { msgKey = 'a1_dice_result_mid'; cls = 'positive'; }
+    else { msgKey = 'a1_dice_result_high'; cls = 'positive'; }
+
+    const lang = body.getAttribute('data-lang') || 'en';
+    diceResultText.textContent = T[msgKey][lang];
+    diceResult.className = 'dice-result shown ' + cls;
+  }, 620);
+}
+
+diceBtn.addEventListener('click', rollDice);
+diceEl.addEventListener('click', rollDice);
+renderDiceFace(1);
+</script>
+
+</body>
+</html>
