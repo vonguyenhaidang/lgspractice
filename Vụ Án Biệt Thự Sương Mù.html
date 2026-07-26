@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hồ Sơ Vụ Án: Biệt Thự Sương Mù</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,500&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+:root{
+  --navy:#11151c;
+  --navy-panel:#1b212b;
+  --navy-panel-2:#222937;
+  --paper:#eee3c8;
+  --paper-dark:#e2d3a8;
+  --ink:#241c12;
+  --red:#a2352f;
+  --red-dark:#7c2823;
+  --gold:#c79a3b;
+  --cream:#ece6d6;
+  --muted:#8f97a6;
+  --good:#4f8a5b;
+  --bad:#a2352f;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--navy);
+  color:var(--cream);
+  font-family:'Crimson Pro',serif;
+  min-height:100vh;
+  overflow-x:hidden;
+  position:relative;
+}
+@media (prefers-reduced-motion:no-preference){
+  .fog{animation-play-state:running;}
+}
+@media (prefers-reduced-motion:reduce){
+  .fog{animation:none !important;}
+}
+
+/* ---------- Fog background ---------- */
+.fog-wrap{position:fixed;inset:0;overflow:hidden;z-index:0;pointer-events:none;}
+.fog{
+  position:absolute;
+  width:140%;height:60%;
+  background:radial-gradient(ellipse at center, rgba(199,154,59,0.06) 0%, rgba(199,154,59,0) 70%);
+  filter:blur(30px);
+  opacity:0.7;
+}
+.fog1{top:-10%;left:-20%;animation:drift1 46s linear infinite;}
+.fog2{bottom:-15%;left:-10%;background:radial-gradient(ellipse at center, rgba(236,230,214,0.05) 0%, rgba(236,230,214,0) 70%);animation:drift2 60s linear infinite;}
+@keyframes drift1{0%{transform:translateX(0);}50%{transform:translateX(8%);}100%{transform:translateX(0);}}
+@keyframes drift2{0%{transform:translateX(0);}50%{transform:translateX(-6%);}100%{transform:translateX(0);}}
+
+.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse at center, rgba(0,0,0,0) 40%, rgba(0,0,0,0.55) 100%);}
+
+#app{position:relative;z-index:2;min-height:100vh;display:flex;flex-direction:column;}
+
+/* ---------- Topbar ---------- */
+#topbar{
+  position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;padding:12px 20px;
+  background:linear-gradient(180deg, rgba(17,21,28,0.97), rgba(17,21,28,0.9));
+  border-bottom:1px solid rgba(199,154,59,0.35);
+  backdrop-filter:blur(4px);
+  flex-wrap:wrap;
+}
+#topbar .brand{display:flex;flex-direction:column;line-height:1.1;}
+#topbar .brand .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;}
+#topbar .brand .title{font-family:'Special Elite',cursive;font-size:18px;color:var(--cream);letter-spacing:1px;}
+#topbar .right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.timer-box{
+  font-family:'IBM Plex Mono',monospace;
+  background:var(--navy-panel);
+  border:1px solid rgba(199,154,59,0.4);
+  color:var(--gold);
+  padding:6px 12px;
+  border-radius:4px;
+  font-size:16px;font-weight:600;
+  letter-spacing:1px;
+  min-width:78px;text-align:center;
+}
+.timer-box.low{color:var(--red);border-color:var(--red);animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
+.pill-btn{
+  font-family:'IBM Plex Mono',monospace;
+  background:var(--navy-panel-2);
+  border:1px solid rgba(236,230,214,0.2);
+  color:var(--cream);
+  padding:7px 12px;
+  border-radius:20px;
+  font-size:12px;
+  cursor:pointer;
+  transition:all .15s ease;
+  letter-spacing:.5px;
+}
+.pill-btn:hover{border-color:var(--gold);color:var(--gold);}
+.pill-btn:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible{
+  outline:2px solid var(--gold);outline-offset:2px;
+}
+
+/* ---------- Screens ---------- */
+.screen{display:none;flex:1;padding:28px 20px 60px;max-width:960px;margin:0 auto;width:100%;}
+.screen.active{display:block;animation:fadein .35s ease;}
+@keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+h1,h2,h3{font-family:'Special Elite',cursive;font-weight:400;color:var(--cream);}
+.case-title{
+  text-align:center;font-size:clamp(28px,5vw,44px);
+  color:var(--gold);letter-spacing:2px;margin:6px 0 0;
+}
+.case-sub{text-align:center;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:3px;text-transform:uppercase;margin-bottom:22px;}
+
+/* ---------- Case file card (paper look) ---------- */
+.dossier{
+  background:var(--paper);
+  color:var(--ink);
+  border-radius:2px;
+  padding:26px 26px 22px;
+  position:relative;
+  box-shadow:0 18px 40px rgba(0,0,0,0.45), inset 0 0 0 1px rgba(0,0,0,0.06);
+  margin-bottom:20px;
+}
+.dossier::before{
+  content:"";position:absolute;inset:8px;border:1px dashed rgba(36,28,18,0.25);pointer-events:none;
+}
+.dossier p{line-height:1.65;font-size:17px;margin:0 0 12px;}
+.dossier p:last-child{margin-bottom:0;}
+.stamp{
+  position:absolute;top:14px;right:18px;
+  font-family:'Special Elite',cursive;
+  color:var(--red);
+  border:3px solid var(--red);
+  padding:4px 10px;
+  border-radius:6px;
+  font-size:13px;letter-spacing:3px;
+  transform:rotate(9deg);
+  opacity:0.85;
+  mix-blend-mode:multiply;
+}
+
+.btn-primary{
+  display:inline-block;
+  font-family:'Special Elite',cursive;
+  background:var(--red);
+  color:var(--cream);
+  border:none;
+  padding:14px 26px;
+  font-size:16px;
+  letter-spacing:1px;
+  border-radius:3px;
+  cursor:pointer;
+  box-shadow:0 8px 18px rgba(162,53,47,0.35);
+  transition:transform .15s ease, background .15s ease;
+}
+.btn-primary:hover{background:var(--red-dark);transform:translateY(-1px);}
+.btn-secondary{
+  display:inline-block;
+  font-family:'IBM Plex Mono',monospace;
+  background:transparent;
+  color:var(--gold);
+  border:1px solid var(--gold);
+  padding:10px 18px;
+  font-size:13px;
+  border-radius:3px;
+  cursor:pointer;
+}
+.btn-secondary:hover{background:rgba(199,154,59,0.1);}
+.center{text-align:center;}
+.howto{margin:18px 0;padding-left:0;list-style:none;}
+.howto li{
+  font-size:15px;line-height:1.5;margin-bottom:10px;padding-left:30px;position:relative;color:var(--cream);
+}
+.howto li::before{
+  content:"—";position:absolute;left:0;color:var(--gold);
+}
+
+/* ---------- Map screen ---------- */
+.progress-line{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted);
+  margin-bottom:26px;
+}
+.progress-track{width:180px;height:6px;background:var(--navy-panel-2);border-radius:4px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--gold);width:0%;transition:width .4s ease;}
+
+.room-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;
+}
+.room-card{
+  background:var(--navy-panel);
+  border:1px solid rgba(199,154,59,0.25);
+  border-radius:6px;
+  padding:20px 16px;
+  text-align:center;
+  cursor:pointer;
+  transition:transform .15s ease, border-color .15s ease;
+  position:relative;
+}
+.room-card:hover{transform:translateY(-4px);border-color:var(--gold);}
+.room-card .icon{font-size:34px;margin-bottom:10px;display:block;}
+.room-card .name{font-family:'Special Elite',cursive;font-size:16px;color:var(--cream);margin-bottom:6px;}
+.room-card .status{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--muted);}
+.room-card.solved{border-color:var(--good);}
+.room-card.solved .status{color:var(--good);}
+.room-card.solved::after{
+  content:"✓";position:absolute;top:8px;right:10px;color:var(--good);font-weight:700;font-family:'IBM Plex Mono',monospace;
+}
+
+.map-footer{margin-top:32px;text-align:center;}
+.map-footer p{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);margin-bottom:12px;}
+
+/* ---------- Room screen ---------- */
+.back-link{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);
+  background:none;border:none;cursor:pointer;margin-bottom:16px;letter-spacing:.5px;
+}
+.back-link:hover{color:var(--gold);}
+.room-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.room-header .icon{font-size:32px;}
+.room-header h2{margin:0;font-size:24px;color:var(--gold);}
+
+.options-grid{display:grid;gap:10px;margin-top:16px;}
+.opt-btn{
+  text-align:left;
+  font-family:'Crimson Pro',serif;
+  font-size:16px;
+  background:var(--paper-dark);
+  color:var(--ink);
+  border:1px solid rgba(36,28,18,0.15);
+  padding:12px 16px;
+  border-radius:4px;
+  cursor:pointer;
+  transition:transform .1s ease, background .15s ease;
+}
+.opt-btn:hover{background:var(--paper);transform:translateX(2px);}
+.opt-btn.correct{background:var(--good);color:#fff;border-color:var(--good);}
+.opt-btn.wrong{background:var(--bad);color:#fff;border-color:var(--bad);}
+.opt-btn:disabled{cursor:default;}
+
+.code-input-row{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;}
+.code-input-row input{
+  font-family:'IBM Plex Mono',monospace;font-size:20px;letter-spacing:6px;
+  padding:10px 14px;border-radius:4px;border:1px solid var(--paper-dark);
+  width:140px;text-align:center;background:var(--paper);color:var(--ink);
+}
+.feedback{margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:13px;min-height:18px;}
+.feedback.good{color:var(--good);}
+.feedback.bad{color:var(--bad);}
+
+.hint-toggle{
+  margin-top:16px;background:none;border:1px dashed var(--muted);color:var(--muted);
+  font-family:'IBM Plex Mono',monospace;font-size:12px;padding:8px 12px;border-radius:4px;cursor:pointer;
+}
+.hint-toggle:hover{border-color:var(--gold);color:var(--gold);}
+.hint-box{
+  margin-top:10px;background:rgba(199,154,59,0.1);border-left:3px solid var(--gold);
+  padding:10px 14px;font-size:14px;color:var(--cream);display:none;border-radius:0 4px 4px 0;
+}
+.hint-box.show{display:block;}
+
+.cipher-block{
+  font-family:'IBM Plex Mono',monospace;
+  background:var(--ink);color:var(--gold);
+  padding:16px;border-radius:4px;letter-spacing:3px;font-size:15px;
+  word-spacing:10px;margin:14px 0;line-height:1.8;
+}
+.clue-added{
+  margin-top:16px;padding:14px 16px;background:rgba(79,138,91,0.15);border:1px solid var(--good);
+  border-radius:4px;font-size:14px;color:var(--cream);
+}
+.clue-added b{color:var(--good);}
+
+table.evidence-table{width:100%;border-collapse:collapse;margin:14px 0;font-size:15px;}
+table.evidence-table th, table.evidence-table td{
+  border:1px solid rgba(36,28,18,0.2);padding:8px 10px;text-align:left;
+}
+table.evidence-table th{background:var(--paper-dark);font-family:'IBM Plex Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:1px;}
+
+.statement-card{
+  background:var(--paper-dark);border-radius:4px;padding:12px 14px;margin-bottom:10px;
+  border-left:4px solid var(--red);
+}
+.statement-card b{display:block;margin-bottom:4px;font-family:'Special Elite',cursive;font-size:14px;color:var(--red-dark);}
+.statement-card.witness{border-left-color:var(--gold);}
+.statement-card.witness b{color:#7a5f1f;}
+
+/* ---------- Side panels ---------- */
+.side-panel{
+  position:fixed;top:0;right:-380px;width:340px;max-width:88vw;height:100%;
+  background:var(--navy-panel);border-left:1px solid rgba(199,154,59,0.3);
+  z-index:100;transition:right .3s ease;overflow-y:auto;padding:20px;
+}
+.side-panel.open{right:0;box-shadow:-20px 0 40px rgba(0,0,0,0.4);}
+.side-panel h3{color:var(--gold);font-size:18px;margin-top:0;display:flex;justify-content:space-between;align-items:center;}
+.side-panel .close-x{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;}
+.side-panel .close-x:hover{color:var(--red);}
+
+.notebook-entry{
+  background:var(--paper);color:var(--ink);border-radius:4px;padding:12px 14px;margin-bottom:10px;font-size:14px;line-height:1.5;
+  border-left:4px solid var(--gold);
+}
+.notebook-entry b{display:block;font-family:'Special Elite',cursive;font-size:13px;margin-bottom:4px;color:var(--red-dark);}
+.notebook-empty{color:var(--muted);font-size:14px;font-family:'IBM Plex Mono',monospace;margin-top:20px;}
+
+.suspect-card{
+  background:var(--paper);color:var(--ink);border-radius:4px;padding:14px;margin-bottom:14px;
+  display:flex;gap:12px;
+  transform:rotate(-0.6deg);
+}
+.suspect-card:nth-child(even){transform:rotate(0.6deg);}
+.suspect-photo{
+  min-width:52px;height:64px;background:var(--paper-dark);border:1px solid rgba(36,28,18,0.3);
+  display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0;
+  font-family:'Special Elite',cursive;font-size:22px;color:var(--red-dark);
+}
+.suspect-photo::after{
+  content:"ẢNH";position:absolute;bottom:2px;font-size:7px;letter-spacing:1px;color:rgba(36,28,18,0.4);
+  font-family:'IBM Plex Mono',monospace;
+}
+.suspect-info b{display:block;font-family:'Special Elite',cursive;font-size:14px;margin-bottom:2px;}
+.suspect-info span{display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6b5c3f;margin-bottom:6px;}
+.suspect-info p{margin:0;font-size:13px;line-height:1.45;}
+
+.overlay-bg{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99;display:none;}
+.overlay-bg.show{display:block;}
+
+/* ---------- Accuse screen ---------- */
+.accuse-form{display:flex;flex-direction:column;gap:16px;margin-top:10px;}
+.field label{display:block;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:1px;color:var(--gold);margin-bottom:6px;text-transform:uppercase;}
+.field select{
+  width:100%;padding:12px 14px;font-family:'Crimson Pro',serif;font-size:16px;border-radius:4px;
+  border:1px solid var(--paper-dark);background:var(--paper);color:var(--ink);
+}
+.progress-note{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);margin-bottom:10px;}
+
+/* ---------- End screen ---------- */
+.end-badge{
+  text-align:center;font-family:'Special Elite',cursive;font-size:30px;margin-bottom:8px;
+}
+.end-badge.win{color:var(--good);}
+.end-badge.lose{color:var(--bad);}
+.reveal-text p{line-height:1.7;font-size:16px;}
+
+/* ---------- Timeup overlay ---------- */
+.timeup-card{
+  max-width:420px;margin:14vh auto;background:var(--paper);color:var(--ink);
+  border-radius:6px;padding:30px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,0.5);
+}
+.timeup-card h2{color:var(--red-dark);margin-top:0;}
+
+footer.credit{
+  text-align:center;padding:20px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);
+}
+
+@media(max-width:560px){
+  .dossier{padding:18px 16px;}
+  #topbar{padding:10px 12px;}
+  .stamp{position:static;display:inline-block;margin-bottom:10px;transform:rotate(-3deg);}
+}
+</style>
+</head>
+<body>
+
+<div class="fog-wrap">
+  <div class="fog fog1"></div>
+  <div class="fog fog2"></div>
+</div>
+<div class="vignette"></div>
+
+<div id="app">
+
+  <div id="topbar">
+    <div class="brand">
+      <span class="eyebrow">Hồ sơ vụ án #1935</span>
+      <span class="title">🕯️ Biệt Thự Sương Mù</span>
+    </div>
+    <div class="right">
+      <button class="pill-btn" id="btnNotebook" onclick="openPanel('notebook')">📔 Sổ Tay Manh Mối</button>
+      <button class="pill-btn" id="btnSuspects" onclick="openPanel('suspects')">🗂️ Hồ Sơ Nghi Phạm</button>
+      <div class="timer-box" id="timerBox">60:00</div>
+    </div>
+  </div>
+
+  <!-- ===================== INTRO SCREEN ===================== -->
+  <section class="screen active" id="screen-intro">
+    <p class="case-title">VỤ ÁN BIỆT THỰ SƯƠNG MÙ</p>
+    <p class="case-sub">Trò chơi trinh thám · 60 phút · Hồ sơ mật</p>
+
+    <div class="dossier">
+      <div class="stamp">MẬT</div>
+      <p><b>Đêm qua, trên ngọn đồi phủ sương mù ngoại ô thành phố</b>, ông <b>Nguyễn Thành Đạt</b> — nhà sưu tầm cổ vật nổi tiếng — đã tổ chức một bữa tiệc lớn mừng sinh nhật lần thứ 60, đồng thời khai trương phòng trưng bày mới với viên ngọc quý giá nhất bộ sưu tập của ông: <b>viên ngọc "Mắt Rồng"</b>.</p>
+      <p>Nhưng bữa tiệc đã không có hồi kết vui vẻ. Gần nửa đêm, người quản gia phát hiện ông Đạt <b>nằm bất động trong phòng trưng bày</b>, chiếc tủ kính trưng bày viên ngọc bị vỡ, và viên ngọc Mắt Rồng đã biến mất không dấu vết.</p>
+      <p>Cảnh sát đã phong tỏa hiện trường. Có <b>4 người</b> vẫn còn ở trong biệt thự vào thời điểm xảy ra án mạng — và một trong số họ chính là hung thủ.</p>
+      <p>Bạn là thám tử được mời đến để phá án. Bạn có <b>60 phút</b> để khám phá 8 khu vực trong biệt thự, thu thập manh mối, và tìm ra: <b>ai đã ra tay, bằng vật gì, và vì động cơ gì.</b></p>
+    </div>
+
+    <div class="dossier">
+      <h3 style="margin-top:0;">📋 Cách chơi</h3>
+      <ul class="howto">
+        <li>Khám phá lần lượt <b>8 khu vực</b> trong biệt thự: Thư Phòng, Vườn, Nhà Bếp, Phòng Khách, Phòng Ngủ Ông Đạt, Thư Viện, Ga-ra, và Phòng Trưng Bày.</li>
+        <li>Mỗi khu vực có một <b>câu đố hoặc bí ẩn</b> cần bạn đọc kỹ và suy luận để giải. Giải đúng sẽ mở khóa một <b>manh mối</b>.</li>
+        <li>Các manh mối được lưu trong <b>Sổ Tay Manh Mối</b> (góc trên bên phải) — hãy đọc kỹ hồ sơ 4 nghi phạm để đối chiếu.</li>
+        <li>Bí quá thì bấm <b>"Gợi ý"</b> ở mỗi câu đố.</li>
+        <li>Khi đã sẵn sàng, hãy <b>Buộc Tội</b> hung thủ trước khi hết 60 phút!</li>
+      </ul>
+      <div class="center">
+        <button class="btn-primary" onclick="startGame()">🔎 Bắt Đầu Điều Tra</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== MAP SCREEN ===================== -->
+  <section class="screen" id="screen-map">
+    <h2 class="center" style="color:var(--gold);">Sơ Đồ Biệt Thự</h2>
+    <p class="center" style="color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:13px;">Chọn một khu vực để bắt đầu khám xét</p>
+
+    <div class="progress-line">
+      <span id="progressText">Manh mối: 0/8</span>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+
+    <div class="room-grid" id="roomGrid"></div>
+
+    <div class="map-footer">
+      <p>Khi đã thu thập đủ manh mối và tự tin về nghi phạm, hãy tuyên bố kết luận của bạn.</p>
+      <button class="btn-primary" onclick="goToAccuse()">⚖️ Buộc Tội Hung Thủ</button>
+    </div>
+  </section>
+
+  <!-- ===================== ROOM SCREEN ===================== -->
+  <section class="screen" id="screen-room">
+    <button class="back-link" onclick="showScreen('screen-map')">← Quay lại sơ đồ</button>
+    <div id="roomContent"></div>
+  </section>
+
+  <!-- ===================== ACCUSE SCREEN ===================== -->
+  <section class="screen" id="screen-accuse">
+    <button class="back-link" onclick="showScreen('screen-map')">← Quay lại sơ đồ</button>
+    <h2 style="color:var(--gold);">⚖️ Buộc Tội</h2>
+    <p class="progress-note" id="accuseProgressNote"></p>
+    <div class="dossier">
+      <p>Dựa trên tất cả manh mối đã thu thập, hãy đưa ra kết luận cuối cùng của bạn. Chọn cẩn thận — bạn chỉ có một lần cáo buộc chính thức!</p>
+    </div>
+    <div class="accuse-form">
+      <div class="field">
+        <label>Hung thủ là ai?</label>
+        <select id="selSuspect">
+          <option value="">— Chọn nghi phạm —</option>
+          <option value="Bà Hương">Bà Hương (quản gia)</option>
+          <option value="Cậu Minh">Cậu Minh (cháu trai)</option>
+          <option value="Ông Phong">Ông Phong (nhà sưu tầm đối thủ)</option>
+          <option value="Cô Lan">Cô Lan (thư ký riêng)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Vũ khí gây án là gì?</label>
+        <select id="selWeapon">
+          <option value="">— Chọn vật chứng —</option>
+          <option value="Chặn giấy đá cẩm thạch">Chặn giấy đá cẩm thạch bị sứt</option>
+          <option value="Dây đàn piano">Dây đàn piano</option>
+          <option value="Lọ thuốc an thần">Lọ thuốc an thần</option>
+          <option value="Dao rọc giấy">Dao rọc giấy</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Động cơ gây án là gì?</label>
+        <select id="selMotive">
+          <option value="">— Chọn động cơ —</option>
+          <option value="Trả thù cá nhân">Trả thù cá nhân</option>
+          <option value="Nợ nần và tranh giành thừa kế">Nợ nần và tranh giành thừa kế</option>
+          <option value="Ghen tuông">Ghen tuông</option>
+          <option value="Trộm cắp vặt">Trộm cắp vặt</option>
+        </select>
+      </div>
+      <div class="center" style="margin-top:8px;">
+        <button class="btn-primary" onclick="submitAccusation()">📌 Xác Nhận Cáo Buộc</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== END SCREEN ===================== -->
+  <section class="screen" id="screen-end">
+    <div id="endContent"></div>
+  </section>
+
+  <footer class="credit">Trò chơi trinh thám hư cấu — mọi nhân vật và tình huống đều là giả tưởng.</footer>
+</div>
+
+<!-- Side panels -->
+<div class="overlay-bg" id="overlayBg" onclick="closeAllPanels()"></div>
+
+<div class="side-panel" id="panelNotebook">
+  <h3>📔 Sổ Tay Manh Mối <button class="close-x" onclick="closeAllPanels()">✕</button></h3>
+  <div id="notebookList"></div>
+</div>
+
+<div class="side-panel" id="panelSuspects">
+  <h3>🗂️ Hồ Sơ Nghi Phạm <button class="close-x" onclick="closeAllPanels()">✕</button></h3>
+  <div id="suspectsList"></div>
+</div>
+
+<!-- Time up overlay -->
+<div class="overlay-bg" id="timeUpOverlay">
+  <div class="timeup-card">
+    <h2>⏰ Hết Giờ Điều Tra!</h2>
+    <p>60 phút đã trôi qua. Đã đến lúc đưa ra kết luận cuối cùng với những gì bạn có.</p>
+    <button class="btn-primary" onclick="closeTimeUp()">Đi Đến Phần Buộc Tội</button>
+  </div>
+</div>
+
+<script>
+/* ======================= DATA ======================= */
+
+const SUSPECTS = [
+  {
+    key:"Bà Hương", initial:"H",
+    role:"Quản gia — 56 tuổi",
+    bio:"Đã làm việc cho gia đình ông Đạt hơn 20 năm và biết rõ từng ngóc ngách trong biệt thự. Trung thành nhưng gần đây tỏ ra lo lắng vì nghe phong thanh ông Đạt định thuê một quản gia trẻ hơn thay bà."
+  },
+  {
+    key:"Cậu Minh", initial:"M",
+    role:"Cháu trai duy nhất — 24 tuổi",
+    bio:"Người thừa kế chính thức của ông Đạt. Thích ăn diện, thường vay mượn bạn bè. Có một vết sẹo nhỏ hình chữ C ở ngón cái tay phải do ngã xe hồi nhỏ. Luôn tỏ ra thân thiết với chú, nhưng ít ai biết cậu đang nợ nần chồng chất."
+  },
+  {
+    key:"Ông Phong", initial:"P",
+    role:"Nhà sưu tầm cổ vật — 50 tuổi",
+    bio:"Đối thủ lâu năm của ông Đạt trong giới sưu tầm. Vừa thua ông Đạt trong phiên đấu giá viên ngọc Mắt Rồng cách đây một tháng và công khai tức giận về việc đó."
+  },
+  {
+    key:"Cô Lan", initial:"L",
+    role:"Thư ký riêng — 27 tuổi",
+    bio:"Mới vào làm được 3 tháng. Cẩn thận, ít nói, luôn ở bên cạnh giúp ông Đạt chuẩn bị hồ sơ cho buổi triển lãm."
+  }
+];
+
+const ROOM_ORDER = ["study","garden","kitchen","living","bedroom","library","garage","gallery"];
+
+const ROOMS = {
+  study:{
+    name:"Thư Phòng", icon:"🖋️",
+    intro:`<p>Căn thư phòng của ông Đạt vẫn còn thơm mùi giấy cũ và gỗ đàn hương. Trên bàn làm việc, dưới ánh đèn dầu, bạn tìm thấy một <b>mẩu giấy bị xé một nửa</b> với dòng chữ kỳ lạ — có vẻ như ai đó đã viết bằng mật mã.</p>
+           <p>Bên dưới mẩu giấy là một chỉ dẫn nhỏ: <i>"Mỗi chữ cái trong bảng chữ cái đã được dịch lên phía trước 1 vị trí (A→B, B→C, C→D... Z→A). Hãy dịch ngược lại 1 vị trí để đọc được thông điệp thật."</i></p>
+           <div class="cipher-block">HBQ MVD OVB EFN P QIPOH USVOH CBZ N</div>
+           <p>Sau khi giải mã, dòng chữ có nghĩa là: <i>"Gặp lúc nửa đêm ở phòng trưng bày"</i> — và được ký tên bằng một chữ cái duy nhất ở cuối.</p>`,
+    question:"Chữ cái ký tên ở cuối mẩu giấy mật mã là chữ nào?",
+    type:"mc",
+    options:["N","M","L","K"],
+    correct:1,
+    hint:"Chữ cuối cùng trong mật thư là 'N'. Dịch ngược lại 1 vị trí trong bảng chữ cái (N đứng ngay sau chữ nào?) để ra chữ cái thật.",
+    clue:"Một mẩu giấy mật mã hẹn gặp ông Đạt lúc nửa đêm tại phòng trưng bày, ký tên bằng chữ cái 'M'."
+  },
+  garden:{
+    name:"Vườn", icon:"🌳",
+    intro:`<p>Sương mù còn phủ lờ mờ trên bãi cỏ ướt. Ngay dưới cửa sổ phòng trưng bày, bạn phát hiện một <b>dấu giày in rõ trên nền đất mềm</b>. Đội pháp y đo được kích thước dấu giày là <b>size 41</b>.</p>
+           <p>Bạn lật hồ sơ và tìm được bảng ghi chú kích cỡ giày của từng người có mặt tại bữa tiệc:</p>
+           <table class="evidence-table">
+             <tr><th>Người</th><th>Cỡ giày</th></tr>
+             <tr><td>Bà Hương</td><td>36</td></tr>
+             <tr><td>Cậu Minh</td><td>41</td></tr>
+             <tr><td>Ông Phong</td><td>43</td></tr>
+             <tr><td>Cô Lan</td><td>37</td></tr>
+           </table>`,
+    question:"Dấu giày cỡ 41 ngoài vườn khớp với ai?",
+    type:"mc",
+    options:["Bà Hương","Cậu Minh","Ông Phong","Cô Lan"],
+    correct:1,
+    hint:"So khớp trực tiếp con số 41 với bảng kích cỡ giày ở trên.",
+    clue:"Một dấu giày cỡ 41 in dưới cửa sổ phòng trưng bày — trùng khớp với cỡ giày của Cậu Minh."
+  },
+  kitchen:{
+    name:"Nhà Bếp", icon:"🍽️",
+    intro:`<p>Căn bếp vẫn còn thoảng mùi bánh ngọt của bữa tiệc. Đầu bếp trưởng — người đã ở trong bếp suốt buổi tối — đồng ý trả lời vài câu hỏi của bạn.</p>
+           <p><b>Đầu bếp kể lại:</b> "Bà Hương vào bếp đúng 9 giờ tối để dọn dẹp bát đĩa sau tiệc. Từ lúc đó đến 10 giờ, tôi luôn thấy bà đứng ở bồn rửa, tay ướt sũng bọt xà phòng, không hề rời khỏi bếp một phút nào — kể cả khi tôi mời bà ra ngoài nghỉ tay, bà cũng từ chối vì sợ chưa xong việc."</p>
+           <p>Trên bảng phân công việc dán ở tường, bạn thấy dòng ghi chú: <i>"9h00–10h00: Bà Hương — rửa chén, dọn bếp (xác nhận bởi đầu bếp trưởng và 2 nhân viên phục vụ)."</i></p>`,
+    question:"Bằng chứng trong bếp cho thấy điều gì về Bà Hương?",
+    type:"mc",
+    options:["Bà Hương có mặt liên tục trong bếp suốt khung giờ án mạng, nên không đủ thời gian gây án","Bà Hương đã rời bếp một lúc nên có thể là hung thủ","Bà Hương thừa nhận đã lên phòng trưng bày","Không ai nhìn thấy Bà Hương tối hôm đó"],
+    correct:0,
+    hint:"Đọc kỹ lời kể của đầu bếp trưởng — có ai xác nhận rằng bà Hương không hề rời khỏi bếp không?",
+    clue:"Đầu bếp trưởng và hai nhân viên phục vụ xác nhận Bà Hương có mặt liên tục trong bếp từ 9 giờ đến 10 giờ tối — bà được loại khỏi danh sách nghi phạm."
+  },
+  living:{
+    name:"Phòng Khách", icon:"🛋️",
+    intro:`<p>Trong phòng khách, cảnh sát đã ghi lại lời khai của từng người về việc họ ở đâu trong khoảng <b>9 giờ đến 10 giờ tối</b> — thời điểm được cho là án mạng xảy ra.</p>
+           <div class="statement-card"><b>Bà Hương khai:</b> "Tôi ở trong bếp dọn dẹp từ 9 giờ đến 10 giờ tối."</div>
+           <div class="statement-card"><b>Cậu Minh khai:</b> "Tôi ở trong phòng riêng cả buổi tối, không gặp ai."</div>
+           <div class="statement-card"><b>Ông Phong khai:</b> "Tôi ngồi trò chuyện với khách mời ở phòng khách suốt buổi."</div>
+           <div class="statement-card"><b>Cô Lan khai:</b> "Tôi giúp ông Đạt sắp xếp giấy tờ triển lãm đến 9 giờ 15, sau đó về phòng riêng."</div>
+           <div class="statement-card witness"><b>Người phục vụ tiệc kể lại:</b> "Khoảng 9 giờ 30 tối, tôi thấy một người đi vội từ hành lang phía phòng trưng bày trở về, tay cầm khăn tay lau trán. Tôi nhớ rất rõ đó là cậu Minh."</div>`,
+    question:"Lời khai của ai mâu thuẫn với lời kể của người phục vụ?",
+    type:"mc",
+    options:["Bà Hương","Cậu Minh","Ông Phong","Cô Lan"],
+    correct:1,
+    hint:"Ai nói mình ở một nơi, nhưng người phục vụ lại nhìn thấy ở một nơi khác vào đúng thời điểm đó?",
+    clue:"Cậu Minh khai ở trong phòng riêng cả tối, nhưng người phục vụ khẳng định thấy cậu ở hành lang gần phòng trưng bày lúc 9 giờ 30."
+  },
+  bedroom:{
+    name:"Phòng Ngủ Ông Đạt", icon:"🛏️",
+    intro:`<p>Phòng ngủ của ông Đạt gọn gàng, trên bàn trang điểm có một cuốn <b>nhật ký nhỏ</b>. Trang cuối cùng bị nhòe mực nhưng vẫn đọc được.</p>
+           <p>Nội dung trang nhật ký:</p>
+           <ol style="padding-left:20px;line-height:1.6;">
+             <li>"Cô Lan đã giúp tôi hoàn tất toàn bộ hồ sơ triển lãm trước 9 giờ 15 tối, tôi rất hài lòng."</li>
+             <li>"Sau đó cô ấy xin phép rời biệt thự lúc 9 giờ 20 để đến tiệm in lấy thêm catalogue triển lãm."</li>
+             <li>"Tiệm in cách biệt thự gần 20 phút lái xe, chắc cô ấy phải hơn 10 giờ mới quay lại được."</li>
+           </ol>
+           <p>Kẹp trong trang nhật ký là một <b>hóa đơn tiệm in</b> ghi giờ đóng dấu: <b>21 giờ 40</b> — đúng như dự đoán của ông Đạt.</p>`,
+    question:"Trang nhật ký và hóa đơn tiệm in cho thấy điều gì về Cô Lan?",
+    type:"mc",
+    options:["Cô Lan đã rời khỏi biệt thự cả tiếng đồng hồ, nên không có mặt tại hiện trường lúc án mạng xảy ra","Cô Lan đã quay lại biệt thự trước khi án mạng xảy ra","Cô Lan không hề rời khỏi phòng làm việc","Hóa đơn tiệm in bị làm giả"],
+    correct:0,
+    hint:"So sánh giờ trên hóa đơn tiệm in (21h40) với thời điểm án mạng xảy ra (khoảng 21h30) — lúc đó Cô Lan đang ở đâu?",
+    clue:"Hóa đơn tiệm in đóng dấu 21 giờ 40, cách biệt thự 20 phút lái xe — chứng tỏ Cô Lan không có mặt tại biệt thự vào thời điểm án mạng xảy ra. Cô được loại khỏi danh sách nghi phạm."
+  },
+  library:{
+    name:"Thư Viện", icon:"📚",
+    intro:`<p>Giữa những kệ sách cao, bạn tìm thấy một <b>ngăn kéo bí mật</b> phía sau tủ sách chứa vài tờ giấy quan trọng.</p>
+           <p>Tờ thứ nhất là một <b>giấy vay nợ</b>, ký tên "Nguyễn Thành Minh", ghi rõ số tiền nợ là <b>800 triệu đồng</b>, với dòng chữ đỏ: <i>"Phải hoàn trả trong vòng 1 tuần, nếu không sẽ có biện pháp."</i> Giấy được lập chỉ ba ngày trước bữa tiệc.</p>
+           <p>Tờ thứ hai là bản sao <b>di chúc</b> của ông Đạt, trong đó ghi rõ: <i>"Toàn bộ gia sản, bao gồm bộ sưu tập cổ vật, sẽ được để lại cho cháu trai duy nhất — Nguyễn Thành Minh — khi tôi qua đời."</i></p>`,
+    question:"Hai tài liệu này cho thấy động cơ gây án có thể là gì?",
+    type:"mc",
+    options:["Vì thiếu tiền tiêu vặt hằng ngày","Vì đang nợ nần chồng chất và sắp được thừa kế toàn bộ gia tài","Vì muốn viên ngọc để tặng bạn gái","Vì ganh ghét với cô Lan"],
+    correct:1,
+    hint:"Kết hợp cả hai tờ giấy: một tờ nói về khoản nợ khổng lồ cần trả gấp, tờ kia nói về việc ai sẽ được thừa kế khi ông Đạt mất.",
+    clue:"Cậu Minh đang nợ 800 triệu đồng, cần trả trong 1 tuần — và theo di chúc, cậu sẽ được thừa kế toàn bộ gia tài của ông Đạt."
+  },
+  garage:{
+    name:"Ga-ra", icon:"🚗",
+    intro:`<p>Trong ga-ra, đội điều tra tìm thấy đoạn ghi hình từ camera an ninh gắn ở cổng chính. Đoạn băng cho thấy chiếc xe của Ông Phong rời khỏi biệt thự lúc <b>20 giờ 50</b> tối.</p>
+           <p>Ghi chú của cảnh sát giao thông cho biết: quãng đường từ biệt thự về nhà riêng của Ông Phong mất <b>ít nhất 45 phút</b> lái xe không nghỉ, do đường đèo quanh co và sương mù dày đặc tối hôm đó.</p>
+           <p>Thời điểm án mạng được xác định xảy ra vào khoảng <b>21 giờ 30</b> tối, dựa trên lời khai của người phục vụ và giám định pháp y.</p>`,
+    question:"Vào thời điểm án mạng xảy ra (21 giờ 30), Ông Phong đang ở đâu?",
+    type:"mc",
+    options:["Đang trên xe, trên đường về nhà, cách xa hiện trường","Đang đứng trong phòng trưng bày","Đang trốn trong ga-ra","Không thể xác định được"],
+    correct:0,
+    hint:"Xe rời đi lúc 20h50, cộng thêm ít nhất 45 phút di chuyển — vậy đến 21h30 ông ấy đã đi được bao xa rồi?",
+    clue:"Camera an ninh ghi lại xe của Ông Phong rời biệt thự lúc 20 giờ 50 — cộng thêm ít nhất 45 phút lái xe, ông không thể có mặt tại hiện trường lúc 21 giờ 30. Ông được loại khỏi danh sách nghi phạm."
+  },
+  gallery:{
+    name:"Phòng Trưng Bày", icon:"💎",
+    intro:`<p>Đây là hiện trường vụ án. Tủ kính vỡ nằm giữa phòng, viên ngọc Mắt Rồng đã biến mất. Trên tường có một <b>khung thiệp mời</b> treo trang trọng, in thông tin bữa tiệc:</p>
+           <div class="dossier" style="margin:14px 0;">
+             <p style="margin:0;"><i>"Trân trọng kính mời quý khách đến dự tiệc mừng sinh nhật lần thứ 60 của ông Nguyễn Thành Đạt, đúng vào ngày sinh của ông — <b>15 tháng 8</b>. Buổi tiệc bắt đầu lúc 19 giờ tối. Biệt thự được xây dựng và khánh thành vào năm <b>1935</b>."</i></p>
+           </div>
+           <p>Trong góc phòng có một <b>ngăn kéo bị khóa bằng mật mã 4 chữ số</b>. Bạn đoán rằng mật mã liên quan đến ngày sinh của ông Đạt được nhắc đến trong thiệp mời (định dạng: ngày rồi đến tháng, ví dụ 0203 nghĩa là ngày 02 tháng 03).</p>`,
+    question:null,
+    type:"code",
+    correctCode:"1508",
+    hint:"Ngày sinh của ông Đạt là 15 tháng 8. Viết liền ngày rồi đến tháng, mỗi số 2 chữ số: 15 và 08.",
+    clue:"Trong ngăn kéo bí mật là một chiếc chặn giấy bằng đá cẩm thạch có vết sứt — trùng khớp với vết nứt trên tủ kính. Trên đó còn có một vết lõm nhỏ hình chữ C, giống hệt vết sẹo trên ngón tay cái của Cậu Minh."
+  }
+};
+
+/* ======================= STATE ======================= */
+const state = {
+  secondsLeft: 60*60,
+  timerId:null,
+  timerStarted:false,
+  timeUp:false,
+  solved:{ study:false, garden:false, living:false, library:false, gallery:false },
+  clues:[]
+};
+
+/* ======================= INIT ======================= */
+function buildSuspectsPanel(){
+  const list = document.getElementById('suspectsList');
+  list.innerHTML = SUSPECTS.map(s=>`
+    <div class="suspect-card">
+      <div class="suspect-photo">${s.initial}</div>
+      <div class="suspect-info">
+        <b>${s.key}</b>
+        <span>${s.role}</span>
+        <p>${s.bio}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+function buildRoomGrid(){
+  const grid = document.getElementById('roomGrid');
+  grid.innerHTML = ROOM_ORDER.map(key=>{
+    const r = ROOMS[key];
+    const isSolved = state.solved[key];
+    return `
+      <div class="room-card ${isSolved?'solved':''}" onclick="openRoom('${key}')">
+        <span class="icon">${r.icon}</span>
+        <div class="name">${r.name}</div>
+        <div class="status">${isSolved?'Đã tìm thấy manh mối':'Chưa khám phá'}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function updateProgress(){
+  const solvedCount = Object.values(state.solved).filter(Boolean).length;
+  document.getElementById('progressText').textContent = `Manh mối: ${solvedCount}/${ROOM_ORDER.length}`;
+  document.getElementById('progressFill').style.width = (solvedCount/ROOM_ORDER.length*100)+'%';
+  buildRoomGrid();
+  buildNotebook();
+}
+
+function buildNotebook(){
+  const list = document.getElementById('notebookList');
+  if(state.clues.length===0){
+    list.innerHTML = `<p class="notebook-empty">Chưa có manh mối nào. Hãy khám phá các khu vực trong biệt thự để tìm manh mối.</p>`;
+    return;
+  }
+  list.innerHTML = state.clues.map((c,i)=>`
+    <div class="notebook-entry"><b>Manh mối ${i+1}: ${c.room}</b>${c.text}</div>
+  `).join('');
+}
+
+/* ======================= NAVIGATION ======================= */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function startGame(){
+  showScreen('screen-map');
+  if(!state.timerStarted){
+    state.timerStarted = true;
+    startTimer();
+  }
+  updateProgress();
+}
+
+function openRoom(key){
+  renderRoom(key);
+  showScreen('screen-room');
+}
+
+function goToAccuse(){
+  const solvedCount = Object.values(state.solved).filter(Boolean).length;
+  document.getElementById('accuseProgressNote').textContent =
+    solvedCount===ROOM_ORDER.length
+      ? `Bạn đã thu thập đầy đủ ${ROOM_ORDER.length}/${ROOM_ORDER.length} manh mối. Sẵn sàng kết luận!`
+      : `Bạn mới thu thập được ${solvedCount}/${ROOM_ORDER.length} manh mối. Bạn vẫn có thể buộc tội, nhưng nên khám phá đủ ${ROOM_ORDER.length} khu vực để chắc chắn hơn.`;
+  showScreen('screen-accuse');
+}
+
+/* ======================= PANELS ======================= */
+function openPanel(which){
+  document.getElementById('overlayBg').classList.add('show');
+  document.getElementById('panelNotebook').classList.toggle('open', which==='notebook');
+  document.getElementById('panelSuspects').classList.toggle('open', which==='suspects');
+}
+function closeAllPanels(){
+  document.getElementById('overlayBg').classList.remove('show');
+  document.getElementById('panelNotebook').classList.remove('open');
+  document.getElementById('panelSuspects').classList.remove('open');
+}
+
+/* ======================= TIMER ======================= */
+function startTimer(){
+  state.timerId = setInterval(()=>{
+    state.secondsLeft--;
+    renderTimer();
+    if(state.secondsLeft<=0){
+      clearInterval(state.timerId);
+      state.timeUp = true;
+      document.getElementById('timeUpOverlay').classList.add('show');
+    }
+  },1000);
+}
+function renderTimer(){
+  const m = Math.floor(state.secondsLeft/60);
+  const s = state.secondsLeft%60;
+  const box = document.getElementById('timerBox');
+  box.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  box.classList.toggle('low', state.secondsLeft<=300);
+}
+function closeTimeUp(){
+  document.getElementById('timeUpOverlay').classList.remove('show');
+  goToAccuse();
+}
+
+/* ======================= ROOM RENDERING ======================= */
+function renderRoom(key){
+  const r = ROOMS[key];
+  const solved = state.solved[key];
+  let bodyHtml = `
+    <div class="room-header"><span class="icon">${r.icon}</span><h2>${r.name}</h2></div>
+    <div class="dossier">${r.intro}</div>
+  `;
+
+  if(solved){
+    bodyHtml += `<div class="clue-added">✅ <b>Đã giải xong!</b> ${r.clue}</div>`;
+  } else if(r.type==='mc'){
+    bodyHtml += `
+      <div class="dossier">
+        <p style="font-weight:600;">${r.question}</p>
+        <div class="options-grid" id="optionsGrid"></div>
+        <div class="feedback" id="feedback-${key}"></div>
+        <button class="hint-toggle" onclick="toggleHint('${key}')">💡 Gợi ý</button>
+        <div class="hint-box" id="hint-${key}">${r.hint}</div>
+      </div>
+    `;
+  } else if(r.type==='code'){
+    bodyHtml += `
+      <div class="dossier">
+        <p style="font-weight:600;">Nhập mật mã 4 chữ số để mở ngăn kéo:</p>
+        <div class="code-input-row">
+          <input type="text" maxlength="4" id="codeInput-${key}" placeholder="0000" inputmode="numeric">
+          <button class="btn-primary" onclick="checkCode('${key}')">Mở Khóa</button>
+        </div>
+        <div class="feedback" id="feedback-${key}"></div>
+        <button class="hint-toggle" onclick="toggleHint('${key}')">💡 Gợi ý</button>
+        <div class="hint-box" id="hint-${key}">${r.hint}</div>
+      </div>
+    `;
+  }
+
+  document.getElementById('roomContent').innerHTML = bodyHtml;
+
+  if(!solved && r.type==='mc'){
+    const grid = document.getElementById('optionsGrid');
+    grid.innerHTML = r.options.map((opt,i)=>`<button class="opt-btn" onclick="checkMC('${key}',${i},this)">${opt}</button>`).join('');
+  }
+}
+
+function toggleHint(key){
+  document.getElementById(`hint-${key}`).classList.toggle('show');
+}
+
+function checkMC(key, idx, btnEl){
+  if(state.timeUp){ alert('Đã hết giờ điều tra! Hãy đến phần Buộc Tội.'); return; }
+  const r = ROOMS[key];
+  const fb = document.getElementById(`feedback-${key}`);
+  if(idx === r.correct){
+    document.querySelectorAll('#optionsGrid .opt-btn').forEach(b=>b.disabled=true);
+    btnEl.classList.add('correct');
+    fb.textContent = '✔ Chính xác! Manh mối đã được thêm vào sổ tay.';
+    fb.className = 'feedback good';
+    markSolved(key);
+  } else {
+    btnEl.classList.add('wrong');
+    fb.textContent = '✘ Chưa đúng, hãy đọc lại manh mối và thử lần nữa.';
+    fb.className = 'feedback bad';
+    setTimeout(()=>btnEl.classList.remove('wrong'),700);
+  }
+}
+
+function checkCode(key){
+  if(state.timeUp){ alert('Đã hết giờ điều tra! Hãy đến phần Buộc Tội.'); return; }
+  const r = ROOMS[key];
+  const input = document.getElementById(`codeInput-${key}`);
+  const fb = document.getElementById(`feedback-${key}`);
+  if(input.value.trim() === r.correctCode){
+    fb.textContent = '✔ Ổ khóa bật mở! Manh mối đã được thêm vào sổ tay.';
+    fb.className = 'feedback good';
+    markSolved(key);
+  } else {
+    fb.textContent = '✘ Sai mật mã, hãy đọc lại tấm thiệp mời thật kỹ.';
+    fb.className = 'feedback bad';
+  }
+}
+
+function markSolved(key){
+  state.solved[key] = true;
+  state.clues.push({room: ROOMS[key].name, text: ROOMS[key].clue});
+  updateProgress();
+  setTimeout(()=>renderRoom(key), 900);
+}
+
+/* ======================= ACCUSATION ======================= */
+const SOLUTION = {
+  suspect:"Cậu Minh",
+  weapon:"Chặn giấy đá cẩm thạch",
+  motive:"Nợ nần và tranh giành thừa kế"
+};
+
+function submitAccusation(){
+  const suspect = document.getElementById('selSuspect').value;
+  const weapon = document.getElementById('selWeapon').value;
+  const motive = document.getElementById('selMotive').value;
+
+  if(!suspect || !weapon || !motive){
+    alert('Hãy chọn đầy đủ cả 3 mục: hung thủ, vũ khí và động cơ trước khi xác nhận.');
+    return;
+  }
+
+  if(state.timerId) clearInterval(state.timerId);
+
+  const correct = suspect===SOLUTION.suspect && weapon===SOLUTION.weapon && motive===SOLUTION.motive;
+  const solvedCount = Object.values(state.solved).filter(Boolean).length;
+  const timeUsed = 60*60 - state.secondsLeft;
+  const mm = Math.floor(timeUsed/60), ss = timeUsed%60;
+
+  const endEl = document.getElementById('endContent');
+
+  if(correct){
+    endEl.innerHTML = `
+      <div class="end-badge win">🏆 PHÁ ÁN THÀNH CÔNG!</div>
+      <div class="dossier reveal-text">
+        <p><b>Kết luận đúng!</b> Hung thủ chính là <b>Cậu Minh</b>.</p>
+        <p>Vì đang gánh khoản nợ 800 triệu đồng phải trả gấp trong một tuần, và biết rằng mình sẽ được thừa kế toàn bộ gia tài của chú mình, Cậu Minh đã hẹn gặp ông Đạt lúc nửa đêm tại phòng trưng bày với ý định thuyết phục chú cho mượn tiền hoặc bán bớt viên ngọc Mắt Rồng.</p>
+        <p>Khi ông Đạt từ chối, một cuộc xô xát đã xảy ra. Trong lúc giằng co, Cậu Minh đã dùng chiếc <b>chặn giấy đá cẩm thạch</b> trên bàn — vô tình hoặc cố ý — khiến ông Đạt ngã và không qua khỏi. Sau đó, cậu ta đập vỡ tủ kính để đánh lạc hướng thành một vụ trộm, giấu viên ngọc và tang vật vào ngăn kéo bí mật trong thư viện.</p>
+        <p>Bạn đã lần theo từng manh mối — mẩu giấy mật mã, dấu giày ngoài vườn, lời khai mâu thuẫn, khoản nợ trong thư viện, và ổ khóa bí mật — để vạch trần sự thật. Xuất sắc, thám tử!</p>
+        <p style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:#6b5c3f;">⏱ Thời gian sử dụng: ${mm} phút ${ss} giây · Manh mối thu thập: ${solvedCount}/${ROOM_ORDER.length}</p>
+      </div>
+      <div class="center"><button class="btn-secondary" onclick="location.reload()">🔁 Chơi Lại</button></div>
+    `;
+  } else {
+    endEl.innerHTML = `
+      <div class="end-badge lose">🌫️ CHƯA TÌM RA SỰ THẬT</div>
+      <div class="dossier reveal-text">
+        <p>Cáo buộc của bạn (<b>${suspect}</b>, sử dụng <b>${weapon}</b>, vì <b>${motive}</b>) chưa khớp với bằng chứng thật sự.</p>
+        <p>Hãy xem lại Sổ Tay Manh Mối và Hồ Sơ Nghi Phạm: chú ý đến mẩu giấy mật mã, dấu giày, lời khai mâu thuẫn của người phục vụ, khoản nợ trong thư viện, và ổ khóa bí mật trong phòng trưng bày. Tất cả đều chỉ về cùng một người.</p>
+        <p style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:#6b5c3f;">⏱ Thời gian sử dụng: ${mm} phút ${ss} giây · Manh mối thu thập: ${solvedCount}/${ROOM_ORDER.length}</p>
+      </div>
+      <div class="center"><button class="btn-secondary" onclick="location.reload()">🔁 Thử Lại Từ Đầu</button></div>
+    `;
+  }
+
+  showScreen('screen-end');
+}
+
+/* ======================= BOOT ======================= */
+buildSuspectsPanel();
+buildRoomGrid();
+buildNotebook();
+renderTimer();
+</script>
+</body>
+</html>
