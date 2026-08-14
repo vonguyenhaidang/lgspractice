@@ -1,0 +1,2169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Human AI Prompt Lab — Train Your Own AI</title>
+<style>
+  :root{
+    --blue:#3B6BFF;
+    --blue-deep:#2447CC;
+    --purple:#8B5CF6;
+    --cyan:#22D3EE;
+    --yellow:#FFC93C;
+    --white:#FFFFFF;
+    --ink:#1D2340;
+    --ink-soft:#5B6285;
+    --bg:#EEF1FF;
+    --card-bg:#FFFFFF;
+    --radius-lg:24px;
+    --radius-md:16px;
+    --radius-sm:10px;
+    --shadow-soft:0 10px 30px rgba(59,107,255,0.12);
+    --shadow-pop:0 16px 40px rgba(139,92,246,0.22);
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', 'Trebuchet MS', -apple-system, BlinkMacSystemFont, sans-serif;
+    background:
+      radial-gradient(circle at 8% 15%, rgba(59,107,255,0.10) 0, transparent 45%),
+      radial-gradient(circle at 92% 85%, rgba(139,92,246,0.12) 0, transparent 45%),
+      var(--bg);
+    color:var(--ink);
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  button{font-family:inherit;cursor:pointer;}
+  input,select,textarea{font-family:inherit;}
+
+  /* ---------- Scrollbar niceness ---------- */
+  ::-webkit-scrollbar{width:10px;height:10px;}
+  ::-webkit-scrollbar-thumb{background:#C7CEFB;border-radius:10px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+
+  /* ============ HEADER ============ */
+  header.topbar{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; gap:18px;
+    padding:12px 22px;
+    background:linear-gradient(120deg, var(--blue) 0%, var(--purple) 100%);
+    box-shadow:0 8px 24px rgba(36,71,204,0.28);
+    flex-wrap:wrap;
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    color:#fff; font-weight:800; letter-spacing:0.3px;
+    margin-right:8px;
+  }
+  .brand .logo-orb{
+    width:38px;height:38px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #fff, var(--cyan) 45%, var(--purple) 100%);
+    box-shadow:0 0 0 4px rgba(255,255,255,0.25);
+    animation:pulseOrb 3s ease-in-out infinite;
+  }
+  @keyframes pulseOrb{
+    0%,100%{transform:scale(1);}
+    50%{transform:scale(1.12);}
+  }
+  .brand span.title{font-size:17px;}
+  .brand span.sub{display:block;font-size:10px;font-weight:600;opacity:0.85;letter-spacing:1px;text-transform:uppercase;}
+
+  .lang-switch{
+    display:flex; background:rgba(255,255,255,0.22); border-radius:20px; padding:3px; gap:2px;
+  }
+  .lang-btn{
+    border:none; background:transparent; color:#fff; font-weight:800; font-size:12px;
+    padding:6px 12px; border-radius:16px; opacity:0.75; transition:background 0.2s, opacity 0.2s;
+  }
+  .lang-btn.active{background:#fff; color:var(--blue-deep); opacity:1;}
+
+  .ai-name-field{
+    display:flex; flex-direction:column; gap:2px;
+  }
+  .ai-name-field label{font-size:10px;color:rgba(255,255,255,0.85);font-weight:700;text-transform:uppercase;letter-spacing:0.6px;}
+  .ai-name-field input{
+    border:none; border-radius:var(--radius-sm);
+    padding:8px 12px; font-size:15px; font-weight:700; color:var(--ink);
+    width:150px; box-shadow:inset 0 0 0 2px rgba(255,255,255,0.5);
+  }
+
+  .avatar-wrap{display:flex;align-items:center;gap:10px;}
+  .avatar{
+    width:52px;height:52px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-size:26px;
+    background:radial-gradient(circle at 30% 25%, #fff, var(--yellow) 60%, var(--blue) 130%);
+    box-shadow:0 6px 16px rgba(0,0,0,0.18);
+    transition:transform 0.4s ease;
+  }
+  .avatar.grown{animation:growPop 0.6s ease;}
+  @keyframes growPop{
+    0%{transform:scale(1);}
+    40%{transform:scale(1.35) rotate(-6deg);}
+    70%{transform:scale(0.95) rotate(4deg);}
+    100%{transform:scale(1) rotate(0);}
+  }
+
+  .brain-stat{
+    display:flex; flex-direction:column; gap:4px; min-width:190px; flex:1;
+  }
+  .brain-stat .label-row{display:flex;justify-content:space-between;font-size:11px;color:#fff;font-weight:700;}
+  .brain-bar-track{
+    height:14px;border-radius:20px;background:rgba(255,255,255,0.25);
+    overflow:hidden; box-shadow:inset 0 2px 4px rgba(0,0,0,0.15);
+  }
+  .brain-bar-fill{
+    height:100%;border-radius:20px;
+    background:linear-gradient(90deg, var(--cyan), var(--yellow));
+    width:0%; transition:width 0.6s cubic-bezier(.34,1.56,.64,1);
+  }
+  .level-pill{
+    padding:6px 14px;border-radius:20px;font-weight:800;font-size:13px;
+    background:#fff;color:var(--blue-deep);
+    box-shadow:0 4px 10px rgba(0,0,0,0.15);
+    white-space:nowrap;
+  }
+
+  .mem-counter{
+    color:#fff; text-align:center; font-weight:700; font-size:12px;
+  }
+  .mem-counter b{display:block;font-size:20px;}
+
+  /* ============ GUIDE / SCOREBOARD ============ */
+  #guide-toggle{
+    background:rgba(255,255,255,0.9); border:none; border-radius:14px; padding:10px 14px;
+    font-weight:800; color:var(--purple); box-shadow:0 4px 10px rgba(0,0,0,0.15);
+  }
+  #scoreboard-toggle{
+    background:#fff; border:none; border-radius:14px; padding:10px 14px;
+    font-weight:800; color:var(--blue-deep); box-shadow:0 4px 10px rgba(0,0,0,0.15);
+    display:flex; align-items:center; gap:6px;
+  }
+  #scoreboard-panel{
+    position:fixed; top:76px; right:16px; z-index:60;
+    width:250px; background:var(--card-bg); border-radius:var(--radius-lg);
+    box-shadow:var(--shadow-pop); padding:16px; display:none; flex-direction:column; gap:10px;
+    animation:slideIn 0.35s ease;
+  }
+  #scoreboard-panel.open{display:flex;}
+  @keyframes slideIn{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:translateY(0);}}
+  #scoreboard-panel h3{margin:0 0 4px;font-size:15px;color:var(--blue-deep);}
+  .score-row{display:flex;justify-content:space-between;font-size:13px;color:var(--ink-soft);font-weight:600;}
+  .score-row b{color:var(--ink);}
+  .score-row .val-pill{
+    background:var(--bg); color:var(--blue-deep); padding:2px 10px; border-radius:12px; font-weight:800;
+  }
+  #end-session-btn{
+    margin-top:6px; background:linear-gradient(120deg,var(--purple),var(--blue));
+    color:#fff;border:none;border-radius:12px;padding:10px;font-weight:800;font-size:13px;
+    box-shadow:0 6px 14px rgba(139,92,246,0.35);
+  }
+
+  /* ============ MAIN LAYOUT ============ */
+  main.layout{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+    padding:20px;
+    max-width:1500px;
+    margin:0 auto;
+    align-items:start;
+  }
+  @media (max-width:920px){
+    main.layout{grid-template-columns:1fr;}
+  }
+
+  .panel{
+    background:var(--card-bg);
+    border-radius:var(--radius-lg);
+    box-shadow:var(--shadow-soft);
+    padding:20px;
+    display:flex; flex-direction:column;
+    min-height:560px;
+  }
+  .panel h2{
+    margin:0 0 14px; font-size:20px; color:var(--blue-deep);
+    display:flex; align-items:center; gap:8px;
+  }
+  .panel h2 .emoji{font-size:24px;}
+
+  /* ---------- Training form ---------- */
+  .form-grid{display:flex;flex-direction:column;gap:10px;}
+  .field{display:flex;flex-direction:column;gap:5px;}
+  .field label{font-size:12px;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.4px;display:flex;align-items:center;gap:5px;}
+  .hint-icon{
+    width:16px;height:16px;border-radius:50%;background:var(--cyan);color:#fff;
+    font-size:10px;display:inline-flex;align-items:center;justify-content:center;font-weight:900;
+    cursor:help;
+  }
+  select, input[type=text], textarea{
+    border:2px solid #E3E7FB; border-radius:var(--radius-sm);
+    padding:10px 12px; font-size:14px; color:var(--ink); background:#FBFCFF;
+    transition:border-color 0.2s, box-shadow 0.2s;
+  }
+  select:focus, input[type=text]:focus, textarea:focus{
+    outline:none; border-color:var(--blue); box-shadow:0 0 0 4px rgba(59,107,255,0.15);
+  }
+  textarea{resize:vertical;min-height:70px;}
+  #teach-btn{
+    margin-top:4px;
+    background:linear-gradient(120deg, var(--cyan), var(--blue));
+    color:#fff; border:none; border-radius:var(--radius-md);
+    padding:13px; font-weight:800; font-size:15px;
+    box-shadow:0 8px 18px rgba(59,107,255,0.35);
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    transition:transform 0.15s ease;
+  }
+  #teach-btn:hover{transform:translateY(-2px);}
+  #teach-btn:active{transform:translateY(0px) scale(0.98);}
+
+  /* ---------- Library ---------- */
+  .library-header{
+    display:flex; justify-content:space-between; align-items:center;
+    margin:20px 0 10px;
+  }
+  .library-header h3{margin:0;font-size:15px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.5px;}
+  .library-search{
+    border:2px solid #E3E7FB;border-radius:20px;padding:6px 12px;font-size:12px;width:130px;
+  }
+  #memory-list{
+    display:flex; flex-direction:column; gap:10px;
+    max-height:340px; overflow-y:auto; padding-right:4px;
+  }
+  .memory-card{
+    border-radius:var(--radius-md);
+    padding:12px 14px;
+    display:flex; flex-direction:column; gap:4px;
+    position:relative;
+    animation:cardIn 0.4s cubic-bezier(.34,1.56,.64,1);
+    box-shadow:0 4px 10px rgba(29,35,64,0.08);
+    border-left:6px solid var(--blue);
+  }
+  @keyframes cardIn{
+    from{opacity:0;transform:translateY(14px) scale(0.96);}
+    to{opacity:1;transform:translateY(0) scale(1);}
+  }
+  .memory-card.type-fact{background:#EAF1FF;border-left-color:var(--blue);}
+  .memory-card.type-rule{background:#F1EBFF;border-left-color:var(--purple);}
+  .memory-card.type-identity{background:#FFF7DE;border-left-color:var(--yellow);}
+  .memory-card.type-personality{background:#E6FBFF;border-left-color:var(--cyan);}
+  .memory-card .type-tag{
+    font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:0.5px;
+    color:var(--ink-soft);
+  }
+  .memory-card .q{font-weight:800; font-size:14px; color:var(--ink);}
+  .memory-card .a{font-size:13px; color:var(--ink-soft);}
+  .memory-card .card-actions{
+    position:absolute; top:10px; right:10px; display:flex; gap:6px;
+  }
+  .icon-btn{
+    background:rgba(255,255,255,0.8); border:none; border-radius:8px;
+    width:26px;height:26px; display:flex;align-items:center;justify-content:center;
+    font-size:13px; box-shadow:0 2px 6px rgba(0,0,0,0.1);
+  }
+  .icon-btn:hover{background:#fff;}
+
+  .empty-state{
+    text-align:center; padding:30px 10px; color:var(--ink-soft);
+  }
+  .empty-state .big-emoji{font-size:40px;display:block;margin-bottom:8px;animation:float 3s ease-in-out infinite;}
+  @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+
+  /* ============ CHAT PANEL ============ */
+  #chat-window{
+    flex:1; display:flex; flex-direction:column;
+    background:linear-gradient(180deg,#F7F9FF,#EFF3FF);
+    border-radius:var(--radius-md); padding:14px;
+    overflow-y:auto; gap:10px; min-height:340px; max-height:420px;
+  }
+  .bubble-row{display:flex; gap:8px; align-items:flex-end; animation:bubbleIn 0.3s ease;}
+  @keyframes bubbleIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+  .bubble-row.user{justify-content:flex-end;}
+  .bubble-avatar{
+    width:30px;height:30px;border-radius:50%;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-size:16px;
+    background:radial-gradient(circle at 30% 25%, #fff, var(--yellow) 60%, var(--blue) 130%);
+  }
+  .bubble{
+    max-width:70%; padding:10px 14px; border-radius:18px; font-size:14px; line-height:1.4;
+    box-shadow:0 3px 8px rgba(29,35,64,0.08);
+  }
+  .bubble-row.ai .bubble{background:#fff; border-bottom-left-radius:4px; color:var(--ink);}
+  .bubble-row.user .bubble{background:linear-gradient(120deg,var(--blue),var(--purple)); color:#fff; border-bottom-right-radius:4px;}
+  .bubble-row.unknown .bubble{background:#FFF3E0; border:1px dashed #FFC93C; color:#8A6100;}
+
+  .chat-input-row{
+    display:flex; gap:10px; margin-top:14px;
+  }
+  #chat-input{
+    flex:1; border:2px solid #E3E7FB; border-radius:24px; padding:12px 18px; font-size:14px;
+  }
+  #send-btn{
+    background:linear-gradient(120deg,var(--purple),var(--blue));
+    color:#fff;border:none;border-radius:50%;width:48px;height:48px;font-size:18px;
+    box-shadow:0 6px 14px rgba(139,92,246,0.35); flex-shrink:0;
+  }
+
+  .quick-hints{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+  .quick-hint{
+    background:#EEF1FF; color:var(--blue-deep); border:none; border-radius:16px;
+    padding:6px 12px; font-size:12px; font-weight:700;
+  }
+
+  /* ============ MISSION PANEL ============ */
+  #mission-fab{
+    position:fixed; bottom:22px; right:22px; z-index:70;
+    background:linear-gradient(120deg,var(--yellow),#FF9A3C);
+    color:#5A3A00;
+    border:none;border-radius:30px;padding:14px 20px;font-size:13px;font-weight:800;letter-spacing:0.3px;
+    box-shadow:0 10px 24px rgba(255,159,60,0.45);
+    animation:fabBob 2.6s ease-in-out infinite;
+  }
+  @keyframes fabBob{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+  #mission-panel{
+    position:fixed; bottom:96px; right:22px; z-index:70;
+    width:300px; max-height:60vh; overflow-y:auto;
+    background:var(--card-bg); border-radius:var(--radius-lg); box-shadow:var(--shadow-pop);
+    padding:16px; display:none; flex-direction:column; gap:10px;
+  }
+  #mission-panel.open{display:flex; animation:slideIn 0.3s ease;}
+  #mission-panel h3{margin:0 0 4px; color:var(--blue-deep); font-size:16px; display:flex; align-items:center; gap:6px;}
+  .mission-item{
+    background:#F5F7FF; border-radius:var(--radius-md); padding:10px 12px;
+    display:flex; flex-direction:column; gap:6px;
+    border:2px solid transparent;
+  }
+  .mission-item.done{border-color:#7BE39A; background:#EAFBF0;}
+  .mission-item .m-title{font-size:13px;font-weight:800;color:var(--ink);display:flex;justify-content:space-between;align-items:center;}
+  .mission-item .m-check{font-size:16px;}
+  .mission-progress-track{height:8px;border-radius:8px;background:#E1E6FA;overflow:hidden;}
+  .mission-progress-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue));border-radius:8px;transition:width 0.4s ease;}
+  .mission-item .m-desc{font-size:11px;color:var(--ink-soft);}
+
+  /* ============ ACHIEVEMENTS ============ */
+  #achv-toast-zone{
+    position:fixed; top:90px; left:50%; transform:translateX(-50%);
+    z-index:90; display:flex; flex-direction:column; gap:8px; align-items:center;
+    pointer-events:none;
+  }
+  .achv-toast{
+    background:linear-gradient(120deg,var(--yellow),#FF9A3C);
+    color:#5A3A00; font-weight:900; padding:12px 22px; border-radius:30px;
+    box-shadow:0 12px 26px rgba(255,159,60,0.5);
+    display:flex; align-items:center; gap:10px; font-size:14px;
+    animation:achvPop 2.6s ease forwards;
+  }
+  @keyframes achvPop{
+    0%{opacity:0; transform:translateY(-20px) scale(0.8);}
+    12%{opacity:1; transform:translateY(0) scale(1.05);}
+    20%{transform:scale(1);}
+    85%{opacity:1;}
+    100%{opacity:0; transform:translateY(-10px);}
+  }
+
+  #achv-fab{
+    position:fixed; bottom:22px; left:22px; z-index:70;
+    background:linear-gradient(120deg,var(--purple),var(--blue));
+    border:none;border-radius:30px;padding:14px 20px;font-size:13px;font-weight:800;letter-spacing:0.3px;color:#fff;
+    box-shadow:0 10px 24px rgba(59,107,255,0.4);
+  }
+  #achv-panel{
+    position:fixed; bottom:96px; left:22px; z-index:70;
+    width:280px; max-height:55vh; overflow-y:auto;
+    background:var(--card-bg); border-radius:var(--radius-lg); box-shadow:var(--shadow-pop);
+    padding:16px; display:none; flex-direction:column; gap:10px;
+  }
+  #achv-panel.open{display:flex; animation:slideIn 0.3s ease;}
+  #achv-panel h3{margin:0; color:var(--blue-deep); font-size:16px;}
+  .badge-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
+  .badge{
+    text-align:center; padding:10px 6px; border-radius:var(--radius-sm);
+    background:#F2F4FF; font-size:11px; font-weight:700; color:var(--ink-soft);
+    opacity:0.45; filter:grayscale(1);
+  }
+  .badge.unlocked{opacity:1; filter:none; background:#FFF7DE; color:var(--ink); box-shadow:0 4px 10px rgba(255,201,60,0.35);}
+  .badge .b-emoji{font-size:22px;display:block;margin-bottom:4px;}
+
+  /* ============ MODAL / EDIT / END SESSION ============ */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(29,35,64,0.55); z-index:200;
+    display:none; align-items:center; justify-content:center; padding:20px;
+    backdrop-filter:blur(2px);
+  }
+  .modal-overlay.open{display:flex;}
+  .modal-box{
+    background:#fff; border-radius:var(--radius-lg); padding:24px; width:100%; max-width:420px;
+    box-shadow:var(--shadow-pop); animation:slideIn 0.3s ease;
+  }
+  .modal-box h3{margin-top:0; color:var(--blue-deep);}
+  .modal-actions{display:flex; gap:10px; margin-top:14px;}
+  .modal-actions button{flex:1; border:none; border-radius:12px; padding:10px; font-weight:800;}
+  .btn-cancel{background:#EEF1FF; color:var(--ink-soft);}
+  .btn-save{background:linear-gradient(120deg,var(--cyan),var(--blue)); color:#fff;}
+
+  /* Guide / How to Play modal */
+  #guide-box{max-width:600px; max-height:82vh; overflow-y:auto; text-align:left;}
+  #guide-box .guide-intro{color:var(--ink-soft); font-size:14px; margin:2px 0 18px;}
+  .guide-step{
+    display:flex; gap:12px; margin-bottom:16px; align-items:flex-start;
+  }
+  .guide-step .g-num{
+    flex-shrink:0; width:30px;height:30px;border-radius:50%;
+    background:linear-gradient(120deg,var(--cyan),var(--blue)); color:#fff;
+    font-weight:900; font-size:14px; display:flex;align-items:center;justify-content:center;
+  }
+  .guide-step .g-title{font-weight:800; font-size:14px; color:var(--ink); margin-bottom:3px;}
+  .guide-step .g-desc{font-size:13px; color:var(--ink-soft); line-height:1.5;}
+  .guide-section-title{
+    font-size:13px; font-weight:800; color:var(--purple); text-transform:uppercase;
+    letter-spacing:0.5px; margin:20px 0 10px;
+  }
+  .guide-type-row{
+    background:#F5F7FF; border-radius:var(--radius-sm); padding:10px 12px; margin-bottom:8px;
+    font-size:13px; color:var(--ink-soft); line-height:1.5;
+  }
+  .guide-type-row b{color:var(--ink);}
+  .guide-tip{
+    margin-top:18px; background:#FFF7DE; border-radius:var(--radius-md); padding:12px 14px;
+    font-size:13px; color:#5A4400; line-height:1.5; border-left:4px solid var(--yellow);
+  }
+  .guide-tip b{display:block; margin-bottom:4px; color:#8A6100;}
+
+  /* Teacher Hub (admin) modal */
+  #teacher-hub-toggle{
+    background:linear-gradient(120deg,#2447CC,#151A33);
+    color:#FFC93C; border:none; border-radius:14px; padding:10px 14px;
+    font-weight:800; box-shadow:0 4px 10px rgba(0,0,0,0.28);
+  }
+  #teacher-hub-box{max-width:760px; max-height:86vh; overflow-y:auto; text-align:left;}
+  #teacher-hub-box .th-badge{
+    display:inline-block; background:#151A33; color:#FFC93C; font-size:11px; font-weight:900;
+    text-transform:uppercase; letter-spacing:0.6px; padding:4px 10px; border-radius:12px; margin-bottom:10px;
+  }
+  #teacher-hub-box .th-intro{color:var(--ink-soft); font-size:14px; margin:2px 0 18px; line-height:1.55;}
+  .th-agenda{display:flex; flex-direction:column; gap:8px; margin-bottom:10px;}
+  .th-agenda-row{
+    display:flex; gap:12px; background:#F5F7FF; border-radius:var(--radius-sm); padding:10px 12px;
+    align-items:flex-start;
+  }
+  .th-agenda-time{
+    flex-shrink:0; min-width:78px; font-weight:900; font-size:12px; color:var(--blue-deep);
+    background:#fff; border-radius:8px; padding:5px 6px; text-align:center; box-shadow:0 2px 6px rgba(29,35,64,0.08);
+  }
+  .th-agenda-body .th-agenda-title{font-weight:800; font-size:13px; color:var(--ink); margin-bottom:2px;}
+  .th-agenda-body .th-agenda-desc{font-size:12.5px; color:var(--ink-soft); line-height:1.5;}
+  .th-script{
+    background:#EAF1FF; border-left:4px solid var(--blue); border-radius:var(--radius-sm);
+    padding:12px 14px; margin-bottom:10px; font-size:13px; color:var(--ink); line-height:1.6; font-style:italic;
+  }
+  .th-script b{font-style:normal; color:var(--blue-deep); display:block; margin-bottom:3px; font-size:11px; text-transform:uppercase; letter-spacing:0.4px;}
+  .th-concept{margin-bottom:14px;}
+  .th-concept .g-title{font-weight:800; font-size:14px; color:var(--ink); margin-bottom:3px;}
+  .th-concept .g-desc{font-size:13px; color:var(--ink-soft); line-height:1.55;}
+  .th-list{margin:0 0 6px; padding-left:20px; font-size:13px; color:var(--ink-soft); line-height:1.65;}
+  .th-list li{margin-bottom:5px;}
+  .th-trouble{
+    background:#FFF3E0; border-left:4px solid var(--yellow); border-radius:var(--radius-sm);
+    padding:10px 12px; margin-bottom:8px; font-size:13px; color:#5A4400; line-height:1.5;
+  }
+  .th-trouble b{display:block; color:#8A6100; margin-bottom:2px;}
+  .th-tabs{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px; position:sticky; top:-24px; background:#fff; padding:6px 0 10px; z-index:2;}
+  .th-tab-btn{
+    background:#EEF1FF; color:var(--blue-deep); border:none; border-radius:14px;
+    padding:7px 12px; font-size:12px; font-weight:800;
+  }
+  .th-tab-btn.active{background:linear-gradient(120deg,var(--purple),var(--blue)); color:#fff;}
+  .th-panel{display:none;}
+  .th-panel.active{display:block;}
+  .th-agenda-tip{
+    margin-top:6px; font-size:12px; color:var(--blue-deep); font-weight:700;
+    background:#EAF1FF; border-radius:8px; padding:5px 8px; display:inline-block;
+  }
+  .th-substeps{margin:6px 0 0; padding-left:18px; font-size:12px; color:var(--ink-soft); line-height:1.55;}
+  .th-substeps li{margin-bottom:3px;}
+  .th-phase-pre{
+    background:#F1EBFF; border-left:4px solid var(--purple);
+  }
+  .th-rubric-row{
+    background:#F5F7FF; border-radius:var(--radius-sm); padding:10px 12px; margin-bottom:8px;
+  }
+  .th-rubric-row .r-title{font-weight:800; font-size:13px; color:var(--ink); margin-bottom:3px;}
+  .th-rubric-row .r-desc{font-size:12.5px; color:var(--ink-soft); line-height:1.5;}
+
+  /* Teacher Hub password gate */
+  #teacher-hub-auth-box{max-width:380px; text-align:center;}
+  #teacher-hub-auth-box .th-auth-emoji{font-size:36px; display:block; margin-bottom:6px;}
+  #teacher-hub-auth-box p{color:var(--ink-soft); font-size:13px; line-height:1.5;}
+  #teacher-hub-password-input{
+    width:100%; text-align:center; letter-spacing:2px; font-weight:800; margin-top:8px;
+    border:2px solid #E3E7FB; border-radius:var(--radius-sm); padding:12px; font-size:15px; color:var(--ink);
+  }
+  #teacher-hub-password-input:focus{outline:none; border-color:var(--blue); box-shadow:0 0 0 4px rgba(59,107,255,0.15);}
+  #teacher-hub-auth-error{
+    color:#D64545; font-size:12px; font-weight:700; margin-top:8px; display:none;
+  }
+  #teacher-hub-auth-error.show{display:block;}
+
+  /* End session celebration */
+  #celebration-box{max-width:520px; text-align:center;}
+  #celebration-box .confetti-emoji{font-size:44px;}
+  .celebration-stats{
+    display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:16px 0; text-align:left;
+  }
+  .celebration-stats div{
+    background:#F5F7FF; border-radius:var(--radius-sm); padding:10px 12px;
+  }
+  .celebration-stats .num{font-size:20px; font-weight:900; color:var(--blue-deep);}
+  .celebration-stats .lbl{font-size:11px; color:var(--ink-soft); font-weight:700; text-transform:uppercase;}
+  #celeb-badges{display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:6px;}
+  #celeb-badges span{background:#FFF7DE; border-radius:14px; padding:4px 10px; font-size:12px; font-weight:700;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;}
+  }
+
+  footer.legend{
+    text-align:center; color:var(--ink-soft); font-size:12px; padding:18px; opacity:0.8;
+  }
+
+/* ===== KNOWLEDGE LAB ===== */
+#learn-toggle{background:linear-gradient(120deg,#22D3EE,#fff);color:var(--blue-deep);border:none;border-radius:14px;padding:10px 14px;font-weight:900;box-shadow:0 4px 10px rgba(0,0,0,.15)}
+#learn-box{max-width:880px;max-height:88vh;overflow-y:auto;padding:0}
+.learn-shell{display:grid;grid-template-columns:220px 1fr;min-height:580px}
+.learn-side{padding:24px 18px;background:linear-gradient(180deg,#253FC8,#7149D8);color:#fff;border-radius:24px 0 0 24px}
+.learn-badge{display:inline-block;padding:5px 10px;border-radius:14px;background:rgba(255,255,255,.18);font-size:10px;font-weight:900;letter-spacing:.7px;text-transform:uppercase;margin-bottom:12px}
+.learn-side h3{color:#fff;font-size:22px;margin:0 0 8px}.learn-side p{font-size:12.5px;line-height:1.55;color:rgba(255,255,255,.82)}
+.learn-step-list{display:flex;flex-direction:column;gap:8px;margin-top:20px}.learn-step-btn{width:100%;text-align:left;border:none;border-radius:12px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.82);padding:10px 11px;font-weight:800;font-size:12px;display:flex;align-items:center;gap:8px}.learn-step-btn.active{background:#fff;color:var(--blue-deep)}.learn-step-btn.done{box-shadow:inset 0 0 0 2px rgba(123,227,154,.75)}
+.learn-main{padding:28px;background:#fff;border-radius:0 24px 24px 0;display:flex;flex-direction:column;min-height:580px}.learn-progress{height:8px;border-radius:10px;overflow:hidden;background:#E7EBFC;margin-bottom:22px}.learn-progress>div{height:100%;width:20%;border-radius:10px;background:linear-gradient(90deg,var(--cyan),var(--blue),var(--purple));transition:width .3s}.learn-kicker{font-size:11px;font-weight:900;letter-spacing:.7px;text-transform:uppercase;color:var(--purple);margin-bottom:8px}.learn-main h2{font-size:28px;color:var(--blue-deep);margin:0 0 10px}.learn-lead{font-size:15px;color:var(--ink-soft);line-height:1.65;margin:0 0 18px}
+.learn-card-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:8px 0 18px}.learn-card{border:2px solid #E6E9FA;border-radius:16px;padding:15px;background:#FBFCFF}.learn-card .lc-icon{font-size:24px;display:block;margin-bottom:6px}.learn-card b{display:block;color:var(--ink);margin-bottom:5px}.learn-card span{font-size:13px;color:var(--ink-soft);line-height:1.5}
+.ctco-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0 18px}.ctco-card{min-height:150px;border-radius:16px;padding:14px;color:#fff;box-shadow:0 8px 18px rgba(29,35,64,.12)}.ctco-card:nth-child(1){background:linear-gradient(140deg,#3B6BFF,#2447CC)}.ctco-card:nth-child(2){background:linear-gradient(140deg,#8B5CF6,#6E3BC9)}.ctco-card:nth-child(3){background:linear-gradient(140deg,#0FB7D2,#0796AF)}.ctco-card:nth-child(4){background:linear-gradient(140deg,#FFB433,#F28B2D)}.ctco-letter{font-size:30px;font-weight:1000;line-height:1}.ctco-card b{display:block;margin:8px 0 5px;font-size:14px}.ctco-card p{margin:0;font-size:12px;line-height:1.45;color:rgba(255,255,255,.92)}
+.prompt-compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0 18px}.prompt-box{border-radius:16px;padding:15px;border:2px solid #E4E8F8;background:#F8FAFF}.prompt-box.bad{border-color:#FFD1D1;background:#FFF6F6}.prompt-box.good{border-color:#BFEBD0;background:#F2FFF7}.p-label{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}.bad .p-label{color:#C93B3B}.good .p-label{color:#238B4E}.prompt-box p{margin:0;line-height:1.55;font-size:13px}
+.learn-check{background:#F5F7FF;border:2px solid #E3E7FB;border-radius:16px;padding:15px;margin-top:8px}.learn-check h4{margin:0 0 10px}.learn-choice-wrap{display:flex;flex-wrap:wrap;gap:8px}.learn-choice{border:2px solid #E1E5F7;background:#fff;border-radius:12px;padding:9px 12px;font-size:12px;font-weight:800;color:var(--blue-deep)}.learn-choice.correct{border-color:#67C989;background:#EAFBF0;color:#1F7541}.learn-choice.wrong{border-color:#FFB5B5;background:#FFF0F0;color:#B63D3D}.learn-feedback{font-size:12.5px;color:var(--ink-soft);line-height:1.5;margin-top:10px;min-height:19px}
+.learn-note{background:#FFF7DE;border-left:4px solid var(--yellow);border-radius:12px;padding:12px 14px;color:#674F00;font-size:12.5px;line-height:1.55;margin-top:8px}.learn-note b{display:block;margin-bottom:3px;color:#8A6100}.cycle{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0 18px}.cycle-step{text-align:center;padding:12px 8px;border-radius:14px;background:#F4F6FF;border:2px solid #E3E7FB;font-weight:900;color:var(--blue-deep);font-size:12px}.learn-actions{display:flex;justify-content:space-between;gap:10px;margin-top:auto;padding-top:18px}.learn-actions button{border:none;border-radius:12px;padding:11px 16px;font-weight:900}.learn-prev{background:#EEF1FF;color:var(--ink-soft)}.learn-next{background:linear-gradient(120deg,var(--cyan),var(--blue));color:#fff}
+@media(max-width:760px){.learn-shell{grid-template-columns:1fr}.learn-side{border-radius:24px 24px 0 0}.learn-main{border-radius:0 0 24px 24px}.learn-step-list{display:grid;grid-template-columns:1fr 1fr}.ctco-grid{grid-template-columns:1fr 1fr}.prompt-compare,.learn-card-grid{grid-template-columns:1fr}.cycle{grid-template-columns:1fr 1fr}}
+
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header class="topbar">
+  <div class="brand">
+    <div class="logo-orb"></div>
+    <div>
+      <span class="title" data-i18n="appTitle">Human AI Prompt Lab</span>
+      <span class="sub" data-i18n="appSub">Train Your Own AI</span>
+    </div>
+  </div>
+
+  <div class="lang-switch" id="lang-switch">
+    <button class="lang-btn active" data-lang="en" type="button">EN</button>
+    <button class="lang-btn" data-lang="vi" type="button">VI</button>
+  </div>
+
+  <div class="ai-name-field">
+    <label for="ai-name-input" data-i18n="aiNameLabel">AI name</label>
+    <input id="ai-name-input" type="text" value="My AI" maxlength="20">
+  </div>
+
+  <div class="avatar-wrap">
+    <div class="avatar" id="header-avatar">🤖</div>
+  </div>
+
+  <div class="brain-stat">
+    <div class="label-row">
+      <span>🧠 <span data-i18n="brainCapacity">Brain Capacity</span></span>
+      <span id="brain-count-label">0 memories</span>
+    </div>
+    <div class="brain-bar-track"><div class="brain-bar-fill" id="brain-bar-fill"></div></div>
+  </div>
+
+  <div class="level-pill" id="level-pill">Baby AI</div>
+
+  <div class="mem-counter">
+    <b id="mem-counter-num">0</b>
+    <span data-i18n="memoriesSuffix">memories</span>
+  </div>
+
+  <button id="learn-toggle" data-i18n="learnBtn">Learn First</button>
+  <button id="guide-toggle" data-i18n="guideBtn">How to Play</button>
+  <button id="teacher-hub-toggle" data-i18n="thBtn">🔐 Teacher Hub</button>
+  <button id="scoreboard-toggle" data-i18n="scoreboardBtn">Scoreboard</button>
+</header>
+
+<div id="scoreboard-panel">
+  <h3>📊 <span data-i18n="scoreboardTitle">Scoreboard</span></h3>
+  <div class="score-row"><span data-i18n="knowledgeStored">Knowledge Stored</span><span class="val-pill" id="sb-knowledge">0</span></div>
+  <div class="score-row"><span data-i18n="correctAnswers">Correct Answers</span><span class="val-pill" id="sb-correct">0</span></div>
+  <div class="score-row"><span data-i18n="unknownQuestions">Unknown Questions</span><span class="val-pill" id="sb-unknown">0</span></div>
+  <div class="score-row"><span data-i18n="brainLevel">Brain Level</span><span class="val-pill" id="sb-level">Baby AI</span></div>
+  <div class="score-row"><span data-i18n="completion">Completion</span><span class="val-pill" id="sb-completion">0%</span></div>
+  <button id="end-session-btn" data-i18n="endSession">End Session</button>
+</div>
+
+<!-- ============ MAIN ============ -->
+<main class="layout">
+
+  <!-- LEFT: TRAINING CENTER -->
+  <section class="panel" id="training-panel">
+    <h2><span class="emoji">🎓</span> <span data-i18n="trainTitle">Train Your AI</span></h2>
+
+    <div class="form-grid">
+      <div class="field">
+        <label><span data-i18n="knowTypeLabel">Knowledge type</span> <span class="hint-icon" data-i18n-title="knowTypeHint" title="Choose what kind of memory this is">?</span></label>
+        <select id="know-type">
+          <option value="fact" data-i18n="typeFact">Fact</option>
+          <option value="rule" data-i18n="typeRule">Rule</option>
+          <option value="identity" data-i18n="typeIdentity">Identity</option>
+          <option value="personality" data-i18n="typePersonality">Personality</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label><span data-i18n="questionLabel">Question / Trigger</span> <span class="hint-icon" data-i18n-title="questionHint" title="What will someone type to trigger this answer?">?</span></label>
+        <input id="know-question" type="text" data-i18n-placeholder="questionPlaceholder" placeholder="e.g. What is your name?">
+      </div>
+
+      <div class="field">
+        <label><span data-i18n="answerLabel">Answer</span> <span class="hint-icon" data-i18n-title="answerHint" title="What should the AI say back? Be clear!">?</span></label>
+        <textarea id="know-answer" data-i18n-placeholder="answerPlaceholder" placeholder="e.g. My name is Robo."></textarea>
+      </div>
+
+      <button id="teach-btn" data-i18n="teachBtn">Teach AI</button>
+    </div>
+
+    <div class="library-header">
+      <h3 data-i18n="libraryTitle">Knowledge Library</h3>
+      <input class="library-search" id="library-search" type="text" data-i18n-placeholder="librarySearchPlaceholder" placeholder="🔍 search">
+    </div>
+
+    <div id="memory-list"></div>
+  </section>
+
+  <!-- RIGHT: CHAT -->
+  <section class="panel" id="chat-panel">
+    <h2><span class="emoji">💬</span> <span data-i18n="chatTitle">Chat With Your AI</span></h2>
+    <div id="chat-window"></div>
+    <div class="chat-input-row">
+      <input id="chat-input" type="text" data-i18n-placeholder="chatPlaceholder" placeholder="Ask your AI something...">
+      <button id="send-btn">➤</button>
+    </div>
+    <div class="quick-hints">
+      <button class="quick-hint" data-msg-en="Hello" data-msg-vi="Xin chào" data-i18n="quickHintHello">Hello</button>
+      <button class="quick-hint" data-msg-en="What is your name?" data-msg-vi="Tên của bạn là gì?" data-i18n="quickHintName">Name?</button>
+      <button class="quick-hint" data-msg-en="Are you friendly?" data-msg-vi="Bạn có thân thiện không?" data-i18n="quickHintFriendly">Friendly?</button>
+    </div>
+  </section>
+
+</main>
+
+<footer class="legend" data-i18n="footerLegend">Everything you teach stays in this browser tab only — nothing is sent anywhere. Refreshing the page will start a new AI.</footer>
+
+<!-- ============ MISSIONS ============ -->
+<button id="mission-fab" data-i18n="missionsBtn" title="Missions">Missions</button>
+<div id="mission-panel">
+  <h3>🎯 <span data-i18n="missionsTitle">Missions</span></h3>
+  <div id="mission-list"></div>
+</div>
+
+<!-- ============ ACHIEVEMENTS ============ -->
+<button id="achv-fab" data-i18n="badgesBtn" title="Achievements">Badges</button>
+<div id="achv-panel">
+  <h3>🏅 <span data-i18n="badgesTitle">Achievements</span></h3>
+  <div class="badge-grid" id="badge-grid"></div>
+</div>
+
+<div id="achv-toast-zone"></div>
+
+<!-- ============ EDIT MODAL ============ -->
+<div class="modal-overlay" id="edit-modal-overlay">
+  <div class="modal-box">
+    <h3>✏️ <span data-i18n="editTitle">Edit Memory</span></h3>
+    <div class="form-grid">
+      <div class="field">
+        <label data-i18n="knowTypeLabel">Knowledge type</label>
+        <select id="edit-type">
+          <option value="fact" data-i18n="typeFact">Fact</option>
+          <option value="rule" data-i18n="typeRule">Rule</option>
+          <option value="identity" data-i18n="typeIdentity">Identity</option>
+          <option value="personality" data-i18n="typePersonality">Personality</option>
+        </select>
+      </div>
+      <div class="field">
+        <label data-i18n="questionLabel">Question / Trigger</label>
+        <input id="edit-question" type="text">
+      </div>
+      <div class="field">
+        <label data-i18n="answerLabel">Answer</label>
+        <textarea id="edit-answer"></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="edit-cancel-btn" data-i18n="cancelBtn">Cancel</button>
+      <button class="btn-save" id="edit-save-btn" data-i18n="saveBtn">Save changes</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============ LEARNING LAB / KNOWLEDGE SCREENS ============ -->
+<div class="modal-overlay" id="learn-overlay">
+  <div class="modal-box" id="learn-box">
+    <div class="learn-shell">
+      <aside class="learn-side">
+        <span class="learn-badge" data-i18n="learnBadge">KNOWLEDGE LAB</span>
+        <h3 data-i18n="learnTitle">Before You Train Your AI</h3>
+        <p data-i18n="learnIntro">Learn the idea first, then use it in the activity. You can reopen these screens anytime.</p>
+        <div class="learn-step-list" id="learn-step-list"></div>
+      </aside>
+      <section class="learn-main">
+        <div class="learn-progress"><div id="learn-progress-fill"></div></div>
+        <div id="learn-content"></div>
+        <div class="learn-actions"><button class="learn-prev" id="learn-prev-btn" data-i18n="learnPrev">Previous</button><button class="learn-next" id="learn-next-btn" data-i18n="learnNext">Next</button></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- ============ HOW TO PLAY / GUIDE MODAL ============ -->
+<div class="modal-overlay" id="guide-overlay">
+  <div class="modal-box" id="guide-box">
+    <h3>📖 <span data-i18n="guideTitle">How to Play</span></h3>
+    <p class="guide-intro" data-i18n="guideIntro">Human AI Prompt Lab is a game about teaching your own AI. Play in a team of 3–4 and see how smart you can make it!</p>
+
+    <div class="guide-step">
+      <div class="g-num">1</div>
+      <div>
+        <div class="g-title" data-i18n="guideStep1Title">Teach your AI</div>
+        <div class="g-desc" data-i18n="guideStep1Desc">On the left panel, pick a knowledge type, write a question or trigger, and write a clear answer. Click Teach AI to add it to your AI's memory.</div>
+      </div>
+    </div>
+    <div class="guide-step">
+      <div class="g-num">2</div>
+      <div>
+        <div class="g-title" data-i18n="guideStep2Title">Chat with your AI</div>
+        <div class="g-desc" data-i18n="guideStep2Desc">On the right panel, type a question the way a real person would. Your AI can only answer using what you've taught it — nothing more.</div>
+      </div>
+    </div>
+    <div class="guide-step">
+      <div class="g-num">3</div>
+      <div>
+        <div class="g-title" data-i18n="guideStep3Title">Watch it grow</div>
+        <div class="g-desc" data-i18n="guideStep3Desc">Every memory grows your AI's brain. Reach new levels — Baby AI, Learning AI, Smart AI, Expert AI, Super AI — as you teach more.</div>
+      </div>
+    </div>
+    <div class="guide-step">
+      <div class="g-num">4</div>
+      <div>
+        <div class="g-title" data-i18n="guideStep4Title">Complete missions & earn badges</div>
+        <div class="g-desc" data-i18n="guideStep4Desc">Open the Missions and Badges panels (bottom corners) to see challenges and achievements you can unlock.</div>
+      </div>
+    </div>
+
+    <div class="guide-section-title" data-i18n="guideTypesTitle">Knowledge Types</div>
+    <div class="guide-type-row"><b data-i18n="typeFact">Fact</b> — <span data-i18n="guideTypesFactDesc">objective information, e.g. "What is a cat?" → "A cat is a mammal."</span></div>
+    <div class="guide-type-row"><b data-i18n="typeRule">Rule</b> — <span data-i18n="guideTypesRuleDesc">a response for a situation, e.g. "Hello" → "Hello! Nice to meet you."</span></div>
+    <div class="guide-type-row"><b data-i18n="typeIdentity">Identity</b> — <span data-i18n="guideTypesIdentityDesc">who the AI is, e.g. "What is your name?" → "My name is Robo."</span></div>
+    <div class="guide-type-row"><b data-i18n="typePersonality">Personality</b> — <span data-i18n="guideTypesPersonalityDesc">how the AI behaves, e.g. "Are you friendly?" → "Yes! I always answer politely."</span></div>
+
+    <div class="guide-tip">
+      <b data-i18n="guideTipTitle">Good to know</b>
+      <span data-i18n="guideTipText">If your AI says "I haven't learned that yet," that means you need to teach it! A good AI needs clear, specific answers — vague answers make it confused.</span>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-save" id="guide-close-btn" data-i18n="guideCloseBtn" style="width:100%;">Got it!</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TEACHER HUB PASSWORD GATE ============ -->
+<div class="modal-overlay" id="teacher-hub-auth-overlay">
+  <div class="modal-box" id="teacher-hub-auth-box">
+    <span class="th-auth-emoji">🔒</span>
+    <h3 data-i18n="thAuthTitle">Teacher Access</h3>
+    <p data-i18n="thAuthDesc">This area is for teachers only. Enter the teacher password to continue.</p>
+    <input type="password" id="teacher-hub-password-input" data-i18n-placeholder="thAuthPlaceholder" placeholder="Password" autocomplete="off">
+    <div id="teacher-hub-auth-error" data-i18n="thAuthError">Incorrect password. Please try again.</div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="teacher-hub-auth-cancel" data-i18n="cancelBtn">Cancel</button>
+      <button class="btn-save" id="teacher-hub-auth-submit" data-i18n="thAuthSubmit">Unlock</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TEACHER HUB (ADMIN) MODAL ============ -->
+<div class="modal-overlay" id="teacher-hub-overlay">
+  <div class="modal-box" id="teacher-hub-box">
+    <span class="th-badge" data-i18n="thBadge">FOR TEACHERS ONLY</span>
+    <h3>🧑‍🏫 <span data-i18n="thTitle">Teacher Hub</span></h3>
+    <p class="th-intro" data-i18n="thIntro">This section is for the facilitator, not students. It explains the lesson goals, a suggested class flow, the concepts behind the game, and how to talk students through it.</p>
+
+    <div class="th-tabs" id="th-tabs">
+      <button class="th-tab-btn active" data-th-tab="th-tab-overview" data-i18n="thTabOverview">Overview</button>
+      <button class="th-tab-btn" data-th-tab="th-tab-agenda" data-i18n="thTabAgenda">Lesson Flow</button>
+      <button class="th-tab-btn" data-th-tab="th-tab-concepts" data-i18n="thTabConcepts">Concepts</button>
+      <button class="th-tab-btn" data-th-tab="th-tab-script" data-i18n="thTabScript">Script</button>
+      <button class="th-tab-btn" data-th-tab="th-tab-discussion" data-i18n="thTabDiscussion">Discussion</button>
+      <button class="th-tab-btn" data-th-tab="th-tab-assess" data-i18n="thTabAssess">Assessment</button>
+      <button class="th-tab-btn" data-th-tab="th-tab-trouble" data-i18n="thTabTrouble">Troubleshooting</button>
+    </div>
+
+    <!-- OVERVIEW -->
+    <div class="th-panel active" id="th-tab-overview">
+      <div class="guide-section-title" data-i18n="thObjTitle">Learning Objectives</div>
+      <ul class="th-list">
+        <li data-i18n="thObj1">Students explain, in their own words, that an AI only "knows" what it has been given — it does not think or understand on its own.</li>
+        <li data-i18n="thObj2">Students practice writing clear, specific, unambiguous instructions (an early form of prompt engineering).</li>
+        <li data-i18n="thObj3">Students recognize the difference between this simplified training game and a real AI model like ChatGPT.</li>
+        <li data-i18n="thObj4">Students collaborate in a team to plan, divide, and test knowledge entries.</li>
+        <li data-i18n="thObj5">Students connect the activity to broader ideas in digital citizenship and computational thinking: data quality, categorization, and testing/debugging.</li>
+      </ul>
+      <div class="guide-section-title" data-i18n="thPrepTitle">Preparation</div>
+      <ul class="th-list">
+        <li data-i18n="thPrep1">Group size: 3–4 students per device/team.</li>
+        <li data-i18n="thPrep2">Suggested duration: 45–60 minutes (a trimmed 30-minute version is included at the end of the Lesson Flow tab).</li>
+        <li data-i18n="thPrep3">No installation or internet needed — everything runs and stays inside the browser tab. Refreshing resets the AI.</li>
+        <li data-i18n="thPrep4">Open the "How to Play" guide once for the whole class before letting students start (it explains Knowledge Types, Missions and Badges from the student side).</li>
+        <li data-i18n="thPrep5">One device per team (laptop/tablet), any modern browser, no login required.</li>
+        <li data-i18n="thPrep6">Optional but recommended: a projector or shared screen to run one live demo before teams start on their own.</li>
+        <li data-i18n="thPrep7">Optional: pre-assign each team a different "expert topic" (animals, science, history, or your own subject) so teams end up with different AIs to compare later.</li>
+        <li data-i18n="thPrep8">A visible clock, timer, or countdown on the board helps teams pace themselves through each phase.</li>
+        <li data-i18n="thPrep9">Review the Concepts and Script tabs yourself before class so you can explain the "why" behind the game, not just the "how".</li>
+      </ul>
+      <div class="guide-section-title" data-i18n="thDiffTitle">Differentiation & Extension</div>
+      <ul class="th-list">
+        <li data-i18n="thDiff1">Teams that finish early: challenge them to reach Expert AI or Super AI level, complete every mission including Mission 7 (device swap), or teach one "trick" fact with a very specific trigger phrase for another team to discover.</li>
+        <li data-i18n="thDiff2">Teams that need more support: give them 3–5 ready-made fact ideas on paper (about your subject or the school) to translate into Question/Answer pairs, and pair their Tester with a stronger team once their own teach phase is done.</li>
+        <li data-i18n="thDiff3">For an older or more advanced class: skip the training wheels and ask teams to design their AI as a "customer service bot" or "class FAQ bot" for a specific real scenario, then discuss where exact-match logic would fail in production.</li>
+      </ul>
+    </div>
+
+
+    <!-- LESSON FLOW -->
+    <div class="th-panel" id="th-tab-agenda">
+      <div class="guide-section-title" data-i18n="thAgendaTitle">Detailed Class Agenda (60 min)</div>
+      <div class="th-agenda">
+        <div class="th-agenda-row th-phase-pre">
+          <div class="th-agenda-time" data-i18n="thA0Time">Before class</div>
+          <div class="th-agenda-body">
+            <div class="th-agenda-title" data-i18n="thA0Title">Setup</div>
+            <div class="th-agenda-desc" data-i18n="thA0Desc">Get devices ready, decide team groupings, and (optionally) assign each team a different expert topic so their AIs turn out different.</div>
+            <ul class="th-substeps">
+              <li data-i18n="thA0Sub1">Open this Teacher Hub once yourself and skim the Concepts and Script tabs.</li>
+              <li data-i18n="thA0Sub2">Decide teams of 3–4 and write the team list / expert topics on the board.</li>
+              <li data-i18n="thA0Sub3">If using a projector, open a second copy of the app to run the live demo.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="th-agenda-row">
+          <div class="th-agenda-time" data-i18n="thA1Time">0–5 min</div>
+          <div class="th-agenda-body">
+            <div class="th-agenda-title" data-i18n="thA1Title">Hook</div>
+            <div class="th-agenda-desc" data-i18n="thA1Desc">Ask: "Does AI actually think, or is it doing something else?" Take a few guesses, don't correct them yet.</div>
+            <ul class="th-substeps">
+              <li data-i18n="thA1Sub1">Cold-call 2–3 students for their guess; write key words on the board without judging right/wrong.</li>
+              <li data-i18n="thA1Sub2">Tell them: "By the end of class, you'll have built your own tiny AI and can answer this yourselves."</li>
+            </ul>
+            <div class="th-agenda-tip" data-i18n="thA1Tip">Tip: keep this fast — the goal is curiosity, not an answer yet.</div>
+          </div>
+        </div>
+        <div class="th-agenda-row">
+          <div class="th-agenda-time" data-i18n="thA2Time">5–15 min</div>
+          <div class="th-agenda-body">
+            <div class="th-agenda-title" data-i18n="thA2Title">Mini-lesson & live demo</div>
+            <div class="th-agenda-desc" data-i18n="thA2Desc">Run the five Knowledge Lab screens first: what a prompt is, C–T–C–O, vague vs clear prompts, test-and-improve, and the difference between this game and generative AI. Then teach one memory live so students see the activity loop once.</div>
+            <ul class="th-substeps">
+              <li data-i18n="thA2Sub1">Open "Learn First" and walk through the C–T–C–O framework. Ask students to identify Context, Task, Constraints, and Output in the example prompt.</li>
+              <li data-i18n="thA2Sub2">Live demo: teach one Identity memory (e.g. "What is your name?" → its name), then chat and get a correct answer.</li>
+              <li data-i18n="thA2Sub3">Live demo continued: ask the same question a different way (e.g. "Who are you?") and show the class it fails — this previews the key lesson without spoiling the discussion.</li>
+              <li data-i18n="thA2Sub4">Briefly point out the Missions (🎯) and Badges (🏅) buttons as their checklist for the next phase.</li>
+            </ul>
+            <div class="th-agenda-tip" data-i18n="thA2Tip">Tip: let the class react out loud when the demo AI "fails" — that surprise is what makes the later debrief land.</div>
+          </div>
+        </div>
+        <div class="th-agenda-row">
+          <div class="th-agenda-time" data-i18n="thA3Time">15–20 min</div>
+          <div class="th-agenda-body">
+            <div class="th-agenda-title" data-i18n="thA3Title">Team setup & roles</div>
+            <div class="th-agenda-desc" data-i18n="thA3Desc">Get teams settled, name their AI, and split up simple roles so all 3–4 students are involved.</div>
+            <ul class="th-substeps">
+              <li data-i18n="thA3Sub1">Trainer: types the Question/Answer into the app.</li>
+              <li data-i18n="thA3Sub2">Checker: reads each answer out loud before it's submitted — is it clear and specific?</li>
+              <li data-i18n="thA3Sub3">Tester: will be in charge of the chat/testing phase later.</li>
+              <li data-i18n="thA3Sub4">Have every team set their AI's name in the header field before moving on.</li>
+            </ul>
+            <div class="th-agenda-tip" data-i18n="thA3Tip">Tip: rotate roles halfway through the teach phase so everyone gets to type at least once.</div>
+          </div>
+        </div>
+        <div class="th-agenda-row">
+          <div class="th-agenda-time" data-i18n="thA4Time">20–38 min</div>
+          <div class="th-agenda-body">
+            <div class="th-agenda-title" data-i18n="thA4Title">Teach phase (main activity)</div>
+            <div class="th-agenda-desc" data-i18n="thA4Desc">Teams work through the Missions panel in order. Circulate constantly and check that answers are specific, not vague.</div>
+            <ul class="th-substeps">
+              <li data-i18n="thA4Sub1">Recommended order: Identity memory first (Mission 2), then a Rule/greeting (Mission 3), then 5 Facts (Mission 1), then their expert topic (Mission 5 or 6).</li>
+              <li data-i18n="thA4Sub2">At the ~29 minute mark, do a 1-minute "brain check": ask teams to call out their memory count and Brain Level out loud for friendly competition.</li>
+              <li data-i18n="thA4Sub3">Watch for vague answers ("it's nice", "some stuff") — stop and ask "would a stranger understand this answer?"</li>
+              <li data-i18n="thA4Sub4">Watch for duplicate/contradicting entries from different teammates typing the same trigger with different answers.</li>
+            </ul>
+            <div class="th-agenda-tip" data-i18n="thA4Tip">Tip: this is the longest phase — don't rush it, most of the learning happens here.</div>
+          </div>
+        </div>
+        <div class="th-agenda-row">
+          <div class="th-agenda-time" data-i18n="thA5Time">38–46 min</div>
+          <div class="th-agenda-body">
+            <div class="th-agenda-title" data-i18n="thA5Title">Test & try to break it</div>
+            <div class="th-agenda-desc" data-i18n="thA5Desc">Testers chat with their own AI, then (Mission 7) swap devices with another team and try to stump each other's AI by asking the same question a different way.</div>
+            <ul class="th-substeps">
+              <li data-i18n="thA5Sub1">First, each team quizzes their own AI using the quick-hint buttons and their own questions.</li>
+              <li data-i18n="thA5Sub2">Then swap devices with a neighboring team for Mission 7 — encourage rewording, not just retyping the same question.</li>
+              <li data-i18n="thA5Sub3">Ask teams to note down one question their AI got wrong and why, ready for the debrief.</li>
+            </ul>
+            <div class="th-agenda-tip" data-i18n="thA5Tip">Tip: the "unknown answer" bubble (dashed orange) is a teaching moment, not a failure — point that out if a team gets discouraged.</div>
+          </div>
+        </div>
+        <div class="th-agenda-row">
+          <div class="th-agenda-time" data-i18n="thA6Time">46–54 min</div>
+          <div class="th-agenda-body">
+            <div class="th-agenda-title" data-i18n="thA6Title">Present & wrap-up</div>
+            <div class="th-agenda-desc" data-i18n="thA6Desc">Each team clicks "End Session" and briefly presents their AI's name, level, and favorite memory it learned.</div>
+            <ul class="th-substeps">
+              <li data-i18n="thA6Sub1">Give each team 30–45 seconds max — name, Brain Level, one memory they're proud of, one question that stumped it.</li>
+              <li data-i18n="thA6Sub2">Use the Scoreboard numbers (Knowledge Stored, Correct Answers, Completion %) as a quick shared reference while presenting.</li>
+            </ul>
+            <div class="th-agenda-tip" data-i18n="thA6Tip">Tip: celebrate the team whose AI got stumped in an interesting way just as much as the "smartest" AI — that's the richer learning moment.</div>
+          </div>
+        </div>
+        <div class="th-agenda-row">
+          <div class="th-agenda-time" data-i18n="thA7Time">54–60 min</div>
+          <div class="th-agenda-body">
+            <div class="th-agenda-title" data-i18n="thA7Title">Debrief & real-world connection</div>
+            <div class="th-agenda-desc" data-i18n="thA7Desc">Use the Discussion tab questions to connect the game back to how real AI is trained, and close the loop on the opening question.</div>
+            <ul class="th-substeps">
+              <li data-i18n="thA7Sub1">Revisit the opening question ("Does AI actually think?") and ask students to answer it now, in their own words.</li>
+              <li data-i18n="thA7Sub2">Use the Script tab's closing line to introduce how real models like ChatGPT differ in scale and understanding.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="guide-section-title" data-i18n="thShortTitle">Trimmed 30-Minute Version</div>
+      <ul class="th-list">
+        <li data-i18n="thShort1">Hook + Mini-lesson combined: 5 min (skip the live demo, just show the guide).</li>
+        <li data-i18n="thShort2">Team setup: 2 min (skip formal roles, just pick who types first).</li>
+        <li data-i18n="thShort3">Teach phase: 13 min (only Missions 1–3: facts, identity, rule).</li>
+        <li data-i18n="thShort4">Test phase: 5 min (skip the device swap, test their own AI only).</li>
+        <li data-i18n="thShort5">Debrief: 5 min (use only Discussion questions 1 and 4).</li>
+      </ul>
+    </div>
+
+    <!-- CONCEPTS -->
+    <div class="th-panel" id="th-tab-concepts">
+      <div class="guide-section-title" data-i18n="thConceptsTitle">Concepts to Understand Before You Teach</div>
+      <div class="th-concept">
+        <div class="g-title" data-i18n="thC1Title">1. This is not a real chatbot — and that's the point</div>
+        <div class="g-desc" data-i18n="thC1Desc">Under the hood, this AI only checks whether the student's message exactly matches, or contains, a question/trigger they already taught it. It has no understanding of meaning. This is intentionally simple so students can see the mechanism clearly — real models like ChatGPT are trained on huge amounts of text and generalize to new wording, which is why they can answer things they were never explicitly taught.</div>
+      </div>
+      <div class="th-concept">
+        <div class="g-title" data-i18n="thC2Title">2. Knowledge Types mirror how AI training data is organized</div>
+        <div class="g-desc" data-i18n="thC2Desc">Fact = objective information. Rule = a fixed response to a situation (like a greeting). Identity = who the AI is. Personality = how it behaves. Sorting knowledge this way is a simplified version of how real datasets are labeled and categorized before a model is trained.</div>
+      </div>
+      <div class="th-concept">
+        <div class="g-title" data-i18n="thC3Title">3. "Garbage in, garbage out"</div>
+        <div class="g-desc" data-i18n="thC3Desc">A vague or inconsistent memory makes this tiny AI unreliable. Use that experience to introduce a related prompt-writing habit: clearer Context, Task, Constraints and Output reduce ambiguity when working with generative AI. Do not imply that this Question/Answer memory system is how a large language model is trained.</div>
+      </div>
+      <div class="th-concept">
+        <div class="g-title" data-i18n="thC4Title">4. Why paraphrasing "breaks" the AI</div>
+        <div class="g-desc" data-i18n="thC4Desc">If a student teaches "What is your name?" but then asks "Who are you?", the AI will likely say it hasn't learned that — even though a human would understand it's the same question. This is the best moment to explain the gap between simple matching and true language understanding.</div>
+      </div>
+    </div>
+
+    <!-- SCRIPT -->
+    <div class="th-panel" id="th-tab-script">
+      <div class="guide-section-title" data-i18n="thScriptTitle">Sample Facilitation Script</div>
+      <div class="th-script"><b data-i18n="thS1Label">Opening line</b><span data-i18n="thS1Text">"Today, you are not going to use an AI — you are going to build one. It starts out knowing absolutely nothing. Everything it can say by the end of class is because you taught it."</span></div>
+      <div class="th-script"><b data-i18n="thS2Label">Before the teach phase</b><span data-i18n="thS2Text">"Before you type, agree as a team on the answer first. A messy answer creates a confused AI — a clear answer creates a smart one."</span></div>
+      <div class="th-script"><b data-i18n="thS3Label">Before the test phase</b><span data-i18n="thS3Text">"Now try asking your AI the same thing in a different way. Watch what happens — and think about why."</span></div>
+      <div class="th-script"><b data-i18n="thS4Label">Closing line</b><span data-i18n="thS4Text">"Real AI systems like ChatGPT work on the same basic idea — learning from what they're given — just at a massive scale, and with a much deeper understanding of language."</span></div>
+    </div>
+
+    <!-- DISCUSSION -->
+    <div class="th-panel" id="th-tab-discussion">
+      <div class="guide-section-title" data-i18n="thDiscTitle">Discussion Questions</div>
+      <ul class="th-list">
+        <li data-i18n="thDisc1">Why did your AI fail to answer a question it "should" have known, just because it was worded differently?</li>
+        <li data-i18n="thDisc2">Which Knowledge Type was hardest to write clearly, and why?</li>
+        <li data-i18n="thDisc3">What would happen if two teammates taught the AI two different answers to the same question?</li>
+        <li data-i18n="thDisc4">How is a real AI like ChatGPT similar to — and different from — the AI you just built?</li>
+        <li data-i18n="thDisc5">If you had unlimited time, what would you teach your AI next?</li>
+      </ul>
+    </div>
+
+    <!-- ASSESSMENT -->
+    <div class="th-panel" id="th-tab-assess">
+      <div class="guide-section-title" data-i18n="thAssessTitle">Assessment Ideas (Optional)</div>
+      <p class="th-intro" data-i18n="thAssessIntro">This is primarily a formative, engagement-based activity — not a graded test. If you'd like light-touch evidence of learning, the app's own Scoreboard and Badges already give you most of what you need.</p>
+      <div class="th-rubric-row">
+        <div class="r-title" data-i18n="thR1Title">Clarity of answers</div>
+        <div class="r-desc" data-i18n="thR1Desc">Are Facts, Rules, Identity and Personality entries specific and understandable to a stranger, or vague ("it's nice", "some stuff")?</div>
+      </div>
+      <div class="th-rubric-row">
+        <div class="r-title" data-i18n="thR2Title">Coverage across Knowledge Types</div>
+        <div class="r-desc" data-i18n="thR2Desc">Did the team use all 4 types thoughtfully, or only pile up Facts? Check the Knowledge Library's colored tags.</div>
+      </div>
+      <div class="th-rubric-row">
+        <div class="r-title" data-i18n="thR3Title">Successful testing</div>
+        <div class="r-desc" data-i18n="thR3Desc">Use the Scoreboard's Correct Answers and Completion % as a quick, built-in measure of how well-taught the AI turned out.</div>
+      </div>
+      <div class="th-rubric-row">
+        <div class="r-title" data-i18n="thR4Title">Collaboration</div>
+        <div class="r-desc" data-i18n="thR4Desc">Did all teammates contribute (Trainer / Checker / Tester roles), and can each student explain one memory they personally added?</div>
+      </div>
+      <div class="th-rubric-row">
+        <div class="r-title" data-i18n="thR5Title">Conceptual understanding (exit ticket)</div>
+        <div class="r-desc" data-i18n="thR5Desc">Ask each student to write one sentence: "My AI got a question wrong because ___." A correct answer should reference exact/keyword matching, not "it's dumb" or "it's broken."</div>
+      </div>
+    </div>
+
+    <!-- TROUBLESHOOTING -->
+    <div class="th-panel" id="th-tab-trouble">
+      <div class="guide-section-title" data-i18n="thTroubleTitle">Common Issues & Fixes</div>
+      <div class="th-trouble"><b data-i18n="thT1Title">"My AI never understands me!"</b><span data-i18n="thT1Desc">Check that the taught Question/Trigger closely matches what they're typing in chat. Encourage teaching a few different phrasings of the same question as separate memories.</span></div>
+      <div class="th-trouble"><b data-i18n="thT2Title">Students copy the exact same facts as another team</b><span data-i18n="thT2Desc">Assign each team a different expert topic (animals, science, history) so their AIs end up different, then compare during the presentation phase.</span></div>
+      <div class="th-trouble"><b data-i18n="thT3Title">A team finishes very early</b><span data-i18n="thT3Desc">Point them to Mission 7 (swap devices and try to stump another team's AI) or challenge them to reach a higher Brain Level (Expert AI / Super AI).</span></div>
+      <div class="th-trouble"><b data-i18n="thT4Title">Progress seems lost</b><span data-i18n="thT4Desc">Everything lives only in that browser tab. Warn students in advance not to refresh or close the tab before "End Session".</span></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-save" id="teacher-hub-close-btn" data-i18n="thCloseBtn" style="width:100%;">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ END SESSION MODAL ============ -->
+<div class="modal-overlay" id="celebration-overlay">
+  <div class="modal-box" id="celebration-box">
+    <div class="confetti-emoji">🎉🧠🎉</div>
+    <h3 id="celeb-ai-name">My AI</h3>
+    <p id="celeb-level-text" style="color:var(--ink-soft); font-weight:700;">Baby AI</p>
+    <div class="celebration-stats">
+      <div><div class="num" id="celeb-memories">0</div><div class="lbl" data-i18n="memoriesLearned">Memories Learned</div></div>
+      <div><div class="num" id="celeb-answered">0</div><div class="lbl" data-i18n="questionsAnswered">Questions Answered</div></div>
+      <div><div class="num" id="celeb-unknown">0</div><div class="lbl" data-i18n="unknownQuestions">Unknown Questions</div></div>
+      <div><div class="num" id="celeb-badgecount">0</div><div class="lbl" data-i18n="achievementsLabel">Achievements</div></div>
+    </div>
+    <div id="celeb-badges"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="celeb-close-btn" data-i18n="keepTraining">Keep training</button>
+      <button class="btn-save" id="celeb-present-btn"><span data-i18n="presentBtn">Present to class</span> 🎤</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* =====================================================
+     STATE
+  ===================================================== */
+  const state = {
+    aiName: "My AI",
+    memories: [],       // {id, type, question, answer}
+    nextId: 1,
+    stats: {
+      questionsAsked: 0,
+      correctAnswers: 0,
+      unknownAnswers: 0
+    },
+    achievements: new Set(),
+    editingId: null,
+    lang: "en",
+    chatBusy: false,
+    learnStep: 0,
+    learnAnswered: {}
+  };
+
+  const AVATARS = ["🤖","👾","🦾","🛸","🧠","🐣🤖","🌟🤖"];
+
+  /* =====================================================
+     I18N — English / Vietnamese
+  ===================================================== */
+  const I18N = {
+    en: {
+      appTitle:"Human AI Prompt Lab", appSub:"Train Your Own AI",
+      learnBtn:"Learn First", learnBadge:"KNOWLEDGE LAB", learnTitle:"Before You Train Your AI", learnIntro:"Learn the idea first, then use it in the activity. You can reopen these screens anytime.", learnPrev:"Previous", learnNext:"Next", learnStart:"Start the Lab",
+      learnStep1:"What is a prompt?", learnStep2:"C–T–C–O", learnStep3:"Vague vs clear", learnStep4:"Test & improve", learnStep5:"Game vs real AI",
+      learnKicker1:"KNOWLEDGE 1 OF 5", learnKicker2:"KNOWLEDGE 2 OF 5", learnKicker3:"KNOWLEDGE 3 OF 5", learnKicker4:"KNOWLEDGE 4 OF 5", learnKicker5:"KNOWLEDGE 5 OF 5",
+      learn1Title:"What is a prompt?", learn1Lead:"A prompt is the information or instruction you give an AI to guide what it should do. Clear prompts make the goal easier to understand.",
+      learn1Card1Title:"Tell it the situation", learn1Card1Desc:"Useful context helps the AI understand who, what, or why the task is about.", learn1Card2Title:"Say what you want", learn1Card2Desc:"Use a clear action such as explain, compare, list, design, summarize, or create.", learn1Card3Title:"Add useful limits", learn1Card3Desc:"Specify things such as age, length, tone, allowed tools, or details that must be included.", learn1Card4Title:"Describe the result", learn1Card4Desc:"Say what the finished answer should look like: bullets, a table, three ideas, a short paragraph, and so on.",
+      learn1Check:"Which instruction is more useful to an AI?", learn1ChoiceBad:"Tell me about space.", learn1ChoiceGood:"Explain black holes to a 10-year-old in 3 simple bullet points.", learn1FeedbackGood:"Yes. It gives the AI a clearer task, audience, and output.", learn1FeedbackBad:"This is possible, but it leaves many decisions to the AI. A clearer prompt gives more direction.",
+      learn2Title:"Use the C–T–C–O framework", learn2Lead:"C–T–C–O is a simple checklist for building stronger prompts. You do not always need every part, but checking all four helps you notice what is missing.", ctcoC:"Context", ctcoCDesc:"What situation, role, audience, or background should the AI know?", ctcoT:"Task", ctcoTDesc:"What exactly should the AI do?", ctcoC2:"Constraints", ctcoC2Desc:"What rules, limits, required details, or things to avoid should it follow?", ctcoO:"Output", ctcoODesc:"What should the final answer look like?", learn2ExampleTitle:"Example", learn2Example:"You are helping a Grade 5 student (Context). Explain photosynthesis (Task). Use simple words and no more than 80 words (Constraints). Finish with 3 key points (Output).", learn2NoteTitle:"Important", learn2Note:"C–T–C–O is a planning framework, not a magic formula. A clear prompt can improve the result, but the AI can still make mistakes, miss context, or give incorrect information.",
+      learn3Title:"Vague prompt vs clear prompt", learn3Lead:"Compare the two prompts. Both ask for the same general topic, but one gives much more useful direction.", learn3BadLabel:"VAGUE", learn3Bad:"Make a study plan for me.", learn3GoodLabel:"CLEARER WITH C–T–C–O", learn3Good:"I have a science quiz on Friday (Context). Make a revision plan (Task). I can study 20 minutes each day and need time for vocabulary and practice questions (Constraints). Give me a 4-day table with one goal per day (Output).", learn3Question:"What improved in the clearer prompt?", learn3Opt1:"The goal became more specific", learn3Opt2:"Useful limits were added", learn3Opt3:"The output format became clear", learn3Opt4:"All of these", learn3Correct:"Correct. The clearer prompt reduces guessing by defining the goal, limits, and expected result.",
+      learn4Title:"Prompting is a cycle: test, check, improve", learn4Lead:"A good first prompt is useful, but strong AI users also review the output. If the result is incomplete, unclear, or wrong, they improve the prompt and try again.", learn4Step1:"1. PROMPT", learn4Step2:"2. CHECK", learn4Step3:"3. IMPROVE", learn4Step4:"4. TRY AGAIN", learn4CheckTitle:"When should you revise a prompt?", learn4Choice1:"When important information is missing", learn4Choice2:"When the output format is wrong", learn4Choice3:"When the result is unclear", learn4Choice4:"Any of these", learn4Feedback:"Exactly. Prompting is iterative. Check the result before deciding that it is finished.",
+      learn5Title:"This activity uses a tiny rule-based AI", learn5Lead:"The AI in this game is intentionally simple. You teach Question/Answer memories and it tries to match what the user types. That makes the mechanism visible and easy to experiment with.", learn5GameTitle:"In this game", learn5GameDesc:"Your AI searches the memories you created. Similar wording may work, but it does not truly understand the topic.", learn5RealTitle:"With generative AI", learn5RealDesc:"Models such as ChatGPT already learned patterns from very large datasets. A prompt does not teach them one new memory in the same way; it guides the response for the current interaction.", learn5BridgeTitle:"So why use C–T–C–O here?", learn5BridgeDesc:"The game helps you practise being precise. When you later use generative AI, the same habit—giving enough context, a clear task, useful constraints, and an output format—helps you communicate what you actually want.", learn5Close:"Now train your tiny AI, test what it can and cannot do, and notice how the quality of your instructions changes the experience.",
+
+      aiNameLabel:"AI name", brainCapacity:"Brain Capacity", memoriesSuffix:"memories",
+      scoreboardBtn:"Scoreboard", scoreboardTitle:"Scoreboard",
+      knowledgeStored:"Knowledge Stored", correctAnswers:"Correct Answers",
+      unknownQuestions:"Unknown Questions", brainLevel:"Brain Level", completion:"Completion",
+      endSession:"End Session",
+      trainTitle:"Train Your AI",
+      knowTypeLabel:"Knowledge type", knowTypeHint:"Choose what kind of memory this is",
+      questionLabel:"Question / Trigger", questionHint:"What will someone type to trigger this answer?",
+      questionPlaceholder:"e.g. What is your name?",
+      answerLabel:"Answer", answerHint:"What should the AI say back? Be clear!",
+      answerPlaceholder:"e.g. My name is Robo.",
+      teachBtn:"Teach AI",
+      libraryTitle:"Knowledge Library", librarySearchPlaceholder:"search",
+      emptyStateNoMemories:"Your AI knows nothing yet! Teach it its first memory above.",
+      emptyStateNoMatch:"No memories match your search.",
+      typeFact:"Fact", typeRule:"Rule", typeIdentity:"Identity", typePersonality:"Personality",
+      chatTitle:"Chat With Your AI", chatPlaceholder:"Ask your AI something...",
+      quickHintHello:"Hello", quickHintName:"Name?", quickHintFriendly:"Friendly?",
+      footerLegend:"Everything you teach stays in this browser tab only — nothing is sent anywhere. Refreshing the page will start a new AI.",
+      missionsBtn:"Missions", missionsTitle:"Missions",
+      badgesBtn:"Badges", badgesTitle:"Achievements",
+      editTitle:"Edit Memory", cancelBtn:"Cancel", saveBtn:"Save changes",
+      keepTraining:"Keep training", presentBtn:"Present to class",
+      memoriesLearned:"Memories Learned", questionsAnswered:"Questions Answered",
+      achievementsLabel:"Achievements", noBadgesYet:"No badges yet — keep training!",
+      unknownReply:"I haven't learned that yet. Can you teach me?",
+      welcomeMsg:"Hi! I'm your brand new AI. I don't know anything yet — teach me on the left, then come chat with me!",
+      achvUnlocked:"Achievement Unlocked:",
+      markTried:"Mark as tried", markedDone:"Marked done",
+      levelBaby:"Baby AI", levelLearning:"Learning AI", levelSmart:"Smart AI", levelExpert:"Expert AI", levelSuper:"Super AI",
+      achvFirstMemory:"First Memory", achvTenMemories:"10 Memories", achvTwentyMemories:"20 Memories",
+      achvFirstSuccess:"First Successful Answer", achvAnimalExpert:"Animal Expert",
+      achvHistoryExpert:"History Expert", achvScienceExpert:"Science Expert", achvMasterTrainer:"Master Trainer",
+      m1title:"Teach your AI 5 facts", m1desc:"Add 5 memories of type Fact.",
+      m2title:"Teach your AI who it is", m2desc:"Add at least 1 Identity memory.",
+      m3title:"Teach your AI to greet people", m3desc:"Add at least 1 Rule memory (e.g. a greeting).",
+      m4title:"Answer 10 successful questions", m4desc:"Get 10 correct chat answers.",
+      m5title:"Become an Animal Expert", m5desc:"Teach 5 memories about animals.",
+      m6title:"Become a Space Expert", m6desc:"Teach 5 memories about space or science.",
+      m7title:"Swap computers with another team", m7desc:"Can their team stump your AI? Mark done when you've tried!",
+      guideBtn:"How to Play", guideTitle:"How to Play",
+      guideIntro:"Human AI Prompt Lab is a game about teaching your own AI. Play in a team of 3–4 and see how smart you can make it!",
+      guideStep1Title:"Teach your AI", guideStep1Desc:"On the left panel, pick a knowledge type, write a question or trigger, and write a clear answer. Click Teach AI to add it to your AI's memory.",
+      guideStep2Title:"Chat with your AI", guideStep2Desc:"On the right panel, type a question the way a real person would. Your AI can only answer using what you've taught it — nothing more.",
+      guideStep3Title:"Watch it grow", guideStep3Desc:"Every memory grows your AI's brain. Reach new levels — Baby AI, Learning AI, Smart AI, Expert AI, Super AI — as you teach more.",
+      guideStep4Title:"Complete missions & earn badges", guideStep4Desc:"Open the Missions and Badges panels (bottom corners) to see challenges and achievements you can unlock.",
+      guideTypesTitle:"Knowledge Types",
+      guideTypesFactDesc:'objective information, e.g. "What is a cat?" → "A cat is a mammal."',
+      guideTypesRuleDesc:'a response for a situation, e.g. "Hello" → "Hello! Nice to meet you."',
+      guideTypesIdentityDesc:'who the AI is, e.g. "What is your name?" → "My name is Robo."',
+      guideTypesPersonalityDesc:'how the AI behaves, e.g. "Are you friendly?" → "Yes! I always answer politely."',
+      guideTipTitle:"Good to know",
+      guideTipText:'If your AI says "I haven\'t learned that yet," that means you need to teach it! A good AI needs clear, specific answers — vague answers make it confused.',
+      guideCloseBtn:"Got it!",
+      thBtn:"🔐 Teacher Hub", thBadge:"FOR TEACHERS ONLY", thTitle:"Teacher Hub",
+      thIntro:"This section is for the facilitator, not students. It explains the lesson goals, a suggested class flow, the concepts behind the game, and how to talk students through it.",
+      thTabOverview:"Overview", thTabAgenda:"Lesson Flow", thTabConcepts:"Concepts", thTabScript:"Script", thTabDiscussion:"Discussion", thTabAssess:"Assessment", thTabTrouble:"Troubleshooting",
+      thObjTitle:"Learning Objectives",
+      thObj1:"Students explain, in their own words, that an AI only \"knows\" what it has been given — it does not think or understand on its own.",
+      thObj2:"Students practice writing clear, specific, unambiguous instructions (an early form of prompt engineering).",
+      thObj3:"Students recognize the difference between this simplified training game and a real AI model like ChatGPT.",
+      thObj4:"Students collaborate in a team to plan, divide, and test knowledge entries.",
+      thObj5:"Students connect the activity to broader ideas in digital citizenship and computational thinking: data quality, categorization, and testing/debugging.",
+      thPrepTitle:"Preparation",
+      thPrep1:"Group size: 3–4 students per device/team.",
+      thPrep2:"Suggested duration: 45–60 minutes (a trimmed 30-minute version is included at the end of the Lesson Flow tab).",
+      thPrep3:"No installation or internet needed — everything runs and stays inside the browser tab. Refreshing resets the AI.",
+      thPrep4:"Open the \"How to Play\" guide once for the whole class before letting students start (it explains Knowledge Types, Missions and Badges from the student side).",
+      thPrep5:"One device per team (laptop/tablet), any modern browser, no login required.",
+      thPrep6:"Optional but recommended: a projector or shared screen to run one live demo before teams start on their own.",
+      thPrep7:"Optional: pre-assign each team a different \"expert topic\" (animals, science, history, or your own subject) so teams end up with different AIs to compare later.",
+      thPrep8:"A visible clock, timer, or countdown on the board helps teams pace themselves through each phase.",
+      thPrep9:"Review the Concepts and Script tabs yourself before class so you can explain the \"why\" behind the game, not just the \"how\".",
+      thDiffTitle:"Differentiation & Extension",
+      thDiff1:"Teams that finish early: challenge them to reach Expert AI or Super AI level, complete every mission including Mission 7 (device swap), or teach one \"trick\" fact with a very specific trigger phrase for another team to discover.",
+      thDiff2:"Teams that need more support: give them 3–5 ready-made fact ideas on paper (about your subject or the school) to translate into Question/Answer pairs, and pair their Tester with a stronger team once their own teach phase is done.",
+      thDiff3:"For an older or more advanced class: skip the training wheels and ask teams to design their AI as a \"customer service bot\" or \"class FAQ bot\" for a specific real scenario, then discuss where exact-match logic would fail in production.",
+      thAgendaTitle:"Detailed Class Agenda (60 min)",
+      thA0Time:"Before class", thA0Title:"Setup", thA0Desc:"Get devices ready, decide team groupings, and (optionally) assign each team a different expert topic so their AIs turn out different.",
+      thA0Sub1:"Open this Teacher Hub once yourself and skim the Concepts and Script tabs.",
+      thA0Sub2:"Decide teams of 3–4 and write the team list / expert topics on the board.",
+      thA0Sub3:"If using a projector, open a second copy of the app to run the live demo.",
+      thA1Time:"0–5 min", thA1Title:"Hook", thA1Desc:"Ask: \"Does AI actually think, or is it doing something else?\" Take a few guesses, don't correct them yet.",
+      thA1Sub1:"Cold-call 2–3 students for their guess; write key words on the board without judging right/wrong.",
+      thA1Sub2:"Tell them: \"By the end of class, you'll have built your own tiny AI and can answer this yourselves.\"",
+      thA1Tip:"Tip: keep this fast — the goal is curiosity, not an answer yet.",
+      thA2Time:"5–15 min", thA2Title:"Mini-lesson & live demo", thA2Desc:"Introduce the 4 Knowledge Types using the app's own \"How to Play\" guide, then teach one memory live on the projector so students see the whole loop once before doing it themselves.",
+      thA2Sub1:"Open \"How to Play\" and walk through Fact, Rule, Identity, Personality with the built-in examples.",
+      thA2Sub2:"Live demo: teach one Identity memory (e.g. \"What is your name?\" → its name), then chat and get a correct answer.",
+      thA2Sub3:"Live demo continued: ask the same question a different way (e.g. \"Who are you?\") and show the class it fails — this previews the key lesson without spoiling the discussion.",
+      thA2Sub4:"Briefly point out the Missions (🎯) and Badges (🏅) buttons as their checklist for the next phase.",
+      thA2Tip:"Tip: let the class react out loud when the demo AI \"fails\" — that surprise is what makes the later debrief land.",
+      thA3Time:"15–20 min", thA3Title:"Team setup & roles", thA3Desc:"Get teams settled, name their AI, and split up simple roles so all 3–4 students are involved.",
+      thA3Sub1:"Trainer: types the Question/Answer into the app.",
+      thA3Sub2:"Checker: reads each answer out loud before it's submitted — is it clear and specific?",
+      thA3Sub3:"Tester: will be in charge of the chat/testing phase later.",
+      thA3Sub4:"Have every team set their AI's name in the header field before moving on.",
+      thA3Tip:"Tip: rotate roles halfway through the teach phase so everyone gets to type at least once.",
+      thA4Time:"20–38 min", thA4Title:"Teach phase (main activity)", thA4Desc:"Teams work through the Missions panel in order. Circulate constantly and check that answers are specific, not vague.",
+      thA4Sub1:"Recommended order: Identity memory first (Mission 2), then a Rule/greeting (Mission 3), then 5 Facts (Mission 1), then their expert topic (Mission 5 or 6).",
+      thA4Sub2:"At the ~29 minute mark, do a 1-minute \"brain check\": ask teams to call out their memory count and Brain Level out loud for friendly competition.",
+      thA4Sub3:"Watch for vague answers (\"it's nice\", \"some stuff\") — stop and ask \"would a stranger understand this answer?\"",
+      thA4Sub4:"Watch for duplicate/contradicting entries from different teammates typing the same trigger with different answers.",
+      thA4Tip:"Tip: this is the longest phase — don't rush it, most of the learning happens here.",
+      thA5Time:"38–46 min", thA5Title:"Test & try to break it", thA5Desc:"Testers chat with their own AI, then (Mission 7) swap devices with another team and try to stump each other's AI by asking the same question a different way.",
+      thA5Sub1:"First, each team quizzes their own AI using the quick-hint buttons and their own questions.",
+      thA5Sub2:"Then swap devices with a neighboring team for Mission 7 — encourage rewording, not just retyping the same question.",
+      thA5Sub3:"Ask teams to note down one question their AI got wrong and why, ready for the debrief.",
+      thA5Tip:"Tip: the \"unknown answer\" bubble (dashed orange) is a teaching moment, not a failure — point that out if a team gets discouraged.",
+      thA6Time:"46–54 min", thA6Title:"Present & wrap-up", thA6Desc:"Each team clicks \"End Session\" and briefly presents their AI's name, level, and favorite memory it learned.",
+      thA6Sub1:"Give each team 30–45 seconds max — name, Brain Level, one memory they're proud of, one question that stumped it.",
+      thA6Sub2:"Use the Scoreboard numbers (Knowledge Stored, Correct Answers, Completion %) as a quick shared reference while presenting.",
+      thA6Tip:"Tip: celebrate the team whose AI got stumped in an interesting way just as much as the \"smartest\" AI — that's the richer learning moment.",
+      thA7Time:"54–60 min", thA7Title:"Debrief & real-world connection", thA7Desc:"Use the Discussion tab questions to connect the game back to how real AI is trained, and close the loop on the opening question.",
+      thA7Sub1:"Revisit the opening question (\"Does AI actually think?\") and ask students to answer it now, in their own words.",
+      thA7Sub2:"Use the Script tab's closing line to introduce how real models like ChatGPT differ in scale and understanding.",
+      thShortTitle:"Trimmed 30-Minute Version",
+      thShort1:"Hook + Mini-lesson combined: 5 min (skip the live demo, just show the guide).",
+      thShort2:"Team setup: 2 min (skip formal roles, just pick who types first).",
+      thShort3:"Teach phase: 13 min (only Missions 1–3: facts, identity, rule).",
+      thShort4:"Test phase: 5 min (skip the device swap, test their own AI only).",
+      thShort5:"Debrief: 5 min (use only Discussion questions 1 and 4).",
+      thConceptsTitle:"Concepts to Understand Before You Teach",
+      thC1Title:"1. This is not a real chatbot — and that's the point",
+      thC1Desc:"Under the hood, this AI only checks whether the student's message exactly matches, or contains, a question/trigger they already taught it. It has no understanding of meaning. This is intentionally simple so students can see the mechanism clearly — real models like ChatGPT are trained on huge amounts of text and generalize to new wording, which is why they can answer things they were never explicitly taught.",
+      thC2Title:"2. Knowledge Types mirror how AI training data is organized",
+      thC2Desc:"Fact = objective information. Rule = a fixed response to a situation (like a greeting). Identity = who the AI is. Personality = how it behaves. Sorting knowledge this way is a simplified version of how real datasets are labeled and categorized before a model is trained.",
+      thC3Title:"3. \"Garbage in, garbage out\"",
+      thC3Desc:"A vague or inconsistent answer makes the AI confused or wrong — this is a hands-on introduction to data quality and to prompt engineering: the clearer and more specific the instruction, the more reliable the result.",
+      thC4Title:"4. Why paraphrasing \"breaks\" the AI",
+      thC4Desc:"If a student teaches \"What is your name?\" but then asks \"Who are you?\", the AI will likely say it hasn't learned that — even though a human would understand it's the same question. This is the best moment to explain the gap between simple matching and true language understanding.",
+      thScriptTitle:"Sample Facilitation Script",
+      thS1Label:"Opening line", thS1Text:"\"Today, you are not going to use an AI — you are going to build one. It starts out knowing absolutely nothing. Everything it can say by the end of class is because you taught it.\"",
+      thS2Label:"Before the teach phase", thS2Text:"\"Before you type, agree as a team on the answer first. A messy answer creates a confused AI — a clear answer creates a smart one.\"",
+      thS3Label:"Before the test phase", thS3Text:"\"Now try asking your AI the same thing in a different way. Watch what happens — and think about why.\"",
+      thS4Label:"Closing line", thS4Text:"\"The AI you built today is a simple rule-based model, not the way ChatGPT works. Real generative AI has already learned patterns from huge datasets. What carries over is your job as the user: give clear instructions, check the result, and improve your prompt when needed.\"",
+      thDiscTitle:"Discussion Questions",
+      thDisc1:"Why did your AI fail to answer a question it \"should\" have known, just because it was worded differently?",
+      thDisc2:"Which Knowledge Type was hardest to write clearly, and why?",
+      thDisc3:"What would happen if two teammates taught the AI two different answers to the same question?",
+      thDisc4:"How is a real AI like ChatGPT similar to — and different from — the AI you just built?",
+      thDisc5:"If you had unlimited time, what would you teach your AI next?",
+      thTroubleTitle:"Common Issues & Fixes",
+      thT1Title:"\"My AI never understands me!\"", thT1Desc:"Check that the taught Question/Trigger closely matches what they're typing in chat. Encourage teaching a few different phrasings of the same question as separate memories.",
+      thT2Title:"Students copy the exact same facts as another team", thT2Desc:"Assign each team a different expert topic (animals, science, history) so their AIs end up different, then compare during the presentation phase.",
+      thT3Title:"A team finishes very early", thT3Desc:"Point them to Mission 7 (swap devices and try to stump another team's AI) or challenge them to reach a higher Brain Level (Expert AI / Super AI).",
+      thT4Title:"Progress seems lost", thT4Desc:"Everything lives only in that browser tab. Warn students in advance not to refresh or close the tab before \"End Session\".",
+      thCloseBtn:"Close",
+      thAssessTitle:"Assessment Ideas (Optional)",
+      thAssessIntro:"This is primarily a formative, engagement-based activity — not a graded test. If you'd like light-touch evidence of learning, the app's own Scoreboard and Badges already give you most of what you need.",
+      thR1Title:"Clarity of answers", thR1Desc:"Are Facts, Rules, Identity and Personality entries specific and understandable to a stranger, or vague (\"it's nice\", \"some stuff\")?",
+      thR2Title:"Coverage across Knowledge Types", thR2Desc:"Did the team use all 4 types thoughtfully, or only pile up Facts? Check the Knowledge Library's colored tags.",
+      thR3Title:"Successful testing", thR3Desc:"Use the Scoreboard's Correct Answers and Completion % as a quick, built-in measure of how well-taught the AI turned out.",
+      thR4Title:"Collaboration", thR4Desc:"Did all teammates contribute (Trainer / Checker / Tester roles), and can each student explain one memory they personally added?",
+      thR5Title:"Conceptual understanding (exit ticket)", thR5Desc:"Ask each student to write one sentence: \"My AI got a question wrong because ___.\" A correct answer should reference exact/keyword matching, not \"it's dumb\" or \"it's broken.\"",
+      thAuthTitle:"Teacher Access", thAuthDesc:"This area is for teachers only. Enter the teacher password to continue.",
+      thAuthPlaceholder:"Password", thAuthError:"Incorrect password. Please try again.", thAuthSubmit:"Unlock"
+    },
+    vi: {
+      appTitle:"Phòng Thí Nghiệm AI", appSub:"Tự Huấn Luyện AI Của Bạn",
+      learnBtn:"Học trước", learnBadge:"GÓC KIẾN THỨC", learnTitle:"Trước Khi Huấn Luyện AI", learnIntro:"Hiểu ý tưởng trước, sau đó áp dụng ngay trong hoạt động. Em có thể mở lại phần này bất cứ lúc nào.", learnPrev:"Trước", learnNext:"Tiếp theo", learnStart:"Bắt đầu phòng lab",
+      learnStep1:"Prompt là gì?", learnStep2:"C–T–C–O", learnStep3:"Mơ hồ và rõ ràng", learnStep4:"Thử & cải thiện", learnStep5:"AI trong game và AI thật",
+      learnKicker1:"KIẾN THỨC 1/5", learnKicker2:"KIẾN THỨC 2/5", learnKicker3:"KIẾN THỨC 3/5", learnKicker4:"KIẾN THỨC 4/5", learnKicker5:"KIẾN THỨC 5/5",
+      learn1Title:"Prompt là gì?", learn1Lead:"Prompt là thông tin hoặc hướng dẫn em đưa cho AI để định hướng AI cần làm gì. Prompt càng rõ thì AI càng dễ hiểu mục tiêu em muốn.",
+      learn1Card1Title:"Cho biết bối cảnh", learn1Card1Desc:"Bối cảnh hữu ích giúp AI hiểu tình huống, đối tượng hoặc mục đích của nhiệm vụ.", learn1Card2Title:"Nói rõ việc cần làm", learn1Card2Desc:"Dùng hành động cụ thể như giải thích, so sánh, liệt kê, thiết kế, tóm tắt hoặc tạo ra.", learn1Card3Title:"Thêm giới hạn cần thiết", learn1Card3Desc:"Nêu độ tuổi, độ dài, giọng điệu, công cụ được dùng hoặc những nội dung bắt buộc phải có.", learn1Card4Title:"Mô tả kết quả", learn1Card4Desc:"Cho biết câu trả lời cuối nên ở dạng nào: gạch đầu dòng, bảng, ba ý tưởng, đoạn văn ngắn...",
+      learn1Check:"Hướng dẫn nào hữu ích hơn cho AI?", learn1ChoiceBad:"Kể cho tôi về vũ trụ.", learn1ChoiceGood:"Giải thích hố đen cho một bạn 10 tuổi bằng 3 gạch đầu dòng đơn giản.", learn1FeedbackGood:"Đúng. Hướng dẫn này cho AI biết rõ hơn nhiệm vụ, đối tượng và dạng kết quả.", learn1FeedbackBad:"AI vẫn có thể trả lời, nhưng sẽ phải tự đoán rất nhiều. Prompt rõ hơn sẽ định hướng tốt hơn.",
+      learn2Title:"Dùng khung C–T–C–O", learn2Lead:"C–T–C–O là một checklist đơn giản giúp xây dựng prompt rõ hơn. Không phải lúc nào cũng cần đủ bốn phần, nhưng kiểm tra cả bốn giúp em nhận ra mình đang thiếu gì.", ctcoC:"Context — Bối cảnh", ctcoCDesc:"AI cần biết tình huống, vai trò, đối tượng hoặc thông tin nền nào?", ctcoT:"Task — Nhiệm vụ", ctcoTDesc:"AI cần làm chính xác việc gì?", ctcoC2:"Constraints — Giới hạn", ctcoC2Desc:"Có quy tắc, giới hạn, nội dung bắt buộc hoặc điều cần tránh nào?", ctcoO:"Output — Kết quả", ctcoODesc:"Câu trả lời cuối cùng nên có hình thức như thế nào?", learn2ExampleTitle:"Ví dụ", learn2Example:"Em đang hỗ trợ một học sinh lớp 5 (Bối cảnh). Hãy giải thích quang hợp (Nhiệm vụ). Dùng từ đơn giản và không quá 80 từ (Giới hạn). Kết thúc bằng 3 ý chính (Kết quả).", learn2NoteTitle:"Quan trọng", learn2Note:"C–T–C–O là khung để suy nghĩ, không phải công thức kỳ diệu. Prompt rõ có thể giúp kết quả tốt hơn, nhưng AI vẫn có thể sai, thiếu bối cảnh hoặc đưa thông tin chưa chính xác.",
+      learn3Title:"Prompt mơ hồ và prompt rõ ràng", learn3Lead:"So sánh hai prompt. Cả hai đều muốn một kế hoạch học, nhưng prompt thứ hai đưa ra hướng dẫn cụ thể hơn nhiều.", learn3BadLabel:"MƠ HỒ", learn3Bad:"Lập kế hoạch học cho tôi.", learn3GoodLabel:"RÕ HƠN VỚI C–T–C–O", learn3Good:"Tôi có bài kiểm tra Khoa học vào thứ Sáu (Bối cảnh). Hãy lập kế hoạch ôn tập (Nhiệm vụ). Tôi có thể học 20 phút mỗi ngày và cần ôn từ vựng cùng câu hỏi luyện tập (Giới hạn). Trình bày thành bảng 4 ngày, mỗi ngày một mục tiêu (Kết quả).", learn3Question:"Điểm nào đã được cải thiện trong prompt rõ hơn?", learn3Opt1:"Mục tiêu cụ thể hơn", learn3Opt2:"Có thêm giới hạn hữu ích", learn3Opt3:"Dạng kết quả rõ hơn", learn3Opt4:"Tất cả các ý trên", learn3Correct:"Chính xác. Prompt rõ giúp giảm việc AI phải tự đoán bằng cách xác định mục tiêu, giới hạn và dạng kết quả.",
+      learn4Title:"Prompt là một vòng lặp: thử, kiểm tra, cải thiện", learn4Lead:"Một prompt đầu tiên tốt là hữu ích, nhưng người dùng AI tốt còn kiểm tra kết quả. Nếu câu trả lời thiếu, chưa rõ hoặc sai, hãy cải thiện prompt rồi thử lại.", learn4Step1:"1. VIẾT PROMPT", learn4Step2:"2. KIỂM TRA", learn4Step3:"3. CẢI THIỆN", learn4Step4:"4. THỬ LẠI", learn4CheckTitle:"Khi nào nên chỉnh lại prompt?", learn4Choice1:"Khi thiếu thông tin quan trọng", learn4Choice2:"Khi dạng kết quả không đúng", learn4Choice3:"Khi câu trả lời chưa rõ", learn4Choice4:"Bất kỳ trường hợp nào ở trên", learn4Feedback:"Đúng. Viết prompt là quá trình lặp lại. Hãy kiểm tra kết quả trước khi xem nhiệm vụ là hoàn thành.",
+      learn5Title:"Hoạt động này dùng một AI nhỏ dựa trên quy tắc", learn5Lead:"AI trong trò chơi được làm đơn giản có chủ đích. Em dạy các trí nhớ dạng Câu hỏi/Câu trả lời và AI sẽ cố gắng so khớp với nội dung người dùng nhập. Nhờ vậy em có thể nhìn thấy cơ chế hoạt động rõ hơn.", learn5GameTitle:"Trong trò chơi này", learn5GameDesc:"AI tìm trong những trí nhớ do em tạo. Cách diễn đạt gần giống có thể hoạt động, nhưng AI không thật sự hiểu chủ đề.", learn5RealTitle:"Với AI tạo sinh", learn5RealDesc:"Các mô hình như ChatGPT đã học các mẫu từ lượng dữ liệu rất lớn. Prompt không dạy cho mô hình một trí nhớ mới theo cách của trò chơi; prompt chủ yếu định hướng phản hồi trong lần tương tác hiện tại.", learn5BridgeTitle:"Vậy vì sao vẫn dùng C–T–C–O?", learn5BridgeDesc:"Trò chơi giúp em luyện cách diễn đạt chính xác. Khi dùng AI tạo sinh sau này, cùng thói quen đó—đưa đủ bối cảnh, nhiệm vụ rõ, giới hạn hữu ích và dạng kết quả—sẽ giúp em nói rõ điều mình thật sự muốn.", learn5Close:"Bây giờ hãy huấn luyện AI nhỏ của em, thử xem nó làm được và chưa làm được gì, đồng thời quan sát chất lượng hướng dẫn ảnh hưởng đến trải nghiệm như thế nào.",
+
+      aiNameLabel:"Tên AI", brainCapacity:"Dung Lượng Não", memoriesSuffix:"trí nhớ",
+      scoreboardBtn:"Bảng Điểm", scoreboardTitle:"Bảng Điểm",
+      knowledgeStored:"Kiến Thức Đã Lưu", correctAnswers:"Câu Trả Lời Đúng",
+      unknownQuestions:"Câu Hỏi Chưa Biết", brainLevel:"Cấp Độ Não", completion:"Hoàn Thành",
+      endSession:"Kết Thúc Buổi Học",
+      trainTitle:"Huấn Luyện AI Của Bạn",
+      knowTypeLabel:"Loại Kiến Thức", knowTypeHint:"Chọn loại trí nhớ này",
+      questionLabel:"Câu Hỏi / Từ Khóa", questionHint:"Người dùng sẽ gõ gì để kích hoạt câu trả lời này?",
+      questionPlaceholder:"vd: Tên của bạn là gì?",
+      answerLabel:"Câu Trả Lời", answerHint:"AI nên trả lời gì? Hãy viết rõ ràng!",
+      answerPlaceholder:"vd: Tôi tên là Robo.",
+      teachBtn:"Dạy AI",
+      libraryTitle:"Thư Viện Kiến Thức", librarySearchPlaceholder:"tìm kiếm",
+      emptyStateNoMemories:"AI của bạn chưa biết gì cả! Hãy dạy nó trí nhớ đầu tiên ở trên.",
+      emptyStateNoMatch:"Không tìm thấy trí nhớ phù hợp.",
+      typeFact:"Sự Thật", typeRule:"Quy Tắc", typeIdentity:"Danh Tính", typePersonality:"Tính Cách",
+      chatTitle:"Trò Chuyện Với AI", chatPlaceholder:"Hỏi AI của bạn điều gì đó...",
+      quickHintHello:"Xin chào", quickHintName:"Tên?", quickHintFriendly:"Thân thiện?",
+      footerLegend:"Mọi thứ bạn dạy chỉ được lưu trong tab trình duyệt này — không gửi đi đâu cả. Tải lại trang sẽ tạo một AI mới.",
+      missionsBtn:"Nhiệm Vụ", missionsTitle:"Nhiệm Vụ",
+      badgesBtn:"Huy Hiệu", badgesTitle:"Thành Tích",
+      editTitle:"Chỉnh Sửa Trí Nhớ", cancelBtn:"Hủy", saveBtn:"Lưu thay đổi",
+      keepTraining:"Tiếp tục huấn luyện", presentBtn:"Trình bày trước lớp",
+      memoriesLearned:"Trí Nhớ Đã Học", questionsAnswered:"Câu Hỏi Đã Trả Lời",
+      achievementsLabel:"Thành Tích", noBadgesYet:"Chưa có huy hiệu nào — hãy tiếp tục huấn luyện!",
+      unknownReply:"Tôi chưa học điều đó. Bạn dạy tôi nhé?",
+      welcomeMsg:"Xin chào! Tôi là AI hoàn toàn mới. Tôi chưa biết gì cả — hãy dạy tôi ở bên trái, rồi quay lại trò chuyện với tôi nhé!",
+      achvUnlocked:"Mở Khóa Thành Tích:",
+      markTried:"Đánh dấu đã thử", markedDone:"Đã đánh dấu",
+      levelBaby:"AI Sơ Sinh", levelLearning:"AI Đang Học", levelSmart:"AI Thông Minh", levelExpert:"AI Chuyên Gia", levelSuper:"AI Siêu Việt",
+      achvFirstMemory:"Trí Nhớ Đầu Tiên", achvTenMemories:"10 Trí Nhớ", achvTwentyMemories:"20 Trí Nhớ",
+      achvFirstSuccess:"Câu Trả Lời Đúng Đầu Tiên", achvAnimalExpert:"Chuyên Gia Động Vật",
+      achvHistoryExpert:"Chuyên Gia Lịch Sử", achvScienceExpert:"Chuyên Gia Khoa Học", achvMasterTrainer:"Bậc Thầy Huấn Luyện",
+      m1title:"Dạy AI 5 sự thật", m1desc:"Thêm 5 trí nhớ loại Sự Thật.",
+      m2title:"Dạy AI biết nó là ai", m2desc:"Thêm ít nhất 1 trí nhớ Danh Tính.",
+      m3title:"Dạy AI chào hỏi mọi người", m3desc:"Thêm ít nhất 1 trí nhớ Quy Tắc (vd: lời chào).",
+      m4title:"Trả lời đúng 10 câu hỏi", m4desc:"Đạt 10 câu trả lời đúng trong trò chuyện.",
+      m5title:"Trở thành Chuyên Gia Động Vật", m5desc:"Dạy 5 trí nhớ về động vật.",
+      m6title:"Trở thành Chuyên Gia Vũ Trụ", m6desc:"Dạy 5 trí nhớ về vũ trụ hoặc khoa học.",
+      m7title:"Đổi máy tính với đội khác", m7desc:"Đội kia có thể làm khó AI của bạn không? Đánh dấu khi đã thử!",
+      guideBtn:"Hướng dẫn", guideTitle:"Hướng Dẫn Chơi",
+      guideIntro:"Phòng Thí Nghiệm AI là trò chơi dạy AI của riêng bạn. Chơi theo nhóm 3–4 người và xem bạn có thể làm AI thông minh đến đâu!",
+      guideStep1Title:"Dạy AI của bạn", guideStep1Desc:"Ở bảng bên trái, chọn loại kiến thức, viết câu hỏi hoặc từ khóa, rồi viết câu trả lời rõ ràng. Nhấn Dạy AI để thêm vào trí nhớ của AI.",
+      guideStep2Title:"Trò chuyện với AI", guideStep2Desc:"Ở bảng bên phải, gõ câu hỏi như một người thật sẽ hỏi. AI chỉ có thể trả lời dựa trên những gì bạn đã dạy — không hơn không kém.",
+      guideStep3Title:"Xem AI lớn lên", guideStep3Desc:"Mỗi trí nhớ giúp não AI phát triển. Đạt các cấp độ mới — AI Sơ Sinh, AI Đang Học, AI Thông Minh, AI Chuyên Gia, AI Siêu Việt — khi bạn dạy thêm nhiều kiến thức.",
+      guideStep4Title:"Hoàn thành nhiệm vụ & nhận huy hiệu", guideStep4Desc:"Mở bảng Nhiệm Vụ và Huy Hiệu (góc dưới màn hình) để xem thử thách và thành tích bạn có thể mở khóa.",
+      guideTypesTitle:"Các Loại Kiến Thức",
+      guideTypesFactDesc:'thông tin khách quan, vd: "Con mèo là gì?" → "Con mèo là một loài động vật có vú."',
+      guideTypesRuleDesc:'phản ứng cho một tình huống, vd: "Xin chào" → "Xin chào! Rất vui được gặp bạn."',
+      guideTypesIdentityDesc:'AI là ai, vd: "Tên của bạn là gì?" → "Tôi tên là Robo."',
+      guideTypesPersonalityDesc:'cách AI cư xử, vd: "Bạn có thân thiện không?" → "Có! Tôi luôn trả lời lịch sự."',
+      guideTipTitle:"Mẹo hay",
+      guideTipText:"Nếu AI nói \"Tôi chưa học điều đó\", nghĩa là bạn cần dạy nó! Một AI giỏi cần câu trả lời rõ ràng, cụ thể — câu trả lời mơ hồ sẽ khiến AI bối rối.",
+      guideCloseBtn:"Đã hiểu!",
+      thBtn:"🔐 Khu Vực Giáo Viên", thBadge:"CHỈ DÀNH CHO GIÁO VIÊN", thTitle:"Khu Vực Giáo Viên",
+      thIntro:"Phần này dành cho giáo viên đứng lớp, không dành cho học sinh. Nội dung gồm mục tiêu bài học, trình tự tiết học gợi ý, các khái niệm nền tảng của trò chơi, và cách truyền đạt cho học sinh.",
+      thTabOverview:"Tổng Quan", thTabAgenda:"Trình Tự Tiết Học", thTabConcepts:"Khái Niệm", thTabScript:"Kịch Bản Giảng", thTabDiscussion:"Thảo Luận", thTabAssess:"Đánh Giá", thTabTrouble:"Xử Lý Sự Cố",
+      thObjTitle:"Mục Tiêu Bài Học",
+      thObj1:"Học sinh tự diễn giải được rằng AI chỉ \"biết\" những gì được cung cấp — nó không tự suy nghĩ hay tự hiểu.",
+      thObj2:"Học sinh luyện viết hướng dẫn rõ ràng, cụ thể, không mơ hồ (bước đầu của kỹ năng viết prompt).",
+      thObj3:"Học sinh nhận ra sự khác biệt giữa trò chơi huấn luyện đơn giản này và một mô hình AI thật như ChatGPT.",
+      thObj4:"Học sinh làm việc nhóm để lên kế hoạch, phân công và kiểm tra các mục kiến thức đã dạy.",
+      thObj5:"Học sinh liên hệ hoạt động này với các khái niệm rộng hơn về công dân số và tư duy máy tính: chất lượng dữ liệu, phân loại, và kiểm thử/gỡ lỗi.",
+      thPrepTitle:"Chuẩn Bị",
+      thPrep1:"Quy mô nhóm: 3–4 học sinh mỗi thiết bị/nhóm.",
+      thPrep2:"Thời lượng gợi ý: 45–60 phút (có phiên bản rút gọn 30 phút ở cuối tab Trình Tự Tiết Học).",
+      thPrep3:"Không cần cài đặt hay internet — mọi thứ chạy và lưu trong tab trình duyệt. Tải lại trang sẽ làm mất dữ liệu AI.",
+      thPrep4:"Mở phần \"Hướng dẫn chơi\" một lần cho cả lớp trước khi học sinh bắt đầu (giải thích các Loại Kiến Thức, Nhiệm Vụ và Huy Hiệu ở góc nhìn học sinh).",
+      thPrep5:"Mỗi nhóm 1 thiết bị (laptop/tablet), trình duyệt hiện đại bất kỳ, không cần đăng nhập.",
+      thPrep6:"Nên có (không bắt buộc): máy chiếu hoặc màn hình chung để chạy một lượt demo trực tiếp trước khi các nhóm tự làm.",
+      thPrep7:"Tùy chọn: gán trước cho mỗi nhóm một \"chủ đề chuyên gia\" khác nhau (động vật, khoa học, lịch sử, hoặc môn học của bạn) để AI các nhóm khác nhau, dễ so sánh sau này.",
+      thPrep8:"Một đồng hồ, hẹn giờ, hoặc đếm ngược hiển thị trên bảng giúp các nhóm canh thời gian qua từng giai đoạn.",
+      thPrep9:"Tự xem qua tab Khái Niệm và Kịch Bản Giảng trước giờ học để có thể giải thích \"vì sao\" chứ không chỉ \"làm thế nào\".",
+      thDiffTitle:"Phân Hóa & Mở Rộng",
+      thDiff1:"Nhóm hoàn thành sớm: thử thách đạt cấp AI Chuyên Gia hoặc AI Siêu Việt, hoàn thành mọi nhiệm vụ kể cả Nhiệm vụ 7 (đổi thiết bị), hoặc dạy một sự thật \"mẹo\" với từ khóa kích hoạt rất cụ thể để nhóm khác đi tìm.",
+      thDiff2:"Nhóm cần hỗ trợ thêm: đưa sẵn 3–5 gợi ý sự thật trên giấy (về môn học hoặc trường lớp) để các em chuyển thành cặp Câu Hỏi/Câu Trả Lời, và ghép Tester của nhóm đó với một nhóm mạnh hơn sau khi nhóm mạnh xong phần dạy AI.",
+      thDiff3:"Với lớp lớn tuổi hơn hoặc trình độ cao hơn: bỏ qua phần làm quen cơ bản, yêu cầu các nhóm thiết kế AI như một \"bot chăm sóc khách hàng\" hoặc \"bot hỏi đáp lớp học\" cho một tình huống thực tế cụ thể, sau đó thảo luận việc so khớp chính xác sẽ thất bại ở đâu trong thực tế.",
+      thAgendaTitle:"Trình Tự Tiết Học Chi Tiết (60 phút)",
+      thA0Time:"Trước giờ học", thA0Title:"Chuẩn bị", thA0Desc:"Chuẩn bị thiết bị, chia nhóm, và (tùy chọn) gán mỗi nhóm một chủ đề chuyên gia khác nhau để AI các nhóm khác biệt nhau.",
+      thA0Sub1:"Tự mở Khu Vực Giáo Viên này một lần và xem qua tab Khái Niệm và Kịch Bản Giảng.",
+      thA0Sub2:"Chia nhóm 3–4 học sinh và viết danh sách nhóm / chủ đề chuyên gia lên bảng.",
+      thA0Sub3:"Nếu dùng máy chiếu, mở thêm một bản sao của app để chạy demo trực tiếp.",
+      thA1Time:"0–5 phút", thA1Title:"Mở đầu gây chú ý", thA1Desc:"Hỏi cả lớp: \"AI có thực sự suy nghĩ không, hay nó đang làm điều gì khác?\" Ghi nhận vài câu trả lời, chưa cần chỉnh sửa ngay.",
+      thA1Sub1:"Gọi 2–3 học sinh để nghe dự đoán của các em; ghi từ khóa lên bảng mà không phán xét đúng/sai.",
+      thA1Sub2:"Nói với học sinh: \"Đến cuối buổi học, các em sẽ tự xây được một AI nhỏ và có thể tự trả lời câu hỏi này.\"",
+      thA1Tip:"Mẹo: giữ phần này thật nhanh — mục tiêu là gợi tò mò, chưa cần câu trả lời ngay.",
+      thA2Time:"5–15 phút", thA2Title:"Giảng khái niệm & demo trực tiếp", thA2Desc:"Giới thiệu 4 Loại Kiến Thức bằng \"Hướng dẫn chơi\" sẵn có trong app, sau đó dạy một trí nhớ trực tiếp trên máy chiếu để học sinh thấy toàn bộ chu trình một lần trước khi tự làm.",
+      thA2Sub1:"Mở \"Hướng dẫn chơi\" và đi qua Sự Thật, Quy Tắc, Danh Tính, Tính Cách cùng các ví dụ có sẵn.",
+      thA2Sub2:"Demo trực tiếp: dạy một trí nhớ Danh Tính (vd: \"Tên của bạn là gì?\" → tên của nó), sau đó chat và nhận câu trả lời đúng.",
+      thA2Sub3:"Demo tiếp tục: hỏi lại cùng ý đó nhưng diễn đạt khác (vd: \"Bạn là ai vậy?\") và cho cả lớp thấy AI trả lời sai — đây là cách hé lộ trước bài học chính mà không làm mất phần thảo luận sau.",
+      thA2Sub4:"Chỉ nhanh cho học sinh thấy nút Nhiệm Vụ (🎯) và Huy Hiệu (🏅) như danh sách việc cần làm cho giai đoạn tiếp theo.",
+      thA2Tip:"Mẹo: để cả lớp phản ứng thành tiếng khi AI demo \"trả lời sai\" — sự bất ngờ đó chính là điều làm phần đúc kết sau này hiệu quả hơn.",
+      thA3Time:"15–20 phút", thA3Title:"Chia nhóm & vai trò", thA3Desc:"Ổn định các nhóm, đặt tên cho AI, và phân vai đơn giản để cả 3–4 học sinh đều tham gia.",
+      thA3Sub1:"Người Dạy (Trainer): gõ Câu Hỏi/Câu Trả Lời vào app.",
+      thA3Sub2:"Người Kiểm Tra (Checker): đọc to từng câu trả lời trước khi gửi — đã rõ ràng và cụ thể chưa?",
+      thA3Sub3:"Người Thử (Tester): sẽ phụ trách giai đoạn trò chuyện/kiểm tra sau này.",
+      thA3Sub4:"Yêu cầu mỗi nhóm đặt tên AI của mình ở ô trên header trước khi tiếp tục.",
+      thA3Tip:"Mẹo: đổi vai giữa chừng giai đoạn dạy AI để ai cũng được gõ ít nhất một lần.",
+      thA4Time:"20–38 phút", thA4Title:"Giai đoạn dạy AI (hoạt động chính)", thA4Desc:"Các nhóm thực hiện theo bảng Nhiệm Vụ theo thứ tự. Đi vòng quanh lớp liên tục để kiểm tra câu trả lời có cụ thể, rõ ràng hay còn mơ hồ.",
+      thA4Sub1:"Thứ tự gợi ý: trí nhớ Danh Tính trước (Nhiệm vụ 2), rồi Quy Tắc/lời chào (Nhiệm vụ 3), rồi 5 Sự Thật (Nhiệm vụ 1), rồi chủ đề chuyên gia (Nhiệm vụ 5 hoặc 6).",
+      thA4Sub2:"Ở phút thứ ~29, làm \"kiểm tra não\" 1 phút: cho các nhóm đọc to số trí nhớ và Cấp Độ Não của mình để tạo không khí thi đua thân thiện.",
+      thA4Sub3:"Chú ý các câu trả lời mơ hồ (\"nó dễ thương\", \"vài thứ\") — dừng lại và hỏi \"một người lạ có hiểu được câu trả lời này không?\"",
+      thA4Sub4:"Chú ý các mục trùng lặp/mâu thuẫn khi các bạn trong nhóm gõ cùng một từ khóa nhưng câu trả lời khác nhau.",
+      thA4Tip:"Mẹo: đây là giai đoạn dài nhất — đừng vội, phần lớn việc học diễn ra ở đây.",
+      thA5Time:"38–46 phút", thA5Title:"Kiểm tra & thử làm khó AI", thA5Desc:"Người Thử trò chuyện với AI của nhóm mình, sau đó (Nhiệm vụ 7) đổi thiết bị với nhóm khác và thử làm khó AI của nhau bằng cách hỏi cùng một ý nhưng diễn đạt khác đi.",
+      thA5Sub1:"Đầu tiên, mỗi nhóm tự kiểm tra AI của mình bằng các nút gợi ý nhanh và câu hỏi tự nghĩ ra.",
+      thA5Sub2:"Sau đó đổi thiết bị với nhóm bên cạnh cho Nhiệm vụ 7 — khuyến khích diễn đạt lại, không chỉ gõ lại y hệt câu hỏi.",
+      thA5Sub3:"Yêu cầu các nhóm ghi lại một câu hỏi mà AI trả lời sai và lý do vì sao, để dùng cho phần đúc kết.",
+      thA5Tip:"Mẹo: bong bóng \"chưa biết câu trả lời\" (viền cam đứt nét) là một cơ hội học tập, không phải thất bại — hãy nhắc điều này nếu có nhóm nản lòng.",
+      thA6Time:"46–54 phút", thA6Title:"Trình bày & tổng kết", thA6Desc:"Mỗi nhóm bấm \"Kết Thúc Buổi Học\" và trình bày ngắn gọn tên AI, cấp độ, và trí nhớ mà nhóm thích nhất đã dạy được.",
+      thA6Sub1:"Cho mỗi nhóm tối đa 30–45 giây — tên AI, Cấp Độ Não, một trí nhớ tự hào, một câu hỏi từng làm AI bối rối.",
+      thA6Sub2:"Dùng số liệu ở Bảng Điểm (Kiến Thức Đã Lưu, Câu Trả Lời Đúng, % Hoàn Thành) làm tham chiếu chung nhanh khi trình bày.",
+      thA6Tip:"Mẹo: khen ngợi nhóm có AI bị làm khó theo cách thú vị cũng nhiều như nhóm có AI \"thông minh nhất\" — đó mới là khoảnh khắc học được nhiều nhất.",
+      thA7Time:"54–60 phút", thA7Title:"Đúc kết & liên hệ thực tế", thA7Desc:"Dùng các câu hỏi ở tab Thảo Luận để liên hệ trò chơi với cách AI thật được huấn luyện, và khép lại câu hỏi mở đầu.",
+      thA7Sub1:"Quay lại câu hỏi mở đầu (\"AI có thực sự suy nghĩ không?\") và để học sinh tự trả lời bằng lời của mình.",
+      thA7Sub2:"Dùng câu kết ở tab Kịch Bản Giảng để giới thiệu cách các mô hình thật như ChatGPT khác biệt về quy mô và khả năng hiểu.",
+      thShortTitle:"Phiên Bản Rút Gọn 30 Phút",
+      thShort1:"Mở đầu + Giảng khái niệm gộp lại: 5 phút (bỏ demo trực tiếp, chỉ mở phần hướng dẫn).",
+      thShort2:"Chia nhóm: 2 phút (bỏ phân vai chính thức, chỉ cần chọn ai gõ trước).",
+      thShort3:"Giai đoạn dạy AI: 13 phút (chỉ làm Nhiệm vụ 1–3: sự thật, danh tính, quy tắc).",
+      thShort4:"Giai đoạn kiểm tra: 5 phút (bỏ phần đổi thiết bị, chỉ kiểm tra AI của chính nhóm mình).",
+      thShort5:"Đúc kết: 5 phút (chỉ dùng câu hỏi thảo luận số 1 và số 4).",
+      thConceptsTitle:"Khái Niệm Cần Nắm Trước Khi Dạy",
+      thC1Title:"1. Đây không phải chatbot thật — và đó chính là mục đích",
+      thC1Desc:"Bên dưới, AI này chỉ kiểm tra xem tin nhắn của học sinh có trùng khớp chính xác, hoặc chứa, một câu hỏi/từ khóa đã được dạy hay không. Nó không hiểu ý nghĩa thật sự. Cơ chế được làm đơn giản có chủ đích để học sinh nhìn thấy rõ nguyên lý — các mô hình thật như ChatGPT được huấn luyện trên lượng văn bản khổng lồ và có thể khái quát hóa với cách diễn đạt mới, đó là lý do chúng trả lời được cả những điều chưa từng được dạy trực tiếp.",
+      thC2Title:"2. Các Loại Kiến Thức phản ánh cách dữ liệu huấn luyện AI được tổ chức",
+      thC2Desc:"Sự Thật = thông tin khách quan. Quy Tắc = phản ứng cố định cho một tình huống (như lời chào). Danh Tính = AI là ai. Tính Cách = cách AI cư xử. Việc phân loại kiến thức như vậy là phiên bản đơn giản hóa của cách dữ liệu thật được gán nhãn và phân loại trước khi huấn luyện mô hình.",
+      thC3Title:"3. \"Đầu vào rác, đầu ra rác\"",
+      thC3Desc:"Trí nhớ mơ hồ hoặc thiếu nhất quán khiến AI nhỏ trong trò chơi hoạt động kém ổn định. Từ trải nghiệm đó, giáo viên có thể liên hệ sang kỹ năng viết prompt: Bối cảnh, Nhiệm vụ, Giới hạn và Kết quả càng rõ thì AI tạo sinh càng ít phải tự đoán. Không nên nói rằng hệ thống Câu hỏi/Câu trả lời này chính là cách mô hình ngôn ngữ lớn được huấn luyện.",
+      thC4Title:"4. Vì sao diễn đạt lại câu hỏi khiến AI \"đơ\"",
+      thC4Desc:"Nếu học sinh dạy \"Tên của bạn là gì?\" nhưng sau đó hỏi \"Bạn là ai vậy?\", AI nhiều khả năng sẽ nói chưa học điều đó — dù một người thật sẽ hiểu đây là cùng một câu hỏi. Đây là thời điểm tốt nhất để giải thích khoảng cách giữa việc so khớp đơn giản và khả năng hiểu ngôn ngữ thật sự.",
+      thScriptTitle:"Kịch Bản Giảng Dạy Mẫu",
+      thS1Label:"Câu mở đầu", thS1Text:"\"Hôm nay, các em không dùng một AI có sẵn — các em sẽ tự xây dựng một AI. Nó bắt đầu từ con số không, không biết gì cả. Mọi thứ nó nói được đến cuối buổi học đều là do chính các em đã dạy nó.\"",
+      thS2Label:"Trước giai đoạn dạy AI", thS2Text:"\"Trước khi gõ, cả nhóm hãy thống nhất câu trả lời trước. Một câu trả lời lộn xộn sẽ tạo ra một AI bối rối — một câu trả lời rõ ràng sẽ tạo ra một AI thông minh.\"",
+      thS3Label:"Trước giai đoạn kiểm tra", thS3Text:"\"Bây giờ hãy thử hỏi AI của em cùng một điều nhưng theo cách khác. Quan sát chuyện gì xảy ra — và suy nghĩ vì sao.\"",
+      thS4Label:"Câu kết", thS4Text:"\"AI các em vừa xây hôm nay là một hệ thống đơn giản dựa trên quy tắc, không phải cách ChatGPT hoạt động. AI tạo sinh thật đã học các mẫu từ lượng dữ liệu rất lớn. Điều giống nhau nằm ở vai trò của người dùng: đưa hướng dẫn rõ, kiểm tra kết quả và cải thiện prompt khi cần.\"",
+      thDiscTitle:"Câu Hỏi Thảo Luận",
+      thDisc1:"Vì sao AI của em không trả lời được một câu hỏi mà lẽ ra nó \"phải\" biết, chỉ vì cách diễn đạt khác đi?",
+      thDisc2:"Loại Kiến Thức nào khó viết rõ ràng nhất, và tại sao?",
+      thDisc3:"Điều gì sẽ xảy ra nếu hai bạn trong nhóm dạy AI hai câu trả lời khác nhau cho cùng một câu hỏi?",
+      thDisc4:"AI thật như ChatGPT giống và khác gì so với AI mà em vừa xây dựng?",
+      thDisc5:"Nếu có thời gian không giới hạn, em sẽ dạy thêm điều gì cho AI của mình?",
+      thTroubleTitle:"Sự Cố Thường Gặp & Cách Xử Lý",
+      thT1Title:"\"AI của em không bao giờ hiểu em nói gì!\"", thT1Desc:"Kiểm tra xem Câu Hỏi/Từ Khóa đã dạy có gần giống với những gì các em đang gõ trong khung chat không. Khuyến khích dạy thêm vài cách diễn đạt khác nhau cho cùng một câu hỏi, như những trí nhớ riêng biệt.",
+      thT2Title:"Học sinh chép y hệt kiến thức của nhóm khác", thT2Desc:"Giao mỗi nhóm một chủ đề chuyên gia khác nhau (động vật, khoa học, lịch sử) để AI của các nhóm trở nên khác biệt, rồi so sánh ở phần trình bày.",
+      thT3Title:"Một nhóm hoàn thành quá sớm", thT3Desc:"Hướng nhóm đó đến Nhiệm vụ 7 (đổi thiết bị và thử làm khó AI của nhóm khác) hoặc thử thách nhóm đạt cấp độ Não cao hơn (AI Chuyên Gia / AI Siêu Việt).",
+      thT4Title:"Có vẻ như tiến trình bị mất", thT4Desc:"Mọi dữ liệu chỉ tồn tại trong tab trình duyệt đó. Nhắc học sinh trước là không được tải lại hay đóng tab trước khi bấm \"Kết Thúc Buổi Học\".",
+      thCloseBtn:"Đóng",
+      thAssessTitle:"Gợi Ý Đánh Giá (Tùy Chọn)",
+      thAssessIntro:"Đây chủ yếu là một hoạt động mang tính hình thành, tạo hứng thú — không phải một bài kiểm tra lấy điểm. Nếu muốn có bằng chứng học tập nhẹ nhàng, Bảng Điểm và Huy Hiệu có sẵn trong app đã đủ dùng cho phần lớn nhu cầu.",
+      thR1Title:"Độ rõ ràng của câu trả lời", thR1Desc:"Các mục Sự Thật, Quy Tắc, Danh Tính, Tính Cách có cụ thể, một người lạ hiểu được không, hay còn mơ hồ (\"nó dễ thương\", \"vài thứ\")?",
+      thR2Title:"Độ bao phủ các Loại Kiến Thức", thR2Desc:"Nhóm có dùng đủ cả 4 loại một cách có chủ đích không, hay chỉ dồn vào Sự Thật? Kiểm tra các nhãn màu trong Thư Viện Kiến Thức.",
+      thR3Title:"Kết quả kiểm tra", thR3Desc:"Dùng chỉ số Câu Trả Lời Đúng và % Hoàn Thành ở Bảng Điểm làm thước đo nhanh, có sẵn, cho việc AI được dạy tốt đến đâu.",
+      thR4Title:"Tinh thần hợp tác", thR4Desc:"Mọi thành viên có đóng góp không (vai Trainer / Checker / Tester), và mỗi học sinh có thể giải thích được một trí nhớ mà mình đã tự thêm vào không?",
+      thR5Title:"Hiểu khái niệm (phiếu ra về)", thR5Desc:"Yêu cầu mỗi học sinh viết một câu: \"AI của em trả lời sai vì ___.\" Câu trả lời đúng nên nhắc đến việc so khớp chính xác/từ khóa, chứ không phải \"nó ngu\" hay \"nó bị lỗi\".",
+      thAuthTitle:"Truy Cập Dành Cho Giáo Viên", thAuthDesc:"Khu vực này chỉ dành cho giáo viên. Nhập mật khẩu giáo viên để tiếp tục.",
+      thAuthPlaceholder:"Mật khẩu", thAuthError:"Sai mật khẩu. Vui lòng thử lại.", thAuthSubmit:"Mở Khóa"
+    }
+  };
+
+  function t(key){
+    return (I18N[state.lang] && I18N[state.lang][key]) || I18N.en[key] || key;
+  }
+
+  const LEVELS = [
+    {min:0, max:14, key:"levelBaby", emoji:"👶"},
+    {min:15, max:29, key:"levelLearning", emoji:"🐣"},
+    {min:30, max:44, key:"levelSmart", emoji:"🎓"},
+    {min:45, max:59, key:"levelExpert", emoji:"🧑‍🔬"},
+    {min:60, max:Infinity, key:"levelSuper", emoji:"🚀"}
+  ];
+
+  const ACHIEVEMENT_DEFS = [
+    {id:"first_memory", nameKey:"achvFirstMemory", emoji:"🌱", check: s => s.memories.length >= 1},
+    {id:"ten_memories", nameKey:"achvTenMemories", emoji:"🔟", check: s => s.memories.length >= 10},
+    {id:"twenty_memories", nameKey:"achvTwentyMemories", emoji:"💯", check: s => s.memories.length >= 20},
+    {id:"first_success", nameKey:"achvFirstSuccess", emoji:"✅", check: s => s.stats.correctAnswers >= 1},
+    {id:"animal_expert", nameKey:"achvAnimalExpert", emoji:"🐾", check: s => countKeywordFacts(s, ANIMAL_WORDS) >= 5},
+    {id:"history_expert", nameKey:"achvHistoryExpert", emoji:"📜", check: s => countKeywordFacts(s, HISTORY_WORDS) >= 5},
+    {id:"science_expert", nameKey:"achvScienceExpert", emoji:"🔬", check: s => countKeywordFacts(s, SCIENCE_WORDS) >= 5},
+    {id:"master_trainer", nameKey:"achvMasterTrainer", emoji:"👑", check: s => s.memories.length >= 30 && s.stats.correctAnswers >= 10}
+  ];
+
+  const ANIMAL_WORDS = ["cat","dog","animal","bird","fish","lion","tiger","bear","elephant","snake","insect","mammal","reptile","pet","wildlife","mèo","chó","động vật","chim","cá","voi","rắn","thú"];
+  const HISTORY_WORDS = ["history","war","king","queen","ancient","century","empire","revolution","president","historical","lịch sử","chiến tranh","vua","hoàng đế","cổ đại","thế kỷ"];
+  const SCIENCE_WORDS = ["science","atom","energy","gravity","planet","space","chemistry","biology","physics","cell","experiment","khoa học","nguyên tử","năng lượng","trọng lực","hành tinh","vũ trụ","hóa học","sinh học","vật lý"];
+
+  function countKeywordFacts(s, words){
+    return s.memories.filter(m => {
+      const text = (m.question + " " + m.answer).toLowerCase();
+      return words.some(w => text.includes(w));
+    }).length;
+  }
+
+  const MISSION_DEFS = [
+    {id:"m1", titleKey:"m1title", descKey:"m1desc",
+      progress: s => Math.min(s.memories.filter(m=>m.type==="fact").length, 5), target:5},
+    {id:"m2", titleKey:"m2title", descKey:"m2desc",
+      progress: s => Math.min(s.memories.filter(m=>m.type==="identity").length, 1), target:1},
+    {id:"m3", titleKey:"m3title", descKey:"m3desc",
+      progress: s => Math.min(s.memories.filter(m=>m.type==="rule").length, 1), target:1},
+    {id:"m4", titleKey:"m4title", descKey:"m4desc",
+      progress: s => Math.min(s.stats.correctAnswers, 10), target:10},
+    {id:"m5", titleKey:"m5title", descKey:"m5desc",
+      progress: s => Math.min(countKeywordFacts(s, ANIMAL_WORDS), 5), target:5},
+    {id:"m6", titleKey:"m6title", descKey:"m6desc",
+      progress: s => Math.min(countKeywordFacts(s, SCIENCE_WORDS), 5), target:5},
+    {id:"m7", titleKey:"m7title", descKey:"m7desc", manual:true, target:1}
+  ];
+  const manualMissionState = {};
+
+  /* =====================================================
+     DOM REFS
+  ===================================================== */
+  const $ = id => document.getElementById(id);
+  const els = {
+    langButtons: document.querySelectorAll(".lang-btn"),
+    aiNameInput: $("ai-name-input"),
+    headerAvatar: $("header-avatar"),
+    brainCountLabel: $("brain-count-label"),
+    brainBarFill: $("brain-bar-fill"),
+    levelPill: $("level-pill"),
+    memCounterNum: $("mem-counter-num"),
+    scoreboardToggle: $("scoreboard-toggle"),
+    learnToggle: $("learn-toggle"),
+    learnOverlay: $("learn-overlay"),
+    learnStepList: $("learn-step-list"),
+    learnContent: $("learn-content"),
+    learnProgressFill: $("learn-progress-fill"),
+    learnPrevBtn: $("learn-prev-btn"),
+    learnNextBtn: $("learn-next-btn"),
+    guideToggle: $("guide-toggle"),
+    guideOverlay: $("guide-overlay"),
+    guideCloseBtn: $("guide-close-btn"),
+    teacherHubToggle: $("teacher-hub-toggle"),
+    teacherHubOverlay: $("teacher-hub-overlay"),
+    teacherHubCloseBtn: $("teacher-hub-close-btn"),
+    teacherHubTabs: $("th-tabs"),
+    teacherHubAuthOverlay: $("teacher-hub-auth-overlay"),
+    teacherHubPasswordInput: $("teacher-hub-password-input"),
+    teacherHubAuthError: $("teacher-hub-auth-error"),
+    teacherHubAuthSubmit: $("teacher-hub-auth-submit"),
+    teacherHubAuthCancel: $("teacher-hub-auth-cancel"),
+    scoreboardPanel: $("scoreboard-panel"),
+    sbKnowledge: $("sb-knowledge"),
+    sbCorrect: $("sb-correct"),
+    sbUnknown: $("sb-unknown"),
+    sbLevel: $("sb-level"),
+    sbCompletion: $("sb-completion"),
+    endSessionBtn: $("end-session-btn"),
+
+    knowType: $("know-type"),
+    knowQuestion: $("know-question"),
+    knowAnswer: $("know-answer"),
+    teachBtn: $("teach-btn"),
+    librarySearch: $("library-search"),
+    memoryList: $("memory-list"),
+
+    chatWindow: $("chat-window"),
+    chatInput: $("chat-input"),
+    sendBtn: $("send-btn"),
+
+    missionFab: $("mission-fab"),
+    missionPanel: $("mission-panel"),
+    missionList: $("mission-list"),
+
+    achvFab: $("achv-fab"),
+    achvPanel: $("achv-panel"),
+    badgeGrid: $("badge-grid"),
+    achvToastZone: $("achv-toast-zone"),
+
+    editOverlay: $("edit-modal-overlay"),
+    editType: $("edit-type"),
+    editQuestion: $("edit-question"),
+    editAnswer: $("edit-answer"),
+    editCancelBtn: $("edit-cancel-btn"),
+    editSaveBtn: $("edit-save-btn"),
+
+    celebOverlay: $("celebration-overlay"),
+    celebAiName: $("celeb-ai-name"),
+    celebLevelText: $("celeb-level-text"),
+    celebMemories: $("celeb-memories"),
+    celebAnswered: $("celeb-answered"),
+    celebUnknown: $("celeb-unknown"),
+    celebBadgecount: $("celeb-badgecount"),
+    celebBadges: $("celeb-badges"),
+    celebCloseBtn: $("celeb-close-btn"),
+    celebPresentBtn: $("celeb-present-btn")
+  };
+
+  /* =====================================================
+     UTILITIES
+  ===================================================== */
+  function escapeHtml(str){
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function normalize(str){
+    return str.trim().toLowerCase().replace(/[?!.,]/g, "");
+  }
+
+  function getLevel(count){
+    return LEVELS.find(l => count >= l.min && count <= l.max) || LEVELS[LEVELS.length-1];
+  }
+
+  function randomAvatar(){
+    return AVATARS[Math.floor(Math.random()*AVATARS.length)];
+  }
+
+  /* =====================================================
+     TEACHING / MEMORY MANAGEMENT
+  ===================================================== */
+  function teachAI(){
+    const type = els.knowType.value;
+    const question = els.knowQuestion.value.trim();
+    const answer = els.knowAnswer.value.trim();
+
+    if(!question || !answer){
+      flashField(!question ? els.knowQuestion : els.knowAnswer);
+      return;
+    }
+
+    const memory = {
+      id: state.nextId++,
+      type: type,
+      question: question,
+      answer: answer
+    };
+    state.memories.push(memory);
+
+    els.knowQuestion.value = "";
+    els.knowAnswer.value = "";
+    els.knowQuestion.focus();
+
+    renderMemoryList();
+    refreshBrainSystem(true);
+    checkMissions();
+    checkAchievements();
+  }
+
+  function flashField(field){
+    field.style.borderColor = "#FF6B6B";
+    field.focus();
+    setTimeout(()=>{ field.style.borderColor = ""; }, 900);
+  }
+
+  function deleteMemory(id){
+    state.memories = state.memories.filter(m => m.id !== id);
+    renderMemoryList();
+    refreshBrainSystem(false);
+    checkMissions();
+  }
+
+  function openEditModal(id){
+    const mem = state.memories.find(m => m.id === id);
+    if(!mem) return;
+    state.editingId = id;
+    els.editType.value = mem.type;
+    els.editQuestion.value = mem.question;
+    els.editAnswer.value = mem.answer;
+    els.editOverlay.classList.add("open");
+  }
+
+  function saveEdit(){
+    const mem = state.memories.find(m => m.id === state.editingId);
+    if(!mem) return;
+    const q = els.editQuestion.value.trim();
+    const a = els.editAnswer.value.trim();
+    if(!q || !a) return;
+    mem.type = els.editType.value;
+    mem.question = q;
+    mem.answer = a;
+    els.editOverlay.classList.remove("open");
+    renderMemoryList();
+    checkMissions();
+    checkAchievements();
+  }
+
+  const TYPE_KEYS = {fact:"typeFact", rule:"typeRule", identity:"typeIdentity", personality:"typePersonality"};
+
+  function renderMemoryList(){
+    const query = normalize(els.librarySearch.value || "");
+    els.memoryList.innerHTML = "";
+
+    const filtered = state.memories.filter(m => {
+      if(!query) return true;
+      return normalize(m.question).includes(query) || normalize(m.answer).includes(query);
+    });
+
+    if(filtered.length === 0){
+      const emptyMsg = state.memories.length === 0
+        ? t("emptyStateNoMemories")
+        : t("emptyStateNoMatch");
+      els.memoryList.innerHTML = `
+        <div class="empty-state">
+          <span class="big-emoji">🧠💭</span>
+          ${escapeHtml(emptyMsg)}
+        </div>`;
+      return;
+    }
+
+    filtered.slice().reverse().forEach(mem => {
+      const card = document.createElement("div");
+      card.className = `memory-card type-${mem.type}`;
+      card.innerHTML = `
+        <span class="type-tag">${t(TYPE_KEYS[mem.type])}</span>
+        <span class="q">Q: ${escapeHtml(mem.question)}</span>
+        <span class="a">A: ${escapeHtml(mem.answer)}</span>
+        <div class="card-actions">
+          <button class="icon-btn" title="Edit" data-action="edit" data-id="${mem.id}">✏️</button>
+          <button class="icon-btn" title="Delete" data-action="delete" data-id="${mem.id}">🗑️</button>
+        </div>
+      `;
+      els.memoryList.appendChild(card);
+    });
+  }
+
+  els.memoryList.addEventListener("click", e => {
+    const btn = e.target.closest(".icon-btn");
+    if(!btn) return;
+    const id = parseInt(btn.dataset.id, 10);
+    if(btn.dataset.action === "edit") openEditModal(id);
+    if(btn.dataset.action === "delete") deleteMemory(id);
+  });
+
+  /* =====================================================
+     BRAIN SYSTEM
+  ===================================================== */
+  function refreshBrainSystem(grew){
+    const count = state.memories.length;
+    const level = getLevel(count);
+
+    // brain bar fill within current level band
+    const bandSize = (level.max === Infinity ? Math.max(count, level.min+15) : level.max) - level.min + 1;
+    const progressInBand = Math.min(count - level.min + 1, bandSize);
+    const pct = Math.round((progressInBand / bandSize) * 100);
+
+    els.brainBarFill.style.width = pct + "%";
+    els.brainCountLabel.textContent = count + " " + t("memoriesSuffix");
+    els.levelPill.textContent = `${level.emoji} ${t(level.key)}`;
+    els.memCounterNum.textContent = count;
+    els.headerAvatar.textContent = level.emoji === "👶" ? "🤖" : level.emoji;
+
+    if(grew){
+      els.headerAvatar.classList.remove("grown");
+      void els.headerAvatar.offsetWidth; // restart animation
+      els.headerAvatar.classList.add("grown");
+    }
+
+    updateScoreboard();
+  }
+
+  /* =====================================================
+     CHAT / AI RESPONSE ENGINE
+  ===================================================== */
+  function appendBubble(text, who){
+    const row = document.createElement("div");
+    row.className = `bubble-row ${who}`;
+    const avatarEmoji = who === "user" ? "🧑" : els.headerAvatar.textContent;
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+    bubble.textContent = text;
+
+    if(who === "user"){
+      row.appendChild(bubble);
+      const av = document.createElement("div");
+      av.className = "bubble-avatar";
+      av.textContent = avatarEmoji;
+      row.appendChild(av);
+    } else {
+      const av = document.createElement("div");
+      av.className = "bubble-avatar";
+      av.textContent = avatarEmoji;
+      row.appendChild(av);
+      row.appendChild(bubble);
+    }
+
+    els.chatWindow.appendChild(row);
+    els.chatWindow.scrollTop = els.chatWindow.scrollHeight;
+  }
+
+  function findAnswer(userText){
+    const normUser = normalize(userText);
+    if(!normUser) return null;
+
+    // 1. Exact match (case-sensitive, direct)
+    let hit = state.memories.find(m => m.question === userText);
+    if(hit) return hit;
+
+    // 2. Case-insensitive exact match
+    hit = state.memories.find(m => normalize(m.question) === normUser);
+    if(hit) return hit;
+
+    // 3. Contains keyword match (user text contains the trigger, or vice versa)
+    hit = state.memories.find(m => {
+      const q = normalize(m.question);
+      return q.length > 0 && (normUser.includes(q) || q.includes(normUser));
+    });
+    if(hit) return hit;
+
+    // 4. Partial similarity — shared significant words
+    const userWords = normUser.split(/\s+/).filter(w => w.length > 2);
+    let bestMatch = null, bestScore = 0;
+    state.memories.forEach(m => {
+      const qWords = normalize(m.question).split(/\s+/).filter(w => w.length > 2);
+      if(qWords.length === 0) return;
+      const shared = qWords.filter(w => userWords.includes(w)).length;
+      const score = shared / qWords.length;
+      if(score > bestScore && shared > 0){
+        bestScore = score;
+        bestMatch = m;
+      }
+    });
+    if(bestMatch && bestScore >= 0.4) return bestMatch;
+
+    // 5. No match
+    return null;
+  }
+
+  function sendChatMessage(){
+    if(state.chatBusy) return;
+    const text = els.chatInput.value.trim();
+    if(!text) return;
+    appendBubble(text, "user");
+    els.chatInput.value = "";
+
+    state.stats.questionsAsked++;
+    state.chatBusy = true;
+    els.chatInput.disabled = true;
+    els.sendBtn.disabled = true;
+
+    const match = findAnswer(text);
+    setTimeout(() => {
+      if(match){
+        appendBubble(match.answer, "ai");
+        state.stats.correctAnswers++;
+      } else {
+        appendBubble(t("unknownReply"), "unknown");
+        state.stats.unknownAnswers++;
+      }
+      updateScoreboard();
+      checkMissions();
+      checkAchievements();
+      state.chatBusy = false;
+      els.chatInput.disabled = false;
+      els.sendBtn.disabled = false;
+      els.chatInput.focus();
+    }, 350);
+  }
+
+  /* =====================================================
+     MISSIONS
+  ===================================================== */
+  function renderMissions(){
+    els.missionList.innerHTML = "";
+    let doneCount = 0;
+
+    MISSION_DEFS.forEach(m => {
+      let progress, target = m.target;
+      let isDone;
+      if(m.manual){
+        isDone = !!manualMissionState[m.id];
+        progress = isDone ? 1 : 0;
+      } else {
+        progress = m.progress(state);
+        isDone = progress >= target;
+      }
+      if(isDone) doneCount++;
+
+      const item = document.createElement("div");
+      item.className = "mission-item" + (isDone ? " done" : "");
+      const pct = Math.round((progress/target)*100);
+
+      item.innerHTML = `
+        <div class="m-title">
+          <span>${escapeHtml(t(m.titleKey))}</span>
+          <span class="m-check">${isDone ? "✅" : "⏳"}</span>
+        </div>
+        <div class="m-desc">${escapeHtml(t(m.descKey))}</div>
+        <div class="mission-progress-track"><div class="mission-progress-fill" style="width:${pct}%"></div></div>
+        ${m.manual ? `<button class="quick-hint" data-manual="${m.id}" style="align-self:flex-start;">${isDone ? escapeHtml(t("markedDone")) : escapeHtml(t("markTried"))}</button>` : ""}
+      `;
+      els.missionList.appendChild(item);
+    });
+
+    return doneCount;
+  }
+
+  els.missionList.addEventListener("click", e => {
+    const btn = e.target.closest("[data-manual]");
+    if(!btn) return;
+    manualMissionState[btn.dataset.manual] = true;
+    checkMissions();
+  });
+
+  function checkMissions(){
+    const doneCount = renderMissions();
+    updateScoreboard(doneCount);
+  }
+
+  /* =====================================================
+     ACHIEVEMENTS
+  ===================================================== */
+  function renderBadgeGrid(){
+    els.badgeGrid.innerHTML = "";
+    ACHIEVEMENT_DEFS.forEach(a => {
+      const unlocked = state.achievements.has(a.id);
+      const badge = document.createElement("div");
+      badge.className = "badge" + (unlocked ? " unlocked" : "");
+      badge.innerHTML = `<span class="b-emoji">${a.emoji}</span>${escapeHtml(t(a.nameKey))}`;
+      els.badgeGrid.appendChild(badge);
+    });
+  }
+
+  function showAchievementToast(def){
+    const toast = document.createElement("div");
+    toast.className = "achv-toast";
+    toast.innerHTML = `<span style="font-size:20px;">${def.emoji}</span> ${escapeHtml(t("achvUnlocked"))} ${escapeHtml(t(def.nameKey))}`;
+    els.achvToastZone.appendChild(toast);
+    setTimeout(() => toast.remove(), 2700);
+  }
+
+  function checkAchievements(){
+    ACHIEVEMENT_DEFS.forEach(def => {
+      if(!state.achievements.has(def.id) && def.check(state)){
+        state.achievements.add(def.id);
+        showAchievementToast(def);
+      }
+    });
+    renderBadgeGrid();
+    updateScoreboard();
+  }
+
+  /* =====================================================
+     SCOREBOARD
+  ===================================================== */
+  function updateScoreboard(){
+    const count = state.memories.length;
+    const level = getLevel(count);
+
+    els.sbKnowledge.textContent = count;
+    els.sbCorrect.textContent = state.stats.correctAnswers;
+    els.sbUnknown.textContent = state.stats.unknownAnswers;
+    els.sbLevel.textContent = `${level.emoji} ${t(level.key)}`;
+
+    const totalMissions = MISSION_DEFS.length;
+    let doneMissions = 0;
+    MISSION_DEFS.forEach(m => {
+      if(m.manual){
+        if(manualMissionState[m.id]) doneMissions++;
+      } else if(m.progress(state) >= m.target){
+        doneMissions++;
+      }
+    });
+    const completion = Math.round((doneMissions/totalMissions)*100);
+    els.sbCompletion.textContent = completion + "%";
+  }
+
+  /* =====================================================
+     END SESSION / CELEBRATION
+  ===================================================== */
+  function openCelebration(){
+    const count = state.memories.length;
+    const level = getLevel(count);
+
+    els.celebAiName.textContent = state.aiName || "My AI";
+    els.celebLevelText.textContent = `${level.emoji} ${t(level.key)}`;
+    els.celebMemories.textContent = count;
+    els.celebAnswered.textContent = state.stats.correctAnswers;
+    els.celebUnknown.textContent = state.stats.unknownAnswers;
+    els.celebBadgecount.textContent = state.achievements.size;
+
+    els.celebBadges.innerHTML = "";
+    ACHIEVEMENT_DEFS.filter(a => state.achievements.has(a.id)).forEach(a => {
+      const span = document.createElement("span");
+      span.textContent = `${a.emoji} ${t(a.nameKey)}`;
+      els.celebBadges.appendChild(span);
+    });
+    if(state.achievements.size === 0){
+      els.celebBadges.innerHTML = `<span>${escapeHtml(t("noBadgesYet"))}</span>`;
+    }
+
+    els.celebOverlay.classList.add("open");
+  }
+
+
+  /* =====================================================
+     LEARNING LAB / KNOWLEDGE SCREENS
+  ===================================================== */
+  const LEARN_STEPS=["learnStep1","learnStep2","learnStep3","learnStep4","learnStep5"];
+  function renderLearnSidebar(){
+    els.learnStepList.innerHTML="";
+    LEARN_STEPS.forEach((key,idx)=>{const b=document.createElement("button");b.className="learn-step-btn"+(idx===state.learnStep?" active":"")+(idx<state.learnStep?" done":"");b.innerHTML=`<span>${idx<state.learnStep?"✓":idx+1}</span><span>${escapeHtml(t(key))}</span>`;b.addEventListener("click",()=>{state.learnStep=idx;renderLearnLab();});els.learnStepList.appendChild(b);});
+  }
+  function doLearnCheck(id,answer,correct,goodKey,badKey){state.learnAnswered[id]=answer;const wrap=document.querySelector(`[data-check-id="${id}"]`);if(!wrap)return;wrap.querySelectorAll(".learn-choice").forEach(btn=>{btn.classList.remove("correct","wrong");if(btn.dataset.answer===answer)btn.classList.add(answer===correct?"correct":"wrong");btn.disabled=true;});const fb=wrap.querySelector(".learn-feedback");fb.textContent=answer===correct?t(goodKey):t(badKey||goodKey);}
+  function renderLearnLab(){
+    renderLearnSidebar();els.learnProgressFill.style.width=((state.learnStep+1)/5*100)+"%";els.learnPrevBtn.disabled=state.learnStep===0;els.learnNextBtn.textContent=state.learnStep===4?t("learnStart"):t("learnNext");let h="";
+    if(state.learnStep===0)h=`<div class="learn-kicker">${t("learnKicker1")}</div><h2>${t("learn1Title")}</h2><p class="learn-lead">${t("learn1Lead")}</p><div class="learn-card-grid"><div class="learn-card"><span class="lc-icon">🌍</span><b>${t("learn1Card1Title")}</b><span>${t("learn1Card1Desc")}</span></div><div class="learn-card"><span class="lc-icon">🎯</span><b>${t("learn1Card2Title")}</b><span>${t("learn1Card2Desc")}</span></div><div class="learn-card"><span class="lc-icon">📏</span><b>${t("learn1Card3Title")}</b><span>${t("learn1Card3Desc")}</span></div><div class="learn-card"><span class="lc-icon">📦</span><b>${t("learn1Card4Title")}</b><span>${t("learn1Card4Desc")}</span></div></div><div class="learn-check" data-check-id="k1"><h4>${t("learn1Check")}</h4><div class="learn-choice-wrap"><button class="learn-choice" data-answer="bad">${t("learn1ChoiceBad")}</button><button class="learn-choice" data-answer="good">${t("learn1ChoiceGood")}</button></div><div class="learn-feedback"></div></div>`;
+    else if(state.learnStep===1)h=`<div class="learn-kicker">${t("learnKicker2")}</div><h2>${t("learn2Title")}</h2><p class="learn-lead">${t("learn2Lead")}</p><div class="ctco-grid"><div class="ctco-card"><div class="ctco-letter">C</div><b>${t("ctcoC")}</b><p>${t("ctcoCDesc")}</p></div><div class="ctco-card"><div class="ctco-letter">T</div><b>${t("ctcoT")}</b><p>${t("ctcoTDesc")}</p></div><div class="ctco-card"><div class="ctco-letter">C</div><b>${t("ctcoC2")}</b><p>${t("ctcoC2Desc")}</p></div><div class="ctco-card"><div class="ctco-letter">O</div><b>${t("ctcoO")}</b><p>${t("ctcoODesc")}</p></div></div><div class="learn-card"><b>${t("learn2ExampleTitle")}</b><span>${t("learn2Example")}</span></div><div class="learn-note"><b>${t("learn2NoteTitle")}</b>${t("learn2Note")}</div>`;
+    else if(state.learnStep===2)h=`<div class="learn-kicker">${t("learnKicker3")}</div><h2>${t("learn3Title")}</h2><p class="learn-lead">${t("learn3Lead")}</p><div class="prompt-compare"><div class="prompt-box bad"><div class="p-label">${t("learn3BadLabel")}</div><p>${t("learn3Bad")}</p></div><div class="prompt-box good"><div class="p-label">${t("learn3GoodLabel")}</div><p>${t("learn3Good")}</p></div></div><div class="learn-check" data-check-id="k3"><h4>${t("learn3Question")}</h4><div class="learn-choice-wrap"><button class="learn-choice" data-answer="1">${t("learn3Opt1")}</button><button class="learn-choice" data-answer="2">${t("learn3Opt2")}</button><button class="learn-choice" data-answer="3">${t("learn3Opt3")}</button><button class="learn-choice" data-answer="4">${t("learn3Opt4")}</button></div><div class="learn-feedback"></div></div>`;
+    else if(state.learnStep===3)h=`<div class="learn-kicker">${t("learnKicker4")}</div><h2>${t("learn4Title")}</h2><p class="learn-lead">${t("learn4Lead")}</p><div class="cycle"><div class="cycle-step">${t("learn4Step1")}</div><div class="cycle-step">${t("learn4Step2")}</div><div class="cycle-step">${t("learn4Step3")}</div><div class="cycle-step">${t("learn4Step4")}</div></div><div class="learn-check" data-check-id="k4"><h4>${t("learn4CheckTitle")}</h4><div class="learn-choice-wrap"><button class="learn-choice" data-answer="1">${t("learn4Choice1")}</button><button class="learn-choice" data-answer="2">${t("learn4Choice2")}</button><button class="learn-choice" data-answer="3">${t("learn4Choice3")}</button><button class="learn-choice" data-answer="4">${t("learn4Choice4")}</button></div><div class="learn-feedback"></div></div>`;
+    else h=`<div class="learn-kicker">${t("learnKicker5")}</div><h2>${t("learn5Title")}</h2><p class="learn-lead">${t("learn5Lead")}</p><div class="learn-card-grid"><div class="learn-card"><span class="lc-icon">🧩</span><b>${t("learn5GameTitle")}</b><span>${t("learn5GameDesc")}</span></div><div class="learn-card"><span class="lc-icon">✨</span><b>${t("learn5RealTitle")}</b><span>${t("learn5RealDesc")}</span></div></div><div class="learn-note"><b>${t("learn5BridgeTitle")}</b>${t("learn5BridgeDesc")}</div><p class="learn-lead" style="margin-top:16px">${t("learn5Close")}</p>`;
+    els.learnContent.innerHTML=h;
+    const k1=els.learnContent.querySelector('[data-check-id="k1"]');if(k1)k1.querySelectorAll('.learn-choice').forEach(b=>b.addEventListener('click',()=>doLearnCheck('k1',b.dataset.answer,'good','learn1FeedbackGood','learn1FeedbackBad')));
+    const k3=els.learnContent.querySelector('[data-check-id="k3"]');if(k3)k3.querySelectorAll('.learn-choice').forEach(b=>b.addEventListener('click',()=>doLearnCheck('k3',b.dataset.answer,'4','learn3Correct','learn3Correct')));
+    const k4=els.learnContent.querySelector('[data-check-id="k4"]');if(k4)k4.querySelectorAll('.learn-choice').forEach(b=>b.addEventListener('click',()=>doLearnCheck('k4',b.dataset.answer,'4','learn4Feedback','learn4Feedback')));
+  }
+  function openLearnLab(reset=false){if(reset)state.learnStep=0;renderLearnLab();els.learnOverlay.classList.add('open');}
+  function closeLearnLab(){els.learnOverlay.classList.remove('open');}
+
+  /* =====================================================
+     EVENT WIRING
+  ===================================================== */
+  els.aiNameInput.addEventListener("input", () => {
+    state.aiName = els.aiNameInput.value.trim() || "My AI";
+  });
+
+  els.teachBtn.addEventListener("click", teachAI);
+  [els.knowQuestion, els.knowAnswer].forEach(f => {
+    f.addEventListener("keydown", e => {
+      if(e.key === "Enter" && !e.shiftKey && f === els.knowQuestion){
+        e.preventDefault();
+        els.knowAnswer.focus();
+      }
+    });
+  });
+
+  els.librarySearch.addEventListener("input", renderMemoryList);
+
+  els.sendBtn.addEventListener("click", sendChatMessage);
+  els.chatInput.addEventListener("keydown", e => {
+    if(e.key === "Enter") sendChatMessage();
+  });
+
+  document.querySelectorAll(".quick-hint[data-msg-en]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if(state.chatBusy) return;
+      els.chatInput.value = btn.dataset["msg" + (state.lang === "vi" ? "Vi" : "En")];
+      sendChatMessage();
+    });
+  });
+
+
+  els.learnToggle.addEventListener("click",()=>openLearnLab(false));
+  els.learnPrevBtn.addEventListener("click",()=>{if(state.learnStep>0){state.learnStep--;renderLearnLab();}});
+  els.learnNextBtn.addEventListener("click",()=>{if(state.learnStep<4){state.learnStep++;renderLearnLab();}else{closeLearnLab();els.guideOverlay.classList.add("open");}});
+
+  els.scoreboardToggle.addEventListener("click", () => {
+    els.scoreboardPanel.classList.toggle("open");
+  });
+
+  els.guideToggle.addEventListener("click", () => {
+    els.guideOverlay.classList.add("open");
+  });
+  els.guideCloseBtn.addEventListener("click", () => {
+    els.guideOverlay.classList.remove("open");
+  });
+
+  els.teacherHubToggle.addEventListener("click", () => {
+    els.teacherHubPasswordInput.value = "";
+    els.teacherHubAuthError.classList.remove("show");
+    els.teacherHubAuthOverlay.classList.add("open");
+    setTimeout(() => els.teacherHubPasswordInput.focus(), 50);
+  });
+  els.teacherHubCloseBtn.addEventListener("click", () => {
+    els.teacherHubOverlay.classList.remove("open");
+  });
+
+  const TEACHER_HUB_PASSWORD = "logiscool4ever";
+  function attemptTeacherHubUnlock(){
+    if(els.teacherHubPasswordInput.value === TEACHER_HUB_PASSWORD){
+      els.teacherHubAuthOverlay.classList.remove("open");
+      els.teacherHubPasswordInput.value = "";
+      els.teacherHubAuthError.classList.remove("show");
+      els.teacherHubOverlay.classList.add("open");
+    } else {
+      els.teacherHubAuthError.classList.add("show");
+      flashField(els.teacherHubPasswordInput);
+    }
+  }
+  els.teacherHubAuthSubmit.addEventListener("click", attemptTeacherHubUnlock);
+  els.teacherHubAuthCancel.addEventListener("click", () => {
+    els.teacherHubAuthOverlay.classList.remove("open");
+  });
+  els.teacherHubPasswordInput.addEventListener("keydown", e => {
+    if(e.key === "Enter") attemptTeacherHubUnlock();
+  });
+
+  els.teacherHubTabs.addEventListener("click", e => {
+    const btn = e.target.closest(".th-tab-btn");
+    if(!btn) return;
+    els.teacherHubTabs.querySelectorAll(".th-tab-btn").forEach(b => b.classList.toggle("active", b === btn));
+    document.querySelectorAll("#teacher-hub-box .th-panel").forEach(p => {
+      p.classList.toggle("active", p.id === btn.dataset.thTab);
+    });
+  });
+
+  els.missionFab.addEventListener("click", () => {
+    els.missionPanel.classList.toggle("open");
+  });
+  els.achvFab.addEventListener("click", () => {
+    els.achvPanel.classList.toggle("open");
+  });
+
+  els.editCancelBtn.addEventListener("click", () => els.editOverlay.classList.remove("open"));
+  els.editSaveBtn.addEventListener("click", saveEdit);
+
+  els.endSessionBtn.addEventListener("click", openCelebration);
+  els.celebCloseBtn.addEventListener("click", () => els.celebOverlay.classList.remove("open"));
+  els.celebPresentBtn.addEventListener("click", () => {
+    els.celebOverlay.classList.remove("open");
+    els.missionPanel.classList.remove("open");
+    els.achvPanel.classList.remove("open");
+    els.scoreboardPanel.classList.remove("open");
+  });
+
+  // Close panels when clicking outside
+  document.addEventListener("click", e => {
+    if(!els.scoreboardPanel.contains(e.target) && e.target !== els.scoreboardToggle && els.scoreboardPanel.classList.contains("open")){
+      if(!els.scoreboardToggle.contains(e.target)) els.scoreboardPanel.classList.remove("open");
+    }
+  });
+
+  /* =====================================================
+     LANGUAGE SWITCHING
+  ===================================================== */
+  function applyStaticTranslations(){
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      el.textContent = t(el.dataset.i18n);
+    });
+    document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+      el.setAttribute("placeholder", t(el.dataset.i18nPlaceholder));
+    });
+    document.querySelectorAll("[data-i18n-title]").forEach(el => {
+      el.setAttribute("title", t(el.dataset.i18nTitle));
+    });
+  }
+
+  function refreshDynamicTranslations(){
+    renderMemoryList();
+    refreshBrainSystem(false);
+    renderMissions();
+    renderBadgeGrid();
+    updateScoreboard();
+  }
+
+  function setLanguage(lang){
+    if(!I18N[lang]) return;
+    state.lang = lang;
+    els.langButtons.forEach(btn => {
+      btn.classList.toggle("active", btn.dataset.lang === lang);
+    });
+    applyStaticTranslations();
+    refreshDynamicTranslations();
+    if(els.learnOverlay.classList.contains("open")) renderLearnLab();
+  }
+
+  els.langButtons.forEach(btn => {
+    btn.addEventListener("click", () => setLanguage(btn.dataset.lang));
+  });
+
+  /* =====================================================
+     SEED CONTENT — helpful starter hints (not real memories)
+  ===================================================== */
+  function seedWelcomeMessage(){
+    appendBubble(t("welcomeMsg"), "ai");
+  }
+
+  /* =====================================================
+     INIT
+  ===================================================== */
+  function init(){
+    els.headerAvatar.textContent = randomAvatar() === undefined ? "🤖" : "🤖";
+    applyStaticTranslations();
+    renderMemoryList();
+    refreshBrainSystem(false);
+    renderMissions();
+    renderBadgeGrid();
+    updateScoreboard();
+    seedWelcomeMessage();
+    openLearnLab(true); // show knowledge screens first; How to Play follows
+  }
+
+  init();
+
+})();
+</script>
+
+</body>
+</html>
