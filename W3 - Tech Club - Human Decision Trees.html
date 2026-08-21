@@ -1,0 +1,1914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Life Story — Team Life Simulation</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
+
+  :root{
+    --ink:#16241F;
+    --ink-soft:#3B4F48;
+    --parchment:#FBF7EE;
+    --parchment-dim:#F1EAD9;
+    --forest:#1F4B43;
+    --forest-dark:#163732;
+    --marigold:#F2A93B;
+    --marigold-dark:#C9860F;
+    --coral:#E8654F;
+    --sky:#4C93A6;
+    --violet:#7C6FE0;
+    --line:#D8CDAF;
+    --white:#FFFFFF;
+
+    --stat-knowledge:#7C6FE0;
+    --stat-happiness:#F2A93B;
+    --stat-friendship:#4C93A6;
+    --stat-money:#3F9463;
+    --stat-health:#E8654F;
+
+    --radius-lg:20px;
+    --radius-md:14px;
+    --radius-sm:8px;
+    --shadow-card: 0 6px 0 var(--line), 0 10px 24px rgba(22,36,31,0.12);
+    --shadow-btn: 0 4px 0 rgba(0,0,0,0.18);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle at 12% 8%, rgba(242,169,59,0.10), transparent 42%),
+      radial-gradient(circle at 88% 92%, rgba(76,147,166,0.14), transparent 45%),
+      var(--parchment);
+    color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;
+    font-size:clamp(16px,1.6vw,19px);
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Baloo 2',system-ui,sans-serif;
+    font-weight:700;
+    letter-spacing:0.2px;
+  }
+  .mono{ font-family:'Space Mono', monospace; }
+
+  button{ font-family:inherit; cursor:pointer; }
+  button,.pill,.choice-label,.choice-blurb,.p-name,.p-desc,.tm-btn,.badge{
+    min-width:0; max-width:100%; overflow-wrap:anywhere; word-break:normal;
+  }
+  button:focus-visible, [tabindex]:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible{
+    outline: 3px solid var(--forest);
+    outline-offset: 3px;
+  }
+  a{color:inherit;}
+
+  #app{ min-height:100vh; display:flex; flex-direction:column; }
+
+  /* ---------- TOP BAR ---------- */
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px clamp(14px,3vw,32px);
+    background:var(--forest);
+    color:var(--parchment);
+    box-shadow:0 3px 0 var(--forest-dark);
+    position:relative; z-index:20;
+    flex-wrap:wrap; gap:10px;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; font-size:1.15rem; }
+  .brand .dot{ width:12px;height:12px;border-radius:50%;background:var(--marigold); }
+  .topbar-right{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+
+  .lang-toggle{
+    display:inline-flex; align-items:center; gap:5px; min-height:42px;
+    padding:5px; border:1px solid rgba(255,255,255,0.28); border-radius:999px;
+    background:rgba(255,255,255,0.1); color:var(--parchment);
+  }
+  .lang-toggle span{ padding:4px 8px; border-radius:999px; font-size:0.78rem; font-weight:800; }
+  .lang-toggle .active{ background:var(--marigold); color:var(--forest-dark); }
+
+  .pill{
+    background:rgba(255,255,255,0.12);
+    border:1px solid rgba(255,255,255,0.22);
+    border-radius:999px;
+    padding:7px 14px;
+    font-size:0.9rem;
+    display:flex; align-items:center; gap:8px;
+    color:var(--parchment);
+  }
+
+  .icon-btn{
+    background:rgba(255,255,255,0.12);
+    border:1px solid rgba(255,255,255,0.25);
+    color:var(--parchment);
+    border-radius:999px;
+    min-height:44px; min-width:44px;
+    padding:8px 16px;
+    font-weight:700;
+    font-size:0.95rem;
+    display:inline-flex; align-items:center; gap:8px;
+    transition:transform .12s ease, background .12s ease;
+  }
+  .icon-btn:hover{ background:rgba(255,255,255,0.22); transform:translateY(-1px); }
+
+  /* ---------- LIFE PATH (signature element) ---------- */
+  .lifepath-wrap{
+    background:var(--forest-dark);
+    padding:10px clamp(14px,3vw,32px) 16px;
+    overflow-x:auto;
+  }
+  .lifepath{
+    display:flex; align-items:center;
+    min-width:max-content;
+    gap:0;
+  }
+  .lp-node{
+    display:flex; flex-direction:column; align-items:center;
+    width:64px; flex-shrink:0; position:relative;
+  }
+  .lp-dot{
+    width:16px; height:16px; border-radius:50%;
+    background:rgba(255,255,255,0.25);
+    border:2px solid rgba(255,255,255,0.35);
+    z-index:2;
+  }
+  .lp-node.done .lp-dot{ background:var(--marigold); border-color:var(--marigold); }
+  .lp-node.current .lp-dot{
+    background:var(--parchment); border-color:var(--parchment);
+    width:22px; height:22px;
+    box-shadow:0 0 0 5px rgba(242,169,59,0.35);
+  }
+  .lp-age{ margin-top:6px; font-size:0.72rem; color:rgba(255,255,255,0.7); font-family:'Space Mono',monospace; }
+  .lp-line{
+    height:3px; flex:1; background:rgba(255,255,255,0.2); min-width:20px;
+  }
+  .lp-line.done{ background:var(--marigold); }
+
+  /* ---------- MAIN ---------- */
+  main{ flex:1; display:flex; flex-direction:column; align-items:center; padding:clamp(16px,4vw,40px); }
+  .stage{ width:100%; max-width:920px; margin:0 auto; }
+
+  .eyebrow{
+    font-family:'Space Mono',monospace;
+    text-transform:uppercase; letter-spacing:2px;
+    font-size:0.78rem; color:var(--forest);
+    background:rgba(31,75,67,0.08);
+    display:inline-block; padding:5px 12px; border-radius:999px;
+    margin-bottom:10px;
+  }
+
+  /* ---------- WELCOME ---------- */
+  .welcome{ text-align:center; padding:clamp(20px,6vw,60px) 10px; }
+  .welcome .big-title{
+    font-size:clamp(2.2rem,6vw,4rem);
+    line-height:1.05; margin:8px 0 6px;
+    color:var(--forest);
+  }
+  .welcome .big-title span{ color:var(--marigold-dark); }
+  .welcome p.sub{ font-size:1.15rem; color:var(--ink-soft); max-width:560px; margin:0 auto 30px; }
+  .welcome-art{ font-size:3.2rem; margin-bottom:6px; letter-spacing:14px; }
+
+  .btn{
+    font-weight:800; border:none; border-radius:999px;
+    padding:16px 34px; font-size:1.05rem;
+    min-height:56px;
+    box-shadow:var(--shadow-btn);
+    transition:transform .1s ease, box-shadow .1s ease;
+  }
+  .btn:active{ transform:translateY(3px); box-shadow:0 1px 0 rgba(0,0,0,0.18); }
+  .btn-primary{ background:var(--marigold); color:var(--forest-dark); }
+  .btn-primary:hover{ background:#f7b854; }
+  .btn-secondary{ background:var(--forest); color:var(--parchment); }
+  .btn-secondary:hover{ background:#245b51; }
+  .btn-ghost{ background:transparent; color:var(--forest); border:2px solid var(--forest); box-shadow:none; padding:14px 30px; }
+  .btn-ghost:active{ transform:none; }
+  .btn[disabled]{ opacity:0.45; cursor:not-allowed; box-shadow:none; transform:none; }
+
+  /* ---------- CARD ---------- */
+  .card{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:var(--radius-lg);
+    box-shadow:var(--shadow-card);
+    padding:clamp(18px,4vw,34px);
+  }
+
+  /* ---------- INSTRUCTIONS PANEL ---------- */
+  .whatnow{
+    background:var(--parchment-dim);
+    border:2px dashed var(--marigold-dark);
+    border-radius:var(--radius-md);
+    margin-bottom:18px;
+    overflow:hidden;
+  }
+  .whatnow summary{
+    list-style:none; cursor:pointer;
+    padding:12px 16px;
+    display:flex; align-items:center; gap:10px;
+    font-family:'Baloo 2',sans-serif; font-weight:700; color:var(--forest-dark);
+    min-height:44px;
+  }
+  .whatnow summary::-webkit-details-marker{ display:none; }
+  .whatnow summary .car{ margin-left:auto; transition:transform .15s ease; }
+  .whatnow[open] summary .car{ transform:rotate(90deg); }
+  .whatnow .body{ padding:0 16px 14px 16px; color:var(--ink-soft); line-height:1.55; }
+
+  /* ---------- CHARACTER CREATION ---------- */
+  .field{ margin-bottom:22px; }
+  .field label{ display:block; font-weight:800; margin-bottom:8px; font-size:1rem; color:var(--forest-dark); }
+  .field input[type=text]{
+    width:100%; padding:14px 16px; font-size:1.05rem;
+    border:2px solid var(--line); border-radius:var(--radius-sm);
+    background:var(--parchment); color:var(--ink);
+    min-height:52px;
+  }
+  .field input[type=text]:focus{ border-color:var(--forest); }
+
+  .choice-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(84px,1fr)); gap:10px; }
+  .avatar-btn{
+    background:var(--parchment); border:2.5px solid var(--line); border-radius:var(--radius-md);
+    font-size:2rem; padding:12px 0; min-height:64px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .avatar-btn.sel{ border-color:var(--marigold-dark); background:#FCEBC8; box-shadow:0 0 0 3px rgba(242,169,59,0.35); }
+
+  /* ---------- CAMERA / CHARACTER PHOTO ---------- */
+  .photo-tabs{ display:flex; gap:8px; margin-bottom:14px; }
+  .photo-tab{
+    flex:1; background:var(--parchment); border:2px solid var(--line); border-radius:999px;
+    padding:10px 14px; font-weight:700; min-height:44px;
+  }
+  .photo-tab.sel{ background:var(--forest); color:var(--parchment); border-color:var(--forest); }
+
+  .camera-box{
+    background:var(--forest-dark); border-radius:var(--radius-md); padding:16px;
+    text-align:center; color:var(--parchment);
+  }
+  .camera-video, .camera-canvas-preview{
+    width:100%; max-width:340px; aspect-ratio:1/1; object-fit:cover;
+    border-radius:var(--radius-md); background:#000; border:3px solid var(--marigold);
+    margin:0 auto 14px; display:block;
+  }
+  .camera-preview-img{
+    width:180px; height:180px; object-fit:cover; border-radius:50%;
+    border:4px solid var(--marigold); margin:0 auto 14px; display:block;
+  }
+  .camera-actions{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+  .camera-note{ font-size:0.8rem; color:rgba(255,255,255,0.7); margin-top:10px; }
+  .camera-error{
+    background:rgba(232,101,79,0.18); border:1px solid var(--coral); color:#FBEAE6;
+    border-radius:var(--radius-sm); padding:10px 14px; font-size:0.88rem; margin-bottom:12px;
+  }
+  .char-avatar-img{ border-radius:50%; object-fit:cover; display:inline-block; vertical-align:middle; border:2px solid var(--marigold); }
+
+  .pers-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; }
+  .pers-btn{
+    text-align:left; background:var(--parchment); border:2.5px solid var(--line);
+    border-radius:var(--radius-md); padding:14px; min-height:88px;
+  }
+  .pers-btn .p-name{ font-family:'Baloo 2',sans-serif; font-weight:700; font-size:1.05rem; display:flex; gap:8px; align-items:center; color:var(--forest-dark); }
+  .pers-btn .p-desc{ font-size:0.85rem; color:var(--ink-soft); margin-top:4px; }
+  .pers-btn.sel{ border-color:var(--forest); background:#E4EFEC; box-shadow:0 0 0 3px rgba(31,75,67,0.2); }
+
+  /* ---------- STATS BAR ---------- */
+  .statsbar{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+    gap:10px; margin-bottom:18px;
+  }
+  .statchip{
+    background:var(--white); border:1px solid var(--line); border-radius:var(--radius-sm);
+    padding:10px 12px;
+  }
+  .statchip .s-top{ display:flex; justify-content:space-between; align-items:baseline; font-size:0.78rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--ink-soft); }
+  .statchip .s-val{ font-family:'Space Mono',monospace; font-weight:700; }
+  .statchip .s-bar{ height:8px; border-radius:999px; background:var(--parchment-dim); margin-top:6px; overflow:hidden; }
+  .statchip .s-fill{ height:100%; border-radius:999px; transition:width .4s ease; }
+
+  /* ---------- EVENT ---------- */
+  .event-meta{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:14px; }
+  .age-badge{
+    font-family:'Space Mono',monospace; background:var(--forest); color:var(--parchment);
+    padding:8px 14px; border-radius:var(--radius-sm); font-weight:700; font-size:1rem;
+  }
+  .stage-badge{
+    background:var(--marigold); color:var(--forest-dark); font-weight:800;
+    padding:8px 14px; border-radius:var(--radius-sm); font-size:0.92rem;
+  }
+  .story-title{ font-size:clamp(1.5rem,3vw,2rem); margin:6px 0 10px; color:var(--forest-dark); }
+  .story-text{ font-size:1.08rem; line-height:1.6; color:var(--ink); margin-bottom:20px; }
+
+  .discuss-callout{
+    background:#EAF3F1; border-left:5px solid var(--sky);
+    border-radius:var(--radius-sm); padding:12px 16px; margin-bottom:20px;
+    font-size:0.95rem; color:var(--forest-dark); display:flex; gap:10px; align-items:flex-start;
+  }
+
+  .choices{ display:grid; gap:14px; grid-template-columns:1fr; }
+  @media (min-width:720px){ .choices{ grid-template-columns:1fr 1fr; } }
+  .choice-card{
+    background:var(--parchment); border:2.5px solid var(--line); border-radius:var(--radius-md);
+    padding:16px 18px; text-align:left; display:flex; flex-direction:column; gap:8px;
+    min-height:80px;
+  }
+  .choice-card:hover{ border-color:var(--forest); }
+  .choice-label{ font-family:'Baloo 2',sans-serif; font-weight:700; font-size:1.05rem; color:var(--forest-dark); }
+  .choice-blurb{ font-size:0.9rem; color:var(--ink-soft); }
+  .choice-deltas{ display:flex; flex-wrap:wrap; gap:8px; margin-top:2px; }
+  .delta-tag{
+    font-family:'Space Mono',monospace; font-size:0.78rem; font-weight:700;
+    padding:3px 9px; border-radius:999px;
+  }
+  .delta-pos{ background:#E3F3E7; color:#276B44; }
+  .delta-neg{ background:#FBE7E2; color:#B23F27; }
+
+  /* ---------- CONFIRM MODAL ---------- */
+  .overlay{
+    position:fixed; inset:0; background:rgba(22,36,31,0.55);
+    display:flex; align-items:center; justify-content:center; z-index:50; padding:20px;
+  }
+  .modal{
+    background:var(--white); border-radius:var(--radius-lg); padding:30px; max-width:460px; width:100%;
+    text-align:center; box-shadow:var(--shadow-card);
+  }
+  .modal h3{ color:var(--forest-dark); font-size:1.4rem; margin-top:0; }
+  .modal .modal-actions{ display:flex; gap:12px; justify-content:center; margin-top:20px; flex-wrap:wrap; }
+
+  /* ---------- DECISION CONSEQUENCES ---------- */
+  .consequence-card{ text-align:center; }
+  .consequence-icon{ font-size:3.4rem; line-height:1; margin-bottom:10px; }
+  .consequence-message{
+    max-width:700px; margin:14px auto 22px; padding:16px 18px;
+    background:#FBE7E2; border-left:5px solid var(--coral); border-radius:var(--radius-sm);
+    color:var(--ink); line-height:1.65; text-align:left;
+  }
+  .consequence-actions{ display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin-top:22px; }
+
+  /* ---------- DECISION TREE + AI LEARNING ---------- */
+  .learning-card{
+    background:#EAF3F1; border:2px solid var(--sky); border-radius:var(--radius-md);
+    margin:18px auto; text-align:left; overflow:hidden; max-width:920px;
+  }
+  .learning-card summary{
+    list-style:none; cursor:pointer; padding:14px 16px; min-height:48px;
+    display:flex; align-items:center; gap:10px; color:var(--forest-dark);
+    font-family:'Baloo 2',sans-serif; font-weight:700;
+  }
+  .learning-card summary::-webkit-details-marker{ display:none; }
+  .learning-card summary .car{ margin-left:auto; transition:transform .15s ease; flex-shrink:0; }
+  .learning-card[open] summary .car{ transform:rotate(90deg); }
+  .learning-body{ padding:0 16px 16px; color:var(--ink-soft); line-height:1.65; }
+  .decision-flow{
+    display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px;
+    margin:16px 0;
+  }
+  .flow-step{
+    background:var(--white); border:1px solid var(--line); border-radius:var(--radius-sm);
+    padding:10px 8px; text-align:center; font-size:0.82rem; color:var(--forest-dark);
+  }
+  .flow-step strong{ display:block; margin-bottom:3px; }
+  .ai-lens{
+    background:#F2EFFD; border-left:5px solid var(--violet); border-radius:var(--radius-sm);
+    padding:12px 16px; margin-bottom:20px; color:var(--ink-soft); font-size:0.9rem;
+  }
+  .ai-lens strong{ color:var(--forest-dark); }
+
+  /* ---------- TIMER ---------- */
+  .timer-banner{
+    display:flex; align-items:center; justify-content:center; gap:12px;
+    background:var(--forest-dark); color:var(--parchment); border-radius:var(--radius-sm);
+    padding:10px 16px; margin-bottom:18px; font-family:'Space Mono',monospace; font-size:1.1rem;
+  }
+  .timer-banner.done{ background:var(--coral); }
+  .timer-banner .tclock{ font-weight:700; font-size:1.3rem; }
+
+  /* ---------- REFLECTION ---------- */
+  .refl-q{ margin-bottom:22px; }
+  .refl-q .qtext{ font-family:'Baloo 2',sans-serif; font-weight:700; font-size:1.1rem; color:var(--forest-dark); margin-bottom:8px; }
+  .refl-q textarea{
+    width:100%; min-height:90px; padding:12px 14px; border:2px solid var(--line);
+    border-radius:var(--radius-sm); font-family:inherit; font-size:1rem; background:var(--parchment); color:var(--ink);
+    resize:vertical;
+  }
+
+  /* ---------- PRESENTATION ---------- */
+  .present-header{ text-align:center; margin-bottom:26px; }
+  .present-avatar{ font-size:4rem; }
+  .present-name{ font-size:clamp(1.8rem,4vw,2.6rem); color:var(--forest-dark); margin:6px 0 2px; }
+  .present-sub{ color:var(--ink-soft); font-size:1.05rem; }
+
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:640px){ .grid2{ grid-template-columns:1fr; } }
+
+  .panel{
+    background:var(--parchment-dim); border-radius:var(--radius-md); padding:16px 18px; margin-bottom:16px;
+  }
+  .panel h4{ margin:0 0 10px; font-family:'Baloo 2',sans-serif; color:var(--forest-dark); font-size:1.05rem; }
+  .panel ul{ margin:0; padding-left:20px; line-height:1.7; }
+  .timeline-item{ display:flex; gap:10px; padding:8px 0; border-bottom:1px dashed var(--line); font-size:0.92rem; }
+  .timeline-item:last-child{ border-bottom:none; }
+  .timeline-item .t-age{ font-family:'Space Mono',monospace; font-weight:700; color:var(--forest); width:44px; flex-shrink:0; }
+
+  .badge-row{ display:flex; flex-wrap:wrap; gap:8px; }
+  .badge{ background:var(--marigold); color:var(--forest-dark); font-weight:800; font-size:0.85rem; padding:6px 12px; border-radius:999px; }
+
+  .lesson-box{
+    background:var(--forest); color:var(--parchment); border-radius:var(--radius-lg);
+    padding:24px; text-align:center; margin-top:10px; font-size:1.1rem; line-height:1.6;
+  }
+  .lesson-box .lb-title{ font-family:'Space Mono',monospace; text-transform:uppercase; letter-spacing:2px; font-size:0.78rem; color:var(--marigold); margin-bottom:10px; }
+
+  .present-mode-btn{ display:block; margin:26px auto 0; }
+
+  /* ---------- ACTION ROW ---------- */
+  .action-row{ display:flex; justify-content:space-between; align-items:center; margin-top:22px; gap:12px; flex-wrap:wrap; }
+
+  /* ---------- TEACHER MENU ---------- */
+  .teacher-fab{
+    position:fixed; bottom:20px; right:20px; z-index:40;
+    background:var(--forest-dark); color:var(--parchment); border:none; border-radius:999px;
+    min-height:56px; min-width:56px; padding:0 20px; font-weight:800; display:flex; align-items:center; gap:8px;
+    box-shadow:0 6px 16px rgba(0,0,0,0.25);
+  }
+  .teacher-panel{
+    position:fixed; bottom:86px; right:20px; z-index:41; background:var(--white); border:1px solid var(--line);
+    border-radius:var(--radius-md); box-shadow:var(--shadow-card); padding:16px; width:min(280px,86vw);
+  }
+  .teacher-panel h4{ margin:0 0 10px; font-family:'Baloo 2',sans-serif; color:var(--forest-dark); }
+  .tm-row{ display:flex; gap:8px; align-items:center; margin-bottom:8px; flex-wrap:wrap; }
+  .tm-btn{
+    background:var(--parchment); border:1.5px solid var(--line); border-radius:var(--radius-sm);
+    padding:9px 12px; font-size:0.88rem; font-weight:700; color:var(--ink); flex:1; min-height:40px;
+  }
+  .tm-btn:hover{ border-color:var(--forest); }
+  .tm-select{ padding:8px; border-radius:var(--radius-sm); border:1.5px solid var(--line); font-family:inherit; width:100%; margin-bottom:8px; }
+
+  .hidden-ui .teacher-fab, .hidden-ui .teacher-panel, .hidden-ui .topbar-right .icon-btn{ display:none !important; }
+
+  footer.msg{
+    text-align:center; padding:30px 16px; color:var(--ink-soft); font-size:0.85rem;
+  }
+
+  /* ---------- PRINT ---------- */
+  @media print{
+    body{ background:white !important; }
+    .topbar, .lifepath-wrap, .teacher-fab, .teacher-panel, .no-print{ display:none !important; }
+    .card{ box-shadow:none; border:1px solid #999; }
+    main{ padding:0; }
+    .report-page{ width:190mm; margin:0 auto; }
+  }
+
+  .sr-only{ position:absolute; width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap; }
+
+  @media (max-width:560px){
+    .topbar{ align-items:flex-start; }
+    .topbar-right{ width:100%; gap:7px; }
+    .pill{ padding:6px 10px; font-size:0.78rem; }
+    .lang-toggle{ margin-left:auto; }
+    .btn{ padding:14px 20px; font-size:0.95rem; white-space:normal; line-height:1.3; }
+    .decision-flow{ grid-template-columns:1fr; }
+    .flow-step{ text-align:left; }
+    .statsbar{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .teacher-fab{ right:12px; bottom:12px; padding:0 14px; font-size:0.86rem; }
+    .teacher-panel{ right:12px; bottom:78px; width:min(300px,calc(100vw - 24px)); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; animation:none !important; }
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ============================= DATA ============================= */
+const STATS = ['knowledge','happiness','friendship','money','health'];
+const STAT_META = {
+  knowledge:{ label:'Knowledge', vi:'Kiến thức', icon:'📚', color:'var(--stat-knowledge)' },
+  happiness:{ label:'Happiness', vi:'Hạnh phúc', icon:'😊', color:'var(--stat-happiness)' },
+  friendship:{ label:'Friendship', vi:'Tình bạn', icon:'🤝', color:'var(--stat-friendship)' },
+  money:{ label:'Money', vi:'Tài chính', icon:'💰', color:'var(--stat-money)' },
+  health:{ label:'Health', vi:'Sức khỏe', icon:'💪', color:'var(--stat-health)' },
+};
+
+const AVATARS = ['🦊','🐼','🦁','🐧','🐨','🦉','🐢','🦄'];
+
+const PERSONALITIES = [
+  { id:'curious', name:'Curious', viName:'Tò mò', icon:'🔍', desc:'Loves to ask questions and learn.', viDesc:'Thích đặt câu hỏi và khám phá điều mới.', stat:'knowledge' },
+  { id:'bold', name:'Bold', viName:'Dũng cảm', icon:'⚡', desc:'Jumps into new challenges fearlessly.', viDesc:'Sẵn sàng thử sức với thử thách mới.', stat:'health' },
+  { id:'caring', name:'Caring', viName:'Quan tâm', icon:'💛', desc:'Always looks out for others.', viDesc:'Luôn để ý và hỗ trợ mọi người.', stat:'friendship' },
+  { id:'creative', name:'Creative', viName:'Sáng tạo', icon:'🎨', desc:'Sees the world in fun, new ways.', viDesc:'Nhìn mọi việc theo góc độ mới mẻ.', stat:'happiness' },
+  { id:'focused', name:'Focused', viName:'Tập trung', icon:'🎯', desc:'Plans ahead and works toward goals.', viDesc:'Biết lập kế hoạch và theo đuổi mục tiêu.', stat:'money' },
+];
+
+const EVENTS = [
+  { age:6, stage:'Early Childhood', title:'First Day of School', story:'You just walked into a new classroom full of strangers. Your team must decide how to spend your very first day.',
+    choices:[
+      { label:'Introduce yourself to everyone', blurb:'Meet as many classmates as you can.', deltas:{friendship:8,knowledge:-3} },
+      { label:'Explore the reading corner alone', blurb:'Quietly check out the books first.', deltas:{knowledge:8,friendship:-3} },
+      { label:'Ask the teacher lots of questions', blurb:'Learn how everything works right away.', deltas:{knowledge:5,happiness:3,friendship:-2} },
+      { label:'Bring a favorite toy to share', blurb:'Break the ice with something familiar.', deltas:{friendship:6,happiness:4,knowledge:-4} },
+    ]},
+  { age:7, stage:'Early Childhood', title:'Show and Tell', story:"It's your turn for show and tell. Your team must decide what to bring and how to present it to the class.",
+    choices:[
+      { label:'Bring a book you love and talk about it', blurb:'Share something that taught you a lot.', deltas:{knowledge:6,happiness:2} },
+      { label:'Bring a pet photo and tell a funny story', blurb:'Get everyone laughing.', deltas:{friendship:6,happiness:3,knowledge:-3} },
+      { label:'Skip your turn, you\u2019re too nervous', blurb:'Sit this one out today.', deltas:{health:3,happiness:-4,friendship:-3} },
+      { label:'Ask a friend to present with you', blurb:'Team up so it feels less scary.', deltas:{friendship:7,happiness:2,knowledge:-2} },
+    ]},
+  { age:8, stage:'Early Childhood', title:'The Lost Toy', story:'A classmate lost their favorite toy and is close to tears, searching everywhere for it.',
+    choices:[
+      { label:'Stop playing and help search', blurb:'Give up your game time to help.', deltas:{friendship:8,happiness:-2} },
+      { label:'Keep playing your game', blurb:"It's not your problem to solve.", deltas:{happiness:5,friendship:-5} },
+      { label:'Tell a teacher who can help', blurb:'Get an adult involved instead.', deltas:{friendship:4,knowledge:2} },
+      { label:'Organize the other kids to search together', blurb:'Turn it into a team effort.', deltas:{friendship:6,knowledge:3,happiness:-2} },
+    ]},
+  { age:9, stage:'Early Childhood', title:'The Playground Dispute', story:'Two classmates are arguing over whose turn it is on the swings. Your team notices and has to decide what to do.',
+    choices:[
+      { label:'Help them take turns fairly', blurb:'Step in and work out a schedule.', deltas:{friendship:6,knowledge:3,happiness:-2} },
+      { label:'Walk away and play something else', blurb:'Stay out of it entirely.', deltas:{happiness:4,friendship:-4} },
+      { label:'Tell a teacher right away', blurb:'Let an adult sort it out.', deltas:{friendship:2,knowledge:3} },
+      { label:'Suggest a game everyone can play together', blurb:'Turn conflict into fun for all.', deltas:{friendship:8,happiness:4,health:-3} },
+      { label:'Jump in and try to physically break it up', blurb:'Push into the middle of it yourself.', deltas:{health:-30,friendship:-5,happiness:-10},
+        trap:'severe', trapMessage:'Stepping into a physical conflict without a plan got you hurt. It\u2019s brave to want to help \u2014 but the safest way is often to get a trusted adult involved instead of stepping in yourself.' },
+    ]},
+  { age:10, stage:'Middle Childhood', title:'The Big Test', story:'A major test is coming up, but your friends invite you to a weekend sleepover instead of studying.',
+    choices:[
+      { label:'Study hard all weekend', blurb:'Skip the sleepover to prepare.', deltas:{knowledge:10,friendship:-4,happiness:-2} },
+      { label:'Go to the sleepover', blurb:'Have fun and study later.', deltas:{friendship:8,happiness:4,knowledge:-6} },
+      { label:'Study a bit, then join late', blurb:'Try to balance both.', deltas:{knowledge:3,friendship:3,health:-2} },
+      { label:'Ask a friend to be your study buddy', blurb:'Combine studying and hanging out.', deltas:{knowledge:5,friendship:5,health:-3} },
+    ]},
+  { age:12, stage:'Middle Childhood', title:'New Hobby', story:'You have free time after school. There\u2019s a robotics club, a soccer team, and a chore job for allowance money.',
+    choices:[
+      { label:'Join robotics club', blurb:'Build and code with a team.', deltas:{knowledge:8,money:-2} },
+      { label:'Join soccer team', blurb:'Get active and make teammates.', deltas:{health:8,happiness:2,money:-2} },
+      { label:'Do chores for allowance', blurb:'Earn your own spending money.', deltas:{money:8,health:-3} },
+      { label:'Try a bit of everything', blurb:'Sample all three without fully committing.', deltas:{happiness:5,knowledge:2,money:-4} },
+    ]},
+  { age:13, stage:'Middle Childhood', title:'Moving to a New School', story:"Your family just moved to a new town. It's your first week at a new school and you don\u2019t know anyone yet.",
+    choices:[
+      { label:'Join a club right away to meet people', blurb:'Put yourself out there immediately.', deltas:{friendship:6,knowledge:2,health:-2} },
+      { label:'Focus on catching up with schoolwork first', blurb:'Get settled academically before socializing.', deltas:{knowledge:7,friendship:-3} },
+      { label:'Keep in touch with old friends online instead', blurb:'Lean on familiar friendships for now.', deltas:{friendship:3,happiness:3,knowledge:-3} },
+      { label:'Try out for a sports team', blurb:'Meet people through activity.', deltas:{health:7,friendship:4,knowledge:-4} },
+    ]},
+  { age:14, stage:'Teen Years', title:'High School Clubs', story:'High school has dozens of clubs, but your team can only commit to one this semester.',
+    choices:[
+      { label:'Debate club', blurb:'Sharpen your mind and arguments.', deltas:{knowledge:7,friendship:2,health:-3} },
+      { label:'Volunteer club', blurb:'Give your time to your community.', deltas:{friendship:7,money:-3} },
+      { label:'Fitness club', blurb:'Train hard and stay active.', deltas:{health:7,happiness:3,knowledge:-3} },
+      { label:'Start your own club', blurb:'Take the lead and build something new.', deltas:{knowledge:4,friendship:4,health:-4} },
+    ]},
+  { age:15, stage:'Teen Years', title:'Social Media Account', story:'All your friends are getting social media accounts. Your team has to decide how to handle it.',
+    choices:[
+      { label:'Create an account and post often', blurb:'Jump in and stay active online.', deltas:{friendship:7,happiness:3,health:-4} },
+      { label:'Create an account but use it rarely', blurb:'Have one, but keep it low-key.', deltas:{friendship:3,health:3} },
+      { label:'Wait and skip it for now', blurb:'Hold off for a while longer.', deltas:{health:5,knowledge:3,friendship:-5} },
+      { label:'Use it to share your hobbies and art', blurb:'Post about what you actually love.', deltas:{happiness:6,friendship:4,knowledge:-3} },
+      { label:'Click a link promising free followers and prizes', blurb:'It looks like an easy win.', deltas:{money:-25,happiness:-15,knowledge:-10},
+        trap:'severe', trapMessage:'That link was a scam that stole personal information. Online, offers that sound too good to be true almost always are \u2014 it pays to slow down and check before you click.' },
+    ]},
+  { age:16, stage:'Teen Years', title:'Part-Time Job Offer', story:'A local shop offers you a part-time job after school. It pays well but eats into your free evenings.',
+    choices:[
+      { label:'Take the job', blurb:'Commit to regular paid shifts.', deltas:{money:10,friendship:-4,health:-3} },
+      { label:'Decline, hang out with friends', blurb:'Keep your evenings free.', deltas:{friendship:8,money:-4} },
+      { label:'Negotiate fewer hours', blurb:'Try to get a bit of both.', deltas:{money:4,friendship:3,health:-2} },
+      { label:'Start a small business idea instead', blurb:'Work for yourself instead of a boss.', deltas:{money:6,knowledge:4,friendship:-3} },
+    ]},
+  { age:17, stage:'Teen Years', title:'The College Application Essay', story:'A big application essay is due soon. Your team has to decide how to approach it.',
+    choices:[
+      { label:'Write about your biggest achievement', blurb:'Lead with your proudest moment.', deltas:{knowledge:6,happiness:3,health:-3} },
+      { label:'Get help from a tutor', blurb:'Invest in expert feedback.', deltas:{knowledge:7,money:-5} },
+      { label:'Write it the night before', blurb:'Wing it under pressure.', deltas:{happiness:4,knowledge:-6} },
+      { label:'Ask friends and family to help brainstorm', blurb:'Get input from people who know you.', deltas:{friendship:6,knowledge:3,happiness:-2} },
+    ]},
+  { age:18, stage:'Teen Years', title:'After Graduation', story:'Graduation is here. Your team must choose the very next step in life.',
+    choices:[
+      { label:'Go straight to university', blurb:'Keep learning full-time.', deltas:{knowledge:10,money:-5} },
+      { label:'Start working full-time', blurb:'Jump into a paying job.', deltas:{money:10,knowledge:-4} },
+      { label:'Travel and volunteer abroad', blurb:'See the world and help others.', deltas:{friendship:8,happiness:6,money:-6} },
+      { label:'Take a gap year to figure things out', blurb:'Pause and think before deciding.', deltas:{happiness:7,knowledge:-2,money:-4} },
+      { label:'Join friends for a reckless late-night stunt', blurb:'Celebrate graduation by ignoring every safety rule.', deltas:{happiness:5},
+        trap:'end', trapMessage:'A reckless risk with no regard for safety led to a serious accident that night. This is a hard reminder that some risks are simply too big to take, no matter how exciting they feel in the moment.' },
+    ]},
+  { age:19, stage:'Young Adult', title:'Living on Your Own', story:'You just moved into your first apartment. Money, chores, and freedom are all new. Your team has to decide your approach.',
+    choices:[
+      { label:'Budget carefully and cook at home', blurb:'Play it safe and save money.', deltas:{money:7,health:3,happiness:-3} },
+      { label:'Enjoy going out with new friends', blurb:'Make the most of your freedom.', deltas:{friendship:7,happiness:4,money:-6} },
+      { label:'Work extra hours to save up', blurb:'Push hard to build savings early.', deltas:{money:8,health:-5,friendship:-3} },
+      { label:'Split rent with roommates', blurb:'Share costs and company.', deltas:{friendship:5,money:4,health:-2} },
+    ]},
+  { age:21, stage:'Young Adult', title:'College or Career', story:'An unexpected opportunity arrives: study abroad, or a promising job offer close to home.',
+    choices:[
+      { label:'Study abroad', blurb:'Learn in a whole new place.', deltas:{knowledge:9,friendship:3,money:-6} },
+      { label:'Take the job offer', blurb:'Start building a career now.', deltas:{money:9,knowledge:-3} },
+      { label:'Stay close and freelance', blurb:'Work independently, close to home.', deltas:{happiness:6,money:2,health:-2} },
+      { label:'Start your own small venture', blurb:'Bet on an idea of your own.', deltas:{money:5,knowledge:3,health:-4} },
+      { label:'Borrow fast cash from an unlicensed lender', blurb:'Skip the paperwork for quick funding.', deltas:{money:-45,happiness:-15},
+        trap:'severe', trapMessage:'The loan came with hidden costs that spiraled out of control. Fast, unclear money deals are one of the riskiest financial traps out there \u2014 always read the fine print, or better, ask a trusted adult first.' },
+    ]},
+  { age:24, stage:'Young Adult', title:'The Big Move', story:"You're offered a chance to move to a new city for a fresh start, but it means leaving close friends behind.",
+    choices:[
+      { label:'Make the move', blurb:'Chase the fresh start.', deltas:{money:7,knowledge:4,friendship:-6} },
+      { label:'Stay near your friends', blurb:'Choose familiar people over change.', deltas:{friendship:8,happiness:3,money:-3} },
+      { label:'Compromise: move nearby', blurb:'A smaller move, less risk.', deltas:{money:3,friendship:2,health:-2} },
+      { label:'Take a temporary work assignment abroad', blurb:'Try it out without fully committing.', deltas:{money:5,knowledge:5,friendship:-5} },
+    ]},
+  { age:26, stage:'Adulthood', title:'Starting a Family', story:'Your team is deciding what this next chapter of adult life should look like.',
+    choices:[
+      { label:'Focus on building your career first', blurb:'Put work at the center for now.', deltas:{money:8,knowledge:3,friendship:-4} },
+      { label:'Start a family now', blurb:'Prioritize home and loved ones.', deltas:{friendship:7,happiness:5,money:-6} },
+      { label:'Travel and explore before settling down', blurb:'See more of the world first.', deltas:{happiness:8,knowledge:4,money:-5} },
+      { label:'Focus on close friendships and community', blurb:'Build a strong circle around you.', deltas:{friendship:8,happiness:4,money:-3} },
+    ]},
+  { age:30, stage:'Adulthood', title:'Career Crossroads', story:"You're offered a demanding promotion with more money, or the chance to start a passion project with less certainty.",
+    choices:[
+      { label:'Take the promotion', blurb:'Chase the bigger paycheck.', deltas:{money:10,happiness:-3,health:-3} },
+      { label:'Start the passion project', blurb:'Follow what excites you.', deltas:{happiness:8,money:-6} },
+      { label:'Balance both, part-time', blurb:'Try to do a bit of everything.', deltas:{money:3,happiness:3,health:-3} },
+      { label:'Take a sabbatical to rest and reset', blurb:'Pause everything to recover first.', deltas:{health:8,happiness:5,money:-6} },
+      { label:'Push nonstop with zero rest to prove yourself', blurb:'Work through every warning sign to get ahead.', deltas:{money:8,health:-40,friendship:-10},
+        trap:'severe', trapMessage:'Ignoring your limits for too long led to serious burnout. Rest isn\u2019t a reward for hard work \u2014 it\u2019s part of what makes hard work possible.' },
+    ]},
+  { age:34, stage:'Adulthood', title:'Health Scare', story:"A routine checkup reveals you've been overdoing it. Your team must decide how to respond.",
+    choices:[
+      { label:'Make a big lifestyle change', blurb:'Overhaul your habits now.', deltas:{health:9,happiness:-2,money:-3} },
+      { label:'Ignore it and keep the same pace', blurb:'Skip your follow-up care and push through like nothing happened.', deltas:{money:5},
+        trap:'end', trapMessage:'Ignoring repeated warning signs from your body finally caught up with you. This is why check-ups, rest, and listening to yourself always matter \u2014 before a small warning sign becomes something irreversible.' },
+      { label:'Find a balance with small changes', blurb:'Adjust gradually instead of all at once.', deltas:{health:5,happiness:2,money:-2} },
+      { label:'Take time off work completely', blurb:'Step back fully to recover.', deltas:{health:8,happiness:4,money:-7} },
+    ]},
+  { age:38, stage:'Adulthood', title:'Community Involvement', story:'Your neighborhood is organizing a community garden. It needs volunteers, but it will take up your weekends.',
+    choices:[
+      { label:'Volunteer every weekend', blurb:'Give your time to the project.', deltas:{friendship:8,happiness:4,money:-3} },
+      { label:'Donate money instead', blurb:'Support it without the time cost.', deltas:{money:-4,friendship:2} },
+      { label:'Stay focused on your own goals', blurb:'Sit this one out.', deltas:{money:4,knowledge:2,friendship:-4} },
+      { label:'Organize a team from work to help', blurb:'Bring others along with you.', deltas:{friendship:6,knowledge:3,health:-3} },
+    ]},
+  { age:45, stage:'Adulthood', title:'Career Reinvention', story:"After years in the same field, your team wonders if it's time for a change.",
+    choices:[
+      { label:'Go back to school for something new', blurb:'Retrain for a different path.', deltas:{knowledge:8,money:-6} },
+      { label:'Stay the course, it\u2019s stable', blurb:'Keep things as they are.', deltas:{money:6,happiness:-3} },
+      { label:'Start something entirely your own', blurb:'Take a leap on a new venture.', deltas:{happiness:7,money:-5,knowledge:3} },
+      { label:'Mentor others in your current field', blurb:'Pass on what you know instead of starting over.', deltas:{friendship:6,happiness:3,knowledge:2} },
+    ]},
+  { age:55, stage:'Later Life', title:'Passing on Wisdom', story:'A younger person asks you for life advice. Your team decides how to spend this later chapter of life.',
+    choices:[
+      { label:'Mentor young people', blurb:'Share what you\u2019ve learned.', deltas:{friendship:8,happiness:5,money:-2} },
+      { label:'Keep learning new things', blurb:'Stay a student for life.', deltas:{knowledge:8,happiness:3} },
+      { label:'Relax and enjoy hobbies', blurb:'Take time for yourself.', deltas:{health:8,happiness:6,knowledge:-3} },
+      { label:'Write a book about your life', blurb:'Put your story down on paper.', deltas:{knowledge:6,happiness:4,friendship:-3} },
+    ]},
+  { age:65, stage:'Later Life', title:'Retirement', story:'After a long life of work, your team decides how to spend your newfound free time.',
+    choices:[
+      { label:'Travel the world', blurb:'Finally see the places you dreamed of.', deltas:{happiness:9,money:-6} },
+      { label:'Spend time with family and friends', blurb:'Stay close to the people you love.', deltas:{friendship:9,happiness:4,money:-2} },
+      { label:'Pick up a lifelong passion project', blurb:'Finally start what you always wanted to.', deltas:{happiness:6,knowledge:5,money:-3} },
+      { label:'Stay active with health and fitness', blurb:'Make the most of your energy.', deltas:{health:9,happiness:3,money:-2} },
+    ]},
+];
+
+const DISCUSSION_PROMPTS = [
+  'Why did your team choose this?',
+  'Did everyone agree?',
+  'What could happen next?',
+  'Would another team choose differently?',
+  'Do you think this was a risky choice?',
+];
+
+const REFLECTION_QUESTIONS = [
+  'Which decision changed your life the most?',
+  'Which decision surprised your team?',
+  'Would you make the same decision again?',
+];
+
+const AI_REFLECTION_QUESTIONS = [
+  'How was your team\u2019s process similar to a decision-making algorithm?',
+  'Which inputs or goals influenced your team\u2019s choices the most?',
+  'What should a human check before trusting an AI-made decision?',
+];
+
+const CAREER_MAP = {
+  'knowledge|happiness': { title:'Innovative Teacher', desc:'Someone who loves learning and shares that joy with others.' },
+  'knowledge|friendship': { title:'Community Scientist', desc:'Someone who researches ideas that help people together.' },
+  'knowledge|money': { title:'Research Entrepreneur', desc:'Someone who turns big ideas into real ventures.' },
+  'knowledge|health': { title:'Medical Researcher', desc:'Someone who studies how to keep people healthy.' },
+  'happiness|friendship': { title:'Event Organizer', desc:'Someone who brings people together for joyful moments.' },
+  'happiness|money': { title:'Creative Business Owner', desc:'Someone who builds a business around what they love.' },
+  'happiness|health': { title:'Wellness Coach', desc:'Someone who helps others feel good, inside and out.' },
+  'friendship|money': { title:'Nonprofit Director', desc:'Someone who leads a team doing good work in the world.' },
+  'friendship|health': { title:'Community Health Worker', desc:'Someone who cares for people\u2019s wellbeing up close.' },
+  'money|health': { title:'Sports Team Manager', desc:'Someone who runs the business side of an active team.' },
+};
+
+const LESSONS = {
+  knowledge:'Curiosity opened many doors, but the richest chapters came from balancing learning with people and rest.',
+  happiness:'Joy carried this life forward, showing that how you feel about your choices matters as much as what you achieve.',
+  friendship:'The people along the way mattered most \u2014 this life shows that relationships are built one decision at a time.',
+  money:'Hard work and planning paid off, but the story also shows that security means little without health and connection.',
+  health:'Taking care of the body and mind paid off, proving that energy and wellbeing make every other goal possible.',
+};
+
+const LESSONS_VI = {
+  knowledge:'Sự tò mò mở ra nhiều cơ hội, nhưng hành trình ý nghĩa nhất vẫn cần cân bằng giữa học hỏi, các mối quan hệ và nghỉ ngơi.',
+  happiness:'Niềm vui giúp hành trình tiến về phía trước, cho thấy cảm nhận về lựa chọn cũng quan trọng như thành quả đạt được.',
+  friendship:'Những người đồng hành là điều đáng quý nhất — các mối quan hệ được vun đắp từ từng quyết định nhỏ.',
+  money:'Nỗ lực và kế hoạch mang lại kết quả, nhưng sự ổn định tài chính sẽ chưa trọn vẹn nếu thiếu sức khỏe và kết nối.',
+  health:'Chăm sóc cơ thể và tinh thần tạo nền tảng để theo đuổi mọi mục tiêu khác.',
+};
+
+const UI = {
+  en:{
+    brand:'Life Story', team:'Team', language:'Language',
+    whatNow:'What Should We Do?', noTimer:'No Timer', minutes:'{{n}} Minutes', timerLabel:'Timer duration',
+    timeToDecide:'Time to Decide!', leftToDiscuss:'left to discuss',
+    learningTitle:'Decision Trees: From Life Choices to AI',
+    learningIntro:'Your team will build a character and guide them through a lifetime of choices. Every discussion creates a new branch in a decision tree. Each branch changes Knowledge, Happiness, Health, Friendship, and Money, so even a small choice can lead to a very different future.',
+    flowSituation:'Situation', flowSituationDesc:'What is happening?',
+    flowInputs:'Inputs & goals', flowInputsDesc:'What matters now?',
+    flowOptions:'Compare options', flowOptionsDesc:'What could each choice change?',
+    flowBranch:'Choose a branch', flowBranchDesc:'Make one decision.',
+    flowReview:'Outcome & review', flowReviewDesc:'Check what happened and learn.',
+    aiNoteTitle:'How this connects to AI:',
+    aiNote:'AI systems often follow a similar cycle: receive inputs, use rules or learned patterns to compare possibilities, and produce an output. AI does not think or feel like a person, so humans still need to check the data, the goal, fairness, safety, and real-life consequences.',
+    aiLensTitle:'AI Decision Lens',
+    aiLensBody:'Name the important inputs. Decide what goal matters most. Predict how each option could change the five indicators. Then choose one branch and be ready to explain your reasoning.',
+    welcomeEyebrow:'A Team Life Simulation', welcomeTitle:'Live a Whole <span>Life</span>,<br>One Team, One Story.',
+    welcomeSub:'Create one character, discuss every turning point, and discover how a chain of small decisions can shape an entire life.',
+    startActivity:'▶ Start Activity',
+    createGuide:'Work together to create your character. Discuss before choosing a personality — you can only pick one!',
+    createPhase:'Phase 1 · Create Your Character', discussBefore:'Discuss with your teammates before choosing.',
+    teamName:'Team Name', teamPlaceholder:'e.g. The Storytellers', characterName:'Character Name', charPlaceholder:'e.g. Rio',
+    characterPhoto:'Character Photo', takePhoto:'📷 Take a Photo', chooseIcon:'🙂 Choose an Icon',
+    retakePhoto:'🔄 Retake Photo', capture:'📸 Capture', cancel:'Cancel', pickFace:'Pick one teammate to be the face of your character!',
+    turnOnCamera:'📷 Turn On Camera', photoPrivacy:'📎 This photo stays in your browser for this activity only — it is never uploaded or saved anywhere.',
+    personality:'Choose ONE Starting Personality', fillAll:'Fill in every field to continue.', beginLife:'Begin Life →',
+    great:'Great!', lifeBegins:'Your life begins now.',
+    meetCharacter:'Meet <strong>{{char}}</strong> of Team <strong>{{team}}</strong> — a {{personality}} character about to make {{count}} big life decisions.',
+    beginEvents:'Begin Life Events →',
+    eventGuide:'Read the story together. Compare every choice, vote as a team, and click only one answer.',
+    age:'Age', discussTeam:'Discuss as a team:',
+    confirmTitle:'Have all teammates agreed?', yourChoice:'Your team chose:', permanent:'Once confirmed, this decision is permanent.',
+    lockChoice:'✓ Yes, Lock It In', continueDiscussing:'↺ Continue Discussing',
+    severeGuide:'Pause and talk about what happened. What warning sign could the team notice next time?',
+    consequence:'Decision Consequence', seriousSetback:'A Serious Setback', choseDuring:'Your team chose <strong>“{{choice}}”</strong> during <strong>{{title}}</strong>.',
+    learnContinue:'Learn From It & Continue →',
+    endGuide:'Pause here. Discuss why this decision ended the story and what a safer choice could have been.',
+    turningPoint:'Story Turning Point', endedEarly:'This Life Story Ended Early', finishReflect:'Finish & Reflect →', override:'Teacher Override: Continue Story',
+    reflectionGuide:'Talk about your journey as a team. Connect your life choices to the way a decision-making algorithm compares inputs, goals, branches, and outcomes.',
+    reflectionPhase:'Phase 3 · Reflection', discussContinue:'Discuss before continuing.', answerPlaceholder:'Write your team\u2019s answer here...',
+    seePresentation:'See Your Presentation →',
+    presentationGuide:'Review the journey. Prepare to explain the inputs, goals, choices, and outcomes behind your team\u2019s decision tree.',
+    finalCareer:'Final Career', lifeTimeline:'Life Timeline', chose:'chose', achievements:'Achievements', lifeStats:'Life Statistics',
+    greatestSuccess:'Greatest Success', greatestChallenge:'Greatest Challenge', importantDecision:'Most Important Decision', teamReflection:'Team Reflection',
+    successSentence:'At age {{age}}, choosing <strong>“{{choice}}”</strong> during “{{title}}” gave the biggest boost to {{stat}} ({{value}}).',
+    challengeSentence:'At age {{age}}, choosing <strong>“{{choice}}”</strong> during “{{title}}” came with a real cost to {{stat}} ({{value}}).',
+    importantSentence:'At age {{age}}, <strong>“{{title}}”</strong> changed more of {{char}}\u2019s life than any other moment.',
+    noAnswer:'(no answer recorded)', oneLifeLesson:'One Life Lesson',
+    finalMessage:'Every choice creates a different branch. There is no perfect life or perfect algorithm: good decisions require clear goals, useful information, careful comparison, and human responsibility for the consequences.',
+    presentMode:'🎤 PRESENT MODE', printableReport:'🖨️ Get Printable Report', exitPresent:'Exit Present Mode',
+    backPresentation:'← Back to Presentation', printStory:'🖨️ Print My Life Story', timeline:'Timeline', importantChoices:'Most Important Choices',
+    reflectionQuestions:'Reflection Questions', finalLesson:'Final Life Lesson',
+    teacherMenu:'Teacher Menu', close:'Close', skipEvent:'⏭ Skip Event', nextEvent:'➡ Next Event', pauseTimer:'⏸ Pause Timer', resumeTimer:'▶ Resume Timer',
+    showSummary:'📊 Show Summary', restartLife:'🔄 Restart Life', soundOn:'🔊 Sound On', soundOff:'🔇 Sound Off', hideInterface:'🙈 Hide Interface', presentationMode:'🎤 Presentation Mode',
+    footer:'Team decisions build a life story, one choice at a time.', skipped:'(skipped by teacher)',
+    restartConfirm:'Restart this life from the beginning? All progress will be lost.', balancedBadge:'⚖️ Balanced Life Badge', champion:'{{icon}} {{stat}} Champion',
+    roundedCareer:'Well-Rounded Explorer', roundedCareerDesc:'Someone who tried a bit of everything.', cameraError:'Couldn\u2019t access the camera. Check permissions, or choose an icon instead.',
+    capturedPhoto:'Captured team photo', characterPhotoAlt:'{{name}} photo'
+  },
+  vi:{
+    brand:'Câu chuyện cuộc đời', team:'Đội', language:'Ngôn ngữ',
+    whatNow:'Cả nhóm cần làm gì?', noTimer:'Không giới hạn', minutes:'{{n}} phút', timerLabel:'Thời gian thảo luận',
+    timeToDecide:'Đến lúc quyết định!', leftToDiscuss:'để thảo luận',
+    learningTitle:'Cây quyết định: Từ lựa chọn trong cuộc sống đến AI',
+    learningIntro:'Cả nhóm sẽ cùng xây dựng một nhân vật và dẫn dắt nhân vật đó qua nhiều quyết định trong suốt cuộc đời. Mỗi lần thảo luận sẽ tạo ra một nhánh mới trong “cây quyết định”. Từng nhánh làm thay đổi Kiến thức, Hạnh phúc, Sức khỏe, Tình bạn và Tài chính, vì vậy một lựa chọn nhỏ cũng có thể dẫn đến một tương lai rất khác.',
+    flowSituation:'Tình huống', flowSituationDesc:'Điều gì đang xảy ra?',
+    flowInputs:'Dữ liệu & mục tiêu', flowInputsDesc:'Điều gì quan trọng lúc này?',
+    flowOptions:'So sánh phương án', flowOptionsDesc:'Mỗi lựa chọn có thể thay đổi điều gì?',
+    flowBranch:'Chọn một nhánh', flowBranchDesc:'Đưa ra một quyết định.',
+    flowReview:'Kết quả & nhìn lại', flowReviewDesc:'Xem điều gì xảy ra và rút kinh nghiệm.',
+    aiNoteTitle:'Liên hệ với cách AI ra quyết định:',
+    aiNote:'Hệ thống AI thường trải qua một quy trình tương tự: nhận dữ liệu đầu vào, dùng quy tắc hoặc mẫu đã học để so sánh các khả năng, rồi tạo ra kết quả. AI không suy nghĩ hay cảm nhận như con người, vì vậy con người vẫn phải kiểm tra dữ liệu, mục tiêu, tính công bằng, độ an toàn và ảnh hưởng thực tế của quyết định.',
+    aiLensTitle:'Lăng kính ra quyết định của AI',
+    aiLensBody:'Xác định dữ liệu quan trọng, chọn mục tiêu ưu tiên, dự đoán từng phương án sẽ ảnh hưởng thế nào đến năm chỉ số. Sau đó, chọn một nhánh và sẵn sàng giải thích lý do.',
+    welcomeEyebrow:'Mô phỏng cuộc đời theo đội', welcomeTitle:'Sống trọn một <span>cuộc đời</span>,<br>Một đội, một câu chuyện.',
+    welcomeSub:'Tạo một nhân vật, cùng thảo luận ở mỗi bước ngoặt và khám phá cách chuỗi quyết định nhỏ có thể định hình cả cuộc đời.',
+    startActivity:'▶ Bắt đầu hoạt động',
+    createGuide:'Cùng nhau tạo nhân vật. Hãy thảo luận trước khi chọn tính cách — cả nhóm chỉ được chọn một!',
+    createPhase:'Giai đoạn 1 · Tạo nhân vật', discussBefore:'Thảo luận với các thành viên trước khi chọn.',
+    teamName:'Tên đội', teamPlaceholder:'Ví dụ: Những người kể chuyện', characterName:'Tên nhân vật', charPlaceholder:'Ví dụ: An',
+    characterPhoto:'Ảnh nhân vật', takePhoto:'📷 Chụp ảnh', chooseIcon:'🙂 Chọn biểu tượng',
+    retakePhoto:'🔄 Chụp lại', capture:'📸 Chụp', cancel:'Hủy', pickFace:'Chọn một thành viên làm gương mặt đại diện cho nhân vật!',
+    turnOnCamera:'📷 Bật camera', photoPrivacy:'📎 Ảnh chỉ được dùng trong trình duyệt cho hoạt động này, không được tải lên hay lưu lại.',
+    personality:'Chọn MỘT tính cách khởi đầu', fillAll:'Điền đủ thông tin để tiếp tục.', beginLife:'Bắt đầu cuộc đời →',
+    great:'Tuyệt vời!', lifeBegins:'Hành trình cuộc đời bắt đầu!',
+    meetCharacter:'Đây là <strong>{{char}}</strong> của Đội <strong>{{team}}</strong> — một nhân vật {{personality}}, sắp đối mặt với {{count}} quyết định lớn trong cuộc đời.',
+    beginEvents:'Bắt đầu các sự kiện →',
+    eventGuide:'Cùng đọc tình huống, so sánh mọi phương án, biểu quyết theo đội và chỉ chọn một câu trả lời.',
+    age:'Tuổi', discussTeam:'Cùng thảo luận:',
+    confirmTitle:'Tất cả thành viên đã đồng ý chưa?', yourChoice:'Lựa chọn của đội:', permanent:'Sau khi xác nhận, quyết định này sẽ không thể thay đổi.',
+    lockChoice:'✓ Đồng ý, chốt lựa chọn', continueDiscussing:'↺ Thảo luận thêm',
+    severeGuide:'Tạm dừng và trao đổi về điều vừa xảy ra. Lần sau, đội có thể nhận ra dấu hiệu cảnh báo nào?',
+    consequence:'Hệ quả của quyết định', seriousSetback:'Một trở ngại nghiêm trọng', choseDuring:'Đội đã chọn <strong>“{{choice}}”</strong> trong tình huống <strong>{{title}}</strong>.',
+    learnContinue:'Rút kinh nghiệm & tiếp tục →',
+    endGuide:'Tạm dừng tại đây. Vì sao lựa chọn này khiến câu chuyện kết thúc? Phương án nào an toàn hơn?',
+    turningPoint:'Bước ngoặt câu chuyện', endedEarly:'Câu chuyện cuộc đời kết thúc sớm', finishReflect:'Kết thúc & nhìn lại →', override:'Giáo viên: Cho câu chuyện tiếp tục',
+    reflectionGuide:'Cùng nhìn lại hành trình và liên hệ các lựa chọn với cách một thuật toán so sánh dữ liệu, mục tiêu, các nhánh và kết quả.',
+    reflectionPhase:'Giai đoạn 3 · Nhìn lại', discussContinue:'Thảo luận trước khi tiếp tục.', answerPlaceholder:'Ghi câu trả lời của đội tại đây...',
+    seePresentation:'Xem phần trình bày →',
+    presentationGuide:'Xem lại hành trình và chuẩn bị giải thích dữ liệu, mục tiêu, lựa chọn cùng kết quả trong cây quyết định của đội.',
+    finalCareer:'Nghề nghiệp cuối cùng', lifeTimeline:'Hành trình cuộc đời', chose:'đã chọn', achievements:'Thành tựu', lifeStats:'Các chỉ số cuộc đời',
+    greatestSuccess:'Thành công lớn nhất', greatestChallenge:'Thử thách lớn nhất', importantDecision:'Quyết định quan trọng nhất', teamReflection:'Phần nhìn lại của đội',
+    successSentence:'Ở tuổi {{age}}, lựa chọn <strong>“{{choice}}”</strong> trong “{{title}}” đã giúp {{stat}} tăng nhiều nhất ({{value}}).',
+    challengeSentence:'Ở tuổi {{age}}, lựa chọn <strong>“{{choice}}”</strong> trong “{{title}}” đã khiến {{stat}} giảm nhiều nhất ({{value}}).',
+    importantSentence:'Ở tuổi {{age}}, <strong>“{{title}}”</strong> là bước ngoặt ảnh hưởng đến cuộc đời của {{char}} nhiều hơn mọi thời điểm khác.',
+    noAnswer:'(chưa ghi câu trả lời)', oneLifeLesson:'Một bài học cuộc sống',
+    finalMessage:'Mỗi lựa chọn tạo ra một nhánh tương lai khác nhau. Không có cuộc đời hay thuật toán nào hoàn hảo: quyết định tốt cần mục tiêu rõ ràng, thông tin phù hợp, so sánh cẩn thận và con người chịu trách nhiệm về hệ quả.',
+    presentMode:'🎤 CHẾ ĐỘ TRÌNH BÀY', printableReport:'🖨️ Tạo bản in', exitPresent:'Thoát chế độ trình bày',
+    backPresentation:'← Quay lại phần trình bày', printStory:'🖨️ In câu chuyện cuộc đời', timeline:'Hành trình', importantChoices:'Những lựa chọn quan trọng',
+    reflectionQuestions:'Câu hỏi nhìn lại', finalLesson:'Bài học cuối hành trình',
+    teacherMenu:'Bảng điều khiển giáo viên', close:'Đóng', skipEvent:'⏭ Bỏ qua sự kiện', nextEvent:'➡ Sự kiện tiếp theo', pauseTimer:'⏸ Tạm dừng', resumeTimer:'▶ Tiếp tục tính giờ',
+    showSummary:'📊 Xem tổng kết', restartLife:'🔄 Bắt đầu lại', soundOn:'🔊 Bật âm thanh', soundOff:'🔇 Tắt âm thanh', hideInterface:'🙈 Ẩn giao diện', presentationMode:'🎤 Chế độ trình bày',
+    footer:'Mỗi quyết định của đội sẽ góp phần tạo nên một câu chuyện cuộc đời.', skipped:'(giáo viên đã bỏ qua)',
+    restartConfirm:'Bắt đầu lại từ đầu? Toàn bộ tiến trình hiện tại sẽ bị xóa.', balancedBadge:'⚖️ Huy hiệu Cuộc sống cân bằng', champion:'{{icon}} Bậc thầy {{stat}}',
+    roundedCareer:'Nhà khám phá đa năng', roundedCareerDesc:'Một người sẵn sàng trải nghiệm nhiều hướng đi khác nhau.', cameraError:'Không thể truy cập camera. Hãy kiểm tra quyền truy cập hoặc chọn biểu tượng.',
+    capturedPhoto:'Ảnh đại diện của đội', characterPhotoAlt:'Ảnh của {{name}}'
+  }
+};
+
+function t(key, vars={}){
+  let text = (UI[state.lang] && UI[state.lang][key]) || UI.en[key] || key;
+  return text.replace(/\{\{(\w+)\}\}/g, (_,name)=>String(vars[name] ?? ''));
+}
+
+function statLabel(stat){
+  return state.lang==='vi' ? STAT_META[stat].vi : STAT_META[stat].label;
+}
+
+function personalityName(p){ return state.lang==='vi' ? p.viName : p.name; }
+function personalityDesc(p){ return state.lang==='vi' ? p.viDesc : p.desc; }
+
+const VI_TEXT = {
+  'Early Childhood':'Thời thơ ấu',
+  'Middle Childhood':'Tuổi thiếu nhi',
+  'Teen Years':'Tuổi thiếu niên',
+  'Young Adult':'Tuổi trưởng thành trẻ',
+  'Adulthood':'Tuổi trưởng thành',
+  'Later Life':'Tuổi xế chiều',
+
+  'First Day of School':'Ngày đầu tiên đi học',
+  'You just walked into a new classroom full of strangers. Your team must decide how to spend your very first day.':'Bạn vừa bước vào một lớp học hoàn toàn mới, xung quanh đều là những gương mặt xa lạ. Cả đội phải quyết định sẽ trải qua ngày đầu tiên như thế nào.',
+  'Introduce yourself to everyone':'Chủ động làm quen với mọi người',
+  'Meet as many classmates as you can.':'Chào hỏi càng nhiều bạn trong lớp càng tốt.',
+  'Explore the reading corner alone':'Tự khám phá góc đọc sách',
+  'Quietly check out the books first.':'Bắt đầu bằng việc yên lặng xem những cuốn sách ở đó.',
+  'Ask the teacher lots of questions':'Hỏi thầy cô thật nhiều',
+  'Learn how everything works right away.':'Tìm hiểu ngay cách mọi thứ trong lớp hoạt động.',
+  'Bring a favorite toy to share':'Mang món đồ chơi yêu thích đến chia sẻ',
+  'Break the ice with something familiar.':'Dùng một món đồ quen thuộc để dễ bắt chuyện hơn.',
+
+  'Show and Tell':'Giờ chia sẻ trước lớp',
+  "It's your turn for show and tell. Your team must decide what to bring and how to present it to the class.":'Đến lượt bạn chia sẻ trước lớp. Cả đội phải quyết định sẽ mang gì và trình bày như thế nào.',
+  'Bring a book you love and talk about it':'Mang một cuốn sách yêu thích và giới thiệu',
+  'Share something that taught you a lot.':'Chia sẻ điều đã giúp bạn học được nhiều kiến thức.',
+  'Bring a pet photo and tell a funny story':'Mang ảnh thú cưng và kể một câu chuyện vui',
+  'Get everyone laughing.':'Tạo tiếng cười cho cả lớp.',
+  'Skip your turn, you’re too nervous':'Bỏ lượt vì quá hồi hộp',
+  'Sit this one out today.':'Hôm nay chưa tham gia phần trình bày.',
+  'Ask a friend to present with you':'Nhờ một người bạn trình bày cùng',
+  'Team up so it feels less scary.':'Phối hợp cùng nhau để bớt lo lắng.',
+
+  'The Lost Toy':'Món đồ chơi bị thất lạc',
+  'A classmate lost their favorite toy and is close to tears, searching everywhere for it.':'Một bạn trong lớp làm mất món đồ chơi yêu thích, đang buồn bã và tìm kiếm khắp nơi.',
+  'Stop playing and help search':'Dừng chơi để cùng tìm đồ',
+  'Give up your game time to help.':'Dành thời gian chơi của mình để giúp bạn.',
+  'Keep playing your game':'Tiếp tục trò chơi của mình',
+  "It's not your problem to solve.":'Cho rằng đây không phải việc của mình.',
+  'Tell a teacher who can help':'Báo cho thầy cô để được hỗ trợ',
+  'Get an adult involved instead.':'Nhờ một người lớn cùng giải quyết.',
+  'Organize the other kids to search together':'Rủ các bạn khác cùng tìm',
+  'Turn it into a team effort.':'Biến việc tìm kiếm thành hoạt động chung của cả nhóm.',
+
+  'The Playground Dispute':'Mâu thuẫn ở sân chơi',
+  'Two classmates are arguing over whose turn it is on the swings. Your team notices and has to decide what to do.':'Hai bạn đang tranh cãi xem ai được chơi xích đu trước. Cả đội nhìn thấy và phải quyết định nên làm gì.',
+  'Help them take turns fairly':'Giúp hai bạn chia lượt công bằng',
+  'Step in and work out a schedule.':'Cùng thống nhất thứ tự chơi rõ ràng.',
+  'Walk away and play something else':'Rời đi và chơi trò khác',
+  'Stay out of it entirely.':'Không tham gia vào mâu thuẫn.',
+  'Tell a teacher right away':'Báo cho thầy cô ngay',
+  'Let an adult sort it out.':'Nhờ người lớn hỗ trợ giải quyết.',
+  'Suggest a game everyone can play together':'Đề xuất một trò chơi chung',
+  'Turn conflict into fun for all.':'Biến mâu thuẫn thành hoạt động vui cho mọi người.',
+  'Jump in and try to physically break it up':'Lao vào can ngăn bằng sức lực',
+  'Push into the middle of it yourself.':'Tự chen vào giữa cuộc xô xát.',
+  'Stepping into a physical conflict without a plan got you hurt. It’s brave to want to help — but the safest way is often to get a trusted adult involved instead of stepping in yourself.':'Lao vào một cuộc xô xát khi chưa có cách xử lý an toàn khiến bạn bị thương. Muốn giúp đỡ là điều đáng quý, nhưng cách an toàn hơn thường là báo ngay cho người lớn đáng tin cậy.',
+
+  'The Big Test':'Bài kiểm tra quan trọng',
+  'A major test is coming up, but your friends invite you to a weekend sleepover instead of studying.':'Một bài kiểm tra quan trọng sắp diễn ra, nhưng bạn bè lại rủ bạn đến chơi và ngủ lại vào cuối tuần thay vì ôn bài.',
+  'Study hard all weekend':'Ôn bài chăm chỉ cả cuối tuần',
+  'Skip the sleepover to prepare.':'Không đi chơi để dành thời gian chuẩn bị.',
+  'Go to the sleepover':'Đi chơi cùng bạn bè',
+  'Have fun and study later.':'Vui chơi trước rồi học sau.',
+  'Study a bit, then join late':'Học một lúc rồi đến sau',
+  'Try to balance both.':'Cố gắng cân bằng việc học và vui chơi.',
+  'Ask a friend to be your study buddy':'Rủ một người bạn học cùng',
+  'Combine studying and hanging out.':'Vừa học vừa có thời gian bên bạn bè.',
+
+  'New Hobby':'Sở thích mới',
+  'You have free time after school. There’s a robotics club, a soccer team, and a chore job for allowance money.':'Bạn có thời gian rảnh sau giờ học. Có một câu lạc bộ robot, một đội bóng đá và công việc nhà để nhận tiền tiêu vặt.',
+  'Join robotics club':'Tham gia câu lạc bộ robot',
+  'Build and code with a team.':'Cùng đội thiết kế và điều khiển robot.',
+  'Join soccer team':'Tham gia đội bóng đá',
+  'Get active and make teammates.':'Vận động và làm quen với đồng đội mới.',
+  'Do chores for allowance':'Làm việc nhà để nhận tiền tiêu vặt',
+  'Earn your own spending money.':'Tự kiếm một khoản tiền nhỏ để chi tiêu.',
+  'Try a bit of everything':'Thử mỗi hoạt động một chút',
+  'Sample all three without fully committing.':'Trải nghiệm cả ba nhưng chưa tập trung hẳn vào hoạt động nào.',
+
+  'Moving to a New School':'Chuyển đến trường mới',
+  "Your family just moved to a new town. It's your first week at a new school and you don’t know anyone yet.":'Gia đình bạn vừa chuyển đến một nơi ở mới. Đây là tuần đầu tại trường mới và bạn chưa quen ai.',
+  'Join a club right away to meet people':'Tham gia câu lạc bộ ngay để làm quen',
+  'Put yourself out there immediately.':'Chủ động kết nối với mọi người từ đầu.',
+  'Focus on catching up with schoolwork first':'Ưu tiên theo kịp việc học trước',
+  'Get settled academically before socializing.':'Ổn định việc học rồi mới tập trung kết bạn.',
+  'Keep in touch with old friends online instead':'Chủ yếu giữ liên lạc với bạn cũ qua mạng',
+  'Lean on familiar friendships for now.':'Tạm thời dựa vào những mối quan hệ quen thuộc.',
+  'Try out for a sports team':'Thử tham gia một đội thể thao',
+  'Meet people through activity.':'Làm quen với mọi người qua hoạt động vận động.',
+
+  'High School Clubs':'Câu lạc bộ ở trường trung học',
+  'High school has dozens of clubs, but your team can only commit to one this semester.':'Trường trung học có rất nhiều câu lạc bộ, nhưng học kỳ này cả đội chỉ có thể cam kết tham gia một nơi.',
+  'Debate club':'Câu lạc bộ tranh biện',
+  'Sharpen your mind and arguments.':'Rèn tư duy và cách trình bày lập luận.',
+  'Volunteer club':'Câu lạc bộ tình nguyện',
+  'Give your time to your community.':'Dành thời gian hỗ trợ cộng đồng.',
+  'Fitness club':'Câu lạc bộ thể chất',
+  'Train hard and stay active.':'Tập luyện đều đặn và duy trì vận động.',
+  'Start your own club':'Tự thành lập một câu lạc bộ',
+  'Take the lead and build something new.':'Đứng ra dẫn dắt và tạo nên điều mới.',
+
+  'Social Media Account':'Tài khoản mạng xã hội',
+  'All your friends are getting social media accounts. Your team has to decide how to handle it.':'Bạn bè xung quanh đều bắt đầu sử dụng mạng xã hội. Cả đội phải quyết định sẽ làm gì.',
+  'Create an account and post often':'Tạo tài khoản và đăng bài thường xuyên',
+  'Jump in and stay active online.':'Tham gia ngay và hoạt động tích cực trên mạng.',
+  'Create an account but use it rarely':'Tạo tài khoản nhưng ít sử dụng',
+  'Have one, but keep it low-key.':'Có tài khoản nhưng không chia sẻ quá nhiều.',
+  'Wait and skip it for now':'Tạm thời chưa dùng mạng xã hội',
+  'Hold off for a while longer.':'Chờ thêm một thời gian trước khi tham gia.',
+  'Use it to share your hobbies and art':'Dùng để chia sẻ sở thích và sản phẩm sáng tạo',
+  'Post about what you actually love.':'Đăng những nội dung mình thật sự yêu thích.',
+  'Click a link promising free followers and prizes':'Bấm vào liên kết hứa tặng người theo dõi và phần thưởng',
+  'It looks like an easy win.':'Có vẻ đây là cách nhận quà rất dễ dàng.',
+  'That link was a scam that stole personal information. Online, offers that sound too good to be true almost always are — it pays to slow down and check before you click.':'Liên kết đó là một trò lừa đảo nhằm lấy thông tin cá nhân. Trên mạng, lời mời hấp dẫn đến mức khó tin thường tiềm ẩn rủi ro — hãy dừng lại và kiểm tra trước khi bấm.',
+
+  'Part-Time Job Offer':'Lời mời làm thêm',
+  'A local shop offers you a part-time job after school. It pays well but eats into your free evenings.':'Một cửa hàng gần nhà mời bạn làm thêm sau giờ học. Thu nhập khá tốt nhưng sẽ chiếm phần lớn thời gian rảnh buổi tối.',
+  'Take the job':'Nhận công việc',
+  'Commit to regular paid shifts.':'Làm việc theo ca đều đặn để có thu nhập.',
+  'Decline, hang out with friends':'Từ chối để dành thời gian cho bạn bè',
+  'Keep your evenings free.':'Giữ các buổi tối được rảnh rỗi.',
+  'Negotiate fewer hours':'Thương lượng số giờ làm ít hơn',
+  'Try to get a bit of both.':'Cố gắng cân bằng công việc và thời gian riêng.',
+  'Start a small business idea instead':'Thử thực hiện một ý tưởng kinh doanh nhỏ',
+  'Work for yourself instead of a boss.':'Tự làm dự án của mình thay vì làm thuê.',
+
+  'The College Application Essay':'Bài luận ứng tuyển đại học',
+  'A big application essay is due soon. Your team has to decide how to approach it.':'Sắp đến hạn nộp một bài luận quan trọng. Cả đội phải quyết định sẽ chuẩn bị như thế nào.',
+  'Write about your biggest achievement':'Viết về thành tích lớn nhất',
+  'Lead with your proudest moment.':'Mở đầu bằng khoảnh khắc đáng tự hào nhất.',
+  'Get help from a tutor':'Nhờ gia sư hỗ trợ',
+  'Invest in expert feedback.':'Đầu tư để nhận góp ý từ người có kinh nghiệm.',
+  'Write it the night before':'Đợi đến tối trước hạn mới viết',
+  'Wing it under pressure.':'Làm gấp trong áp lực thời gian.',
+  'Ask friends and family to help brainstorm':'Nhờ bạn bè và gia đình cùng góp ý tưởng',
+  'Get input from people who know you.':'Lắng nghe góp ý từ những người hiểu mình.',
+
+  'After Graduation':'Sau khi tốt nghiệp',
+  'Graduation is here. Your team must choose the very next step in life.':'Ngày tốt nghiệp đã đến. Cả đội phải chọn bước tiếp theo của cuộc đời.',
+  'Go straight to university':'Học đại học ngay',
+  'Keep learning full-time.':'Tiếp tục học tập toàn thời gian.',
+  'Start working full-time':'Bắt đầu đi làm toàn thời gian',
+  'Jump into a paying job.':'Tham gia thị trường lao động và có thu nhập.',
+  'Travel and volunteer abroad':'Du lịch và làm tình nguyện ở nước ngoài',
+  'See the world and help others.':'Khám phá thế giới và hỗ trợ cộng đồng.',
+  'Take a gap year to figure things out':'Dành một năm để xác định hướng đi',
+  'Pause and think before deciding.':'Tạm dừng để suy nghĩ kỹ trước khi chọn.',
+  'Join friends for a reckless late-night stunt':'Tham gia một trò mạo hiểm vào đêm khuya cùng bạn bè',
+  'Celebrate graduation by ignoring every safety rule.':'Ăn mừng tốt nghiệp nhưng bỏ qua mọi quy tắc an toàn.',
+  'A reckless risk with no regard for safety led to a serious accident that night. This is a hard reminder that some risks are simply too big to take, no matter how exciting they feel in the moment.':'Việc bất chấp an toàn để tham gia một trò mạo hiểm đã dẫn đến tai nạn nghiêm trọng. Đây là lời nhắc rằng có những rủi ro không đáng để đánh đổi, dù chúng có hấp dẫn đến đâu trong khoảnh khắc đó.',
+
+  'Living on Your Own':'Bắt đầu cuộc sống tự lập',
+  'You just moved into your first apartment. Money, chores, and freedom are all new. Your team has to decide your approach.':'Bạn vừa chuyển đến căn hộ đầu tiên. Việc quản lý tiền bạc, việc nhà và sự tự do đều còn mới mẻ. Cả đội phải chọn cách thích nghi.',
+  'Budget carefully and cook at home':'Lập ngân sách cẩn thận và tự nấu ăn',
+  'Play it safe and save money.':'Chi tiêu an toàn và tiết kiệm.',
+  'Enjoy going out with new friends':'Đi chơi cùng những người bạn mới',
+  'Make the most of your freedom.':'Tận hưởng sự tự do mới có.',
+  'Work extra hours to save up':'Làm thêm giờ để tiết kiệm',
+  'Push hard to build savings early.':'Nỗ lực tạo khoản tiết kiệm từ sớm.',
+  'Split rent with roommates':'Ở ghép và chia tiền thuê nhà',
+  'Share costs and company.':'Chia sẻ chi phí và có người đồng hành.',
+
+  'College or Career':'Học tiếp hay đi làm',
+  'An unexpected opportunity arrives: study abroad, or a promising job offer close to home.':'Một cơ hội bất ngờ xuất hiện: đi du học hoặc nhận công việc triển vọng gần nhà.',
+  'Study abroad':'Đi du học',
+  'Learn in a whole new place.':'Học tập trong một môi trường hoàn toàn mới.',
+  'Take the job offer':'Nhận lời mời làm việc',
+  'Start building a career now.':'Bắt đầu xây dựng sự nghiệp ngay.',
+  'Stay close and freelance':'Ở gần nhà và làm việc tự do',
+  'Work independently, close to home.':'Làm việc độc lập nhưng vẫn ở gần gia đình.',
+  'Start your own small venture':'Khởi động dự án kinh doanh nhỏ',
+  'Bet on an idea of your own.':'Đầu tư vào ý tưởng của chính mình.',
+  'Borrow fast cash from an unlicensed lender':'Vay tiền nhanh từ nơi không được cấp phép',
+  'Skip the paperwork for quick funding.':'Bỏ qua giấy tờ để nhận tiền nhanh.',
+  'The loan came with hidden costs that spiraled out of control. Fast, unclear money deals are one of the riskiest financial traps out there — always read the fine print, or better, ask a trusted adult first.':'Khoản vay có nhiều chi phí ẩn và nhanh chóng vượt ngoài khả năng kiểm soát. Những giao dịch tiền bạc nhanh nhưng không rõ ràng là chiếc bẫy tài chính rất nguy hiểm — hãy đọc kỹ điều khoản và hỏi người đáng tin cậy trước.',
+
+  'The Big Move':'Chuyển đến thành phố mới',
+  "You're offered a chance to move to a new city for a fresh start, but it means leaving close friends behind.":'Bạn có cơ hội chuyển đến một thành phố mới để bắt đầu lại, nhưng điều đó đồng nghĩa phải rời xa những người bạn thân.',
+  'Make the move':'Chuyển đến nơi ở mới',
+  'Chase the fresh start.':'Nắm lấy cơ hội để bắt đầu một chương mới.',
+  'Stay near your friends':'Ở lại gần bạn bè',
+  'Choose familiar people over change.':'Ưu tiên những mối quan hệ quen thuộc thay vì thay đổi.',
+  'Compromise: move nearby':'Thỏa hiệp: chuyển đến một nơi không quá xa',
+  'A smaller move, less risk.':'Thay đổi vừa phải để giảm bớt rủi ro.',
+  'Take a temporary work assignment abroad':'Nhận công việc ngắn hạn ở nước ngoài',
+  'Try it out without fully committing.':'Trải nghiệm trước khi đưa ra cam kết lâu dài.',
+
+  'Starting a Family':'Xây dựng gia đình',
+  'Your team is deciding what this next chapter of adult life should look like.':'Cả đội đang quyết định chương tiếp theo của cuộc sống trưởng thành sẽ như thế nào.',
+  'Focus on building your career first':'Ưu tiên xây dựng sự nghiệp trước',
+  'Put work at the center for now.':'Tạm thời đặt công việc làm trọng tâm.',
+  'Start a family now':'Bắt đầu xây dựng gia đình ngay',
+  'Prioritize home and loved ones.':'Ưu tiên mái ấm và những người thân yêu.',
+  'Travel and explore before settling down':'Du lịch và khám phá trước khi ổn định',
+  'See more of the world first.':'Trải nghiệm thêm nhiều nơi trước.',
+  'Focus on close friendships and community':'Tập trung vào bạn bè thân thiết và cộng đồng',
+  'Build a strong circle around you.':'Xây dựng mạng lưới quan hệ vững chắc.',
+
+  'Career Crossroads':'Ngã rẽ sự nghiệp',
+  "You're offered a demanding promotion with more money, or the chance to start a passion project with less certainty.":'Bạn được đề nghị thăng chức với thu nhập cao nhưng áp lực lớn, hoặc bắt đầu dự án đam mê có nhiều điều chưa chắc chắn.',
+  'Take the promotion':'Nhận vị trí thăng chức',
+  'Chase the bigger paycheck.':'Theo đuổi mức thu nhập cao hơn.',
+  'Start the passion project':'Bắt đầu dự án đam mê',
+  'Follow what excites you.':'Theo đuổi điều khiến mình hứng thú.',
+  'Balance both, part-time':'Làm song song cả hai ở mức bán thời gian',
+  'Try to do a bit of everything.':'Cố gắng cân bằng nhiều mục tiêu.',
+  'Take a sabbatical to rest and reset':'Tạm nghỉ để hồi phục và định hướng lại',
+  'Pause everything to recover first.':'Tạm gác mọi việc để nghỉ ngơi trước.',
+  'Push nonstop with zero rest to prove yourself':'Làm việc không ngừng nghỉ để chứng tỏ bản thân',
+  'Work through every warning sign to get ahead.':'Bỏ qua mọi dấu hiệu cảnh báo để tiến nhanh hơn.',
+  'Ignoring your limits for too long led to serious burnout. Rest isn’t a reward for hard work — it’s part of what makes hard work possible.':'Bỏ qua giới hạn của bản thân quá lâu đã dẫn đến kiệt sức nghiêm trọng. Nghỉ ngơi không phải phần thưởng sau khi làm việc — đó là điều cần thiết để có thể tiếp tục nỗ lực.',
+
+  'Health Scare':'Cảnh báo sức khỏe',
+  "A routine checkup reveals you've been overdoing it. Your team must decide how to respond.":'Một lần kiểm tra sức khỏe cho thấy bạn đã làm việc quá sức. Cả đội phải quyết định sẽ phản ứng như thế nào.',
+  'Make a big lifestyle change':'Thay đổi lớn trong lối sống',
+  'Overhaul your habits now.':'Điều chỉnh mạnh các thói quen ngay từ bây giờ.',
+  'Ignore it and keep the same pace':'Bỏ qua và tiếp tục như cũ',
+  'Skip your follow-up care and push through like nothing happened.':'Không tái khám và tiếp tục làm việc như chưa có gì xảy ra.',
+  'Ignoring repeated warning signs from your body finally caught up with you. This is why check-ups, rest, and listening to yourself always matter — before a small warning sign becomes something irreversible.':'Việc liên tục bỏ qua những dấu hiệu cảnh báo của cơ thể cuối cùng đã để lại hậu quả nghiêm trọng. Kiểm tra sức khỏe, nghỉ ngơi và lắng nghe cơ thể luôn cần được thực hiện trước khi một dấu hiệu nhỏ trở thành điều không thể thay đổi.',
+  'Find a balance with small changes':'Cân bằng bằng những thay đổi nhỏ',
+  'Adjust gradually instead of all at once.':'Điều chỉnh từng bước thay vì thay đổi tất cả cùng lúc.',
+  'Take time off work completely':'Tạm nghỉ việc hoàn toàn',
+  'Step back fully to recover.':'Dành trọn thời gian để hồi phục.',
+
+  'Community Involvement':'Tham gia hoạt động cộng đồng',
+  'Your neighborhood is organizing a community garden. It needs volunteers, but it will take up your weekends.':'Khu phố đang xây dựng một khu vườn cộng đồng và cần tình nguyện viên, nhưng hoạt động sẽ chiếm các ngày cuối tuần.',
+  'Volunteer every weekend':'Tình nguyện vào mỗi cuối tuần',
+  'Give your time to the project.':'Dành thời gian trực tiếp hỗ trợ dự án.',
+  'Donate money instead':'Thay vào đó, đóng góp tiền',
+  'Support it without the time cost.':'Hỗ trợ dự án mà không cần dành nhiều thời gian.',
+  'Stay focused on your own goals':'Tập trung vào mục tiêu riêng',
+  'Sit this one out.':'Không tham gia hoạt động lần này.',
+  'Organize a team from work to help':'Tổ chức một nhóm đồng nghiệp cùng hỗ trợ',
+  'Bring others along with you.':'Kết nối thêm nhiều người cùng tham gia.',
+
+  'Career Reinvention':'Làm mới sự nghiệp',
+  "After years in the same field, your team wonders if it's time for a change.":'Sau nhiều năm làm cùng một lĩnh vực, cả đội cân nhắc liệu đã đến lúc thay đổi hay chưa.',
+  'Go back to school for something new':'Quay lại học một lĩnh vực mới',
+  'Retrain for a different path.':'Bổ sung kiến thức để chuyển sang hướng đi khác.',
+  'Stay the course, it’s stable':'Tiếp tục công việc hiện tại vì ổn định',
+  'Keep things as they are.':'Giữ mọi thứ như hiện tại.',
+  'Start something entirely your own':'Tự bắt đầu một dự án hoàn toàn mới',
+  'Take a leap on a new venture.':'Chấp nhận thử thách với hướng đi mới.',
+  'Mentor others in your current field':'Hướng dẫn người khác trong lĩnh vực hiện tại',
+  'Pass on what you know instead of starting over.':'Chia sẻ kinh nghiệm thay vì bắt đầu lại từ đầu.',
+
+  'Passing on Wisdom':'Trao lại kinh nghiệm',
+  'A younger person asks you for life advice. Your team decides how to spend this later chapter of life.':'Một người trẻ nhờ bạn chia sẻ lời khuyên. Cả đội quyết định sẽ dành chương tiếp theo của cuộc đời cho điều gì.',
+  'Mentor young people':'Hướng dẫn người trẻ',
+  'Share what you’ve learned.':'Chia sẻ những điều mình đã học được.',
+  'Keep learning new things':'Tiếp tục học điều mới',
+  'Stay a student for life.':'Giữ tinh thần học hỏi suốt đời.',
+  'Relax and enjoy hobbies':'Thư giãn và tận hưởng sở thích',
+  'Take time for yourself.':'Dành thời gian chăm sóc bản thân.',
+  'Write a book about your life':'Viết một cuốn sách về cuộc đời',
+  'Put your story down on paper.':'Ghi lại hành trình của mình trên trang giấy.',
+
+  'Retirement':'Nghỉ hưu',
+  'After a long life of work, your team decides how to spend your newfound free time.':'Sau nhiều năm làm việc, cả đội quyết định sẽ sử dụng khoảng thời gian rảnh mới có như thế nào.',
+  'Travel the world':'Du lịch vòng quanh thế giới',
+  'Finally see the places you dreamed of.':'Đến thăm những nơi mình từng mơ ước.',
+  'Spend time with family and friends':'Dành thời gian cho gia đình và bạn bè',
+  'Stay close to the people you love.':'Ở bên những người mình yêu quý.',
+  'Pick up a lifelong passion project':'Thực hiện dự án đam mê ấp ủ từ lâu',
+  'Finally start what you always wanted to.':'Bắt đầu điều mình luôn mong muốn thực hiện.',
+  'Stay active with health and fitness':'Duy trì vận động và chăm sóc sức khỏe',
+  'Make the most of your energy.':'Sử dụng năng lượng theo cách tích cực nhất.',
+
+  'Why did your team choose this?':'Vì sao đội chọn phương án này?',
+  'Did everyone agree?':'Tất cả thành viên có đồng ý không?',
+  'What could happen next?':'Điều gì có thể xảy ra tiếp theo?',
+  'Would another team choose differently?':'Một đội khác có thể chọn khác không?',
+  'Do you think this was a risky choice?':'Đây có phải là lựa chọn nhiều rủi ro không?',
+  'Which decision changed your life the most?':'Quyết định nào làm cuộc đời nhân vật thay đổi nhiều nhất?',
+  'Which decision surprised your team?':'Quyết định nào khiến cả đội bất ngờ nhất?',
+  'Would you make the same decision again?':'Nếu làm lại, đội có chọn giống như vậy không?',
+  'How was your team’s process similar to a decision-making algorithm?':'Cách đội ra quyết định giống một thuật toán ở điểm nào?',
+  'Which inputs or goals influenced your team’s choices the most?':'Dữ liệu hoặc mục tiêu nào ảnh hưởng nhiều nhất đến lựa chọn của đội?',
+  'What should a human check before trusting an AI-made decision?':'Con người cần kiểm tra điều gì trước khi tin vào quyết định do AI đưa ra?',
+
+  'Innovative Teacher':'Giáo viên đổi mới',
+  'Someone who loves learning and shares that joy with others.':'Người yêu thích học hỏi và lan tỏa niềm vui đó đến mọi người.',
+  'Community Scientist':'Nhà khoa học cộng đồng',
+  'Someone who researches ideas that help people together.':'Người nghiên cứu những ý tưởng giúp cộng đồng cùng phát triển.',
+  'Research Entrepreneur':'Doanh nhân nghiên cứu',
+  'Someone who turns big ideas into real ventures.':'Người biến những ý tưởng lớn thành dự án thực tế.',
+  'Medical Researcher':'Nhà nghiên cứu y học',
+  'Someone who studies how to keep people healthy.':'Người nghiên cứu những cách giúp mọi người khỏe mạnh.',
+  'Event Organizer':'Chuyên viên tổ chức sự kiện',
+  'Someone who brings people together for joyful moments.':'Người kết nối mọi người trong những khoảnh khắc vui vẻ.',
+  'Creative Business Owner':'Chủ doanh nghiệp sáng tạo',
+  'Someone who builds a business around what they love.':'Người xây dựng công việc kinh doanh từ điều mình yêu thích.',
+  'Wellness Coach':'Chuyên gia chăm sóc sức khỏe',
+  'Someone who helps others feel good, inside and out.':'Người giúp mọi người khỏe mạnh cả về thể chất lẫn tinh thần.',
+  'Nonprofit Director':'Quản lý tổ chức cộng đồng',
+  'Someone who leads a team doing good work in the world.':'Người dẫn dắt một đội ngũ tạo ra những thay đổi tích cực.',
+  'Community Health Worker':'Chuyên viên sức khỏe cộng đồng',
+  'Someone who cares for people’s wellbeing up close.':'Người trực tiếp hỗ trợ sức khỏe và cuộc sống của cộng đồng.',
+  'Sports Team Manager':'Quản lý đội thể thao',
+  'Someone who runs the business side of an active team.':'Người điều hành hoạt động của một đội thể thao.',
+};
+
+function dt(text){
+  if(text==='(skipped by teacher)') return t('skipped');
+  return state.lang==='vi' ? (VI_TEXT[text] || text) : text;
+}
+
+/* ============================= STATE ============================= */
+let state = {
+  lang:'en',
+  screen:'welcome', // welcome, create, event, confirm, reflection, presentation, report
+  teamName:'', charName:'', avatar:AVATARS[0], personality:null,
+  avatarType:'photo', // 'photo' or 'icon'
+  avatarPhoto:null, // dataURL of captured team photo
+  cameraStream:null, cameraError:'',
+  stats:{ knowledge:50, happiness:50, friendship:50, money:50, health:50 },
+  eventIndex:0,
+  pendingChoice:null,
+  timeline:[],
+  timerOption:'none', timerTotal:0, timerRemaining:0, timerRunning:false, timerDone:false,
+  timerInterval:null,
+  soundOn:true,
+  teacherOpen:false,
+  interfaceHidden:false,
+  presentMode:false,
+  reflectionQs: [pickRandom(AI_REFLECTION_QUESTIONS,1)[0], ...pickRandom(REFLECTION_QUESTIONS,2)],
+  reflectionAnswers:{},
+  discussionPrompt: pickRandom(DISCUSSION_PROMPTS,1)[0],
+  activeTrap:null, // { type:'severe'|'end', message, title, age }
+  storyEnded:false,
+  endReason:null,
+  showLessonPlan:false,
+};
+
+function pickRandom(arr,n){
+  const copy=[...arr]; const out=[];
+  while(out.length<n && copy.length){ out.push(copy.splice(Math.floor(Math.random()*copy.length),1)[0]); }
+  return out;
+}
+function clamp(n){ return Math.max(0, Math.min(100, n)); }
+
+/* Simple sound (WebAudio, no assets needed) */
+let audioCtx=null;
+function beep(freq=520, dur=0.09){
+  if(!state.soundOn) return;
+  try{
+    audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+    const o=audioCtx.createOscillator(); const g=audioCtx.createGain();
+    o.type='sine'; o.frequency.value=freq;
+    g.gain.setValueAtTime(0.06, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime+dur);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime+dur);
+  }catch(e){}
+}
+
+/* ============================= RENDER HELPERS ============================= */
+function el(html){ const t=document.createElement('template'); t.innerHTML=html.trim(); return t.content.firstChild; }
+function esc(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function avatarDisplay(size){
+  size = size || '2.2rem';
+  if(state.avatarType==='photo' && state.avatarPhoto){
+    return `<img class="char-avatar-img" src="${state.avatarPhoto}" alt="${esc(t('characterPhotoAlt',{name:state.charName||'Character'}))}" style="width:${size};height:${size};">`;
+  }
+  return `<span style="font-size:${size};line-height:1;display:inline-block;">${state.avatar}</span>`;
+}
+
+function statsBarHTML(){
+  return `<div class="statsbar">` + STATS.map(s=>{
+    const m=STAT_META[s]; const v=state.stats[s];
+    return `<div class="statchip">
+      <div class="s-top"><span>${m.icon} ${statLabel(s)}</span><span class="s-val">${v}</span></div>
+      <div class="s-bar"><div class="s-fill" style="width:${v}%;background:${m.color}"></div></div>
+    </div>`;
+  }).join('') + `</div>`;
+}
+
+function whatNowHTML(text, openByDefault){
+  return `<details class="whatnow" ${openByDefault?'open':''}>
+    <summary>🧭 ${t('whatNow')} <span class="car">▶</span></summary>
+    <div class="body">${text}</div>
+  </details>`;
+}
+
+function decisionLearningHTML(openByDefault=false){
+  return `<details class="learning-card" ${openByDefault?'open':''}>
+    <summary>🧠 ${t('learningTitle')} <span class="car">▶</span></summary>
+    <div class="learning-body">
+      <p>${t('learningIntro')}</p>
+      <div class="decision-flow" aria-label="${esc(t('learningTitle'))}">
+        <div class="flow-step"><strong>1 · ${t('flowSituation')}</strong>${t('flowSituationDesc')}</div>
+        <div class="flow-step"><strong>2 · ${t('flowInputs')}</strong>${t('flowInputsDesc')}</div>
+        <div class="flow-step"><strong>3 · ${t('flowOptions')}</strong>${t('flowOptionsDesc')}</div>
+        <div class="flow-step"><strong>4 · ${t('flowBranch')}</strong>${t('flowBranchDesc')}</div>
+        <div class="flow-step"><strong>5 · ${t('flowReview')}</strong>${t('flowReviewDesc')}</div>
+      </div>
+      <p><strong>${t('aiNoteTitle')}</strong> ${t('aiNote')}</p>
+    </div>
+  </details>`;
+}
+
+function aiLensHTML(){
+  return `<div class="ai-lens">🧠 <strong>${t('aiLensTitle')}:</strong> ${t('aiLensBody')}</div>`;
+}
+
+function timerControlsHTML(){
+  const opts = [['none',t('noTimer')],['2',t('minutes',{n:2})],['3',t('minutes',{n:3})],['5',t('minutes',{n:5})],['10',t('minutes',{n:10})]];
+  return `<select class="tm-select" id="timerSelect" aria-label="${esc(t('timerLabel'))}">
+    ${opts.map(([v,l])=>`<option value="${v}" ${state.timerOption===v?'selected':''}>${l}</option>`).join('')}
+  </select>`;
+}
+
+function timerBannerHTML(){
+  if(state.timerOption==='none' || !state.timerRunning && !state.timerDone && state.timerRemaining===0) {
+    if(state.timerOption==='none') return '';
+  }
+  if(state.timerDone){
+    return `<div class="timer-banner done">⏰ <span>${t('timeToDecide')}</span></div>`;
+  }
+  if(state.timerRemaining>0){
+    const mm=Math.floor(state.timerRemaining/60), ss=state.timerRemaining%60;
+    return `<div class="timer-banner">⏳ <span class="tclock">${mm}:${ss.toString().padStart(2,'0')}</span> <span>${t('leftToDiscuss')}</span></div>`;
+  }
+  return '';
+}
+
+/* ============================= TIMER LOGIC ============================= */
+function startTimer(){
+  clearInterval(state.timerInterval);
+  if(state.timerOption==='none'){ state.timerRemaining=0; state.timerRunning=false; state.timerDone=false; return; }
+  state.timerTotal = parseInt(state.timerOption,10)*60;
+  state.timerRemaining = state.timerTotal;
+  state.timerRunning = true;
+  state.timerDone = false;
+  state.timerInterval = setInterval(()=>{
+    if(!state.timerRunning) return;
+    state.timerRemaining--;
+    if(state.timerRemaining<=0){
+      state.timerRemaining=0; state.timerRunning=false; state.timerDone=true;
+      clearInterval(state.timerInterval);
+      beep(700,0.15);
+    }
+    renderTimerOnly();
+  },1000);
+}
+function renderTimerOnly(){
+  const holder=document.getElementById('timerHolder');
+  if(holder) holder.innerHTML = timerBannerHTML();
+}
+
+/* ============================= CAMERA ============================= */
+async function startCamera(){
+  state.cameraError='';
+  stopCamera();
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:'user' }, audio:false });
+    state.cameraStream = stream;
+    render();
+    const video = document.getElementById('cameraVideo');
+    if(video){ video.srcObject = stream; }
+  }catch(err){
+    state.cameraError = t('cameraError');
+    render();
+  }
+}
+function stopCamera(){
+  if(state.cameraStream){
+    state.cameraStream.getTracks().forEach(t=>t.stop());
+    state.cameraStream=null;
+  }
+}
+function capturePhoto(){
+  const video = document.getElementById('cameraVideo');
+  if(!video) return;
+  const size = Math.min(video.videoWidth, video.videoHeight) || 480;
+  const canvas = document.createElement('canvas');
+  canvas.width = size; canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const sx = (video.videoWidth - size)/2, sy = (video.videoHeight - size)/2;
+  ctx.translate(size,0); ctx.scale(-1,1); // mirror for a natural selfie view
+  ctx.drawImage(video, sx, sy, size, size, 0, 0, size, size);
+  state.avatarPhoto = canvas.toDataURL('image/png');
+  stopCamera();
+  beep(700,0.1);
+  render();
+}
+function retakePhoto(){
+  state.avatarPhoto=null;
+  startCamera();
+}
+
+/* ============================= SCREENS ============================= */
+function renderWelcome(){
+  return `
+  <div class="stage welcome">
+    <div class="welcome-art">🦊🐧🦉</div>
+    <span class="eyebrow">${t('welcomeEyebrow')}</span>
+    <h1 class="big-title">${t('welcomeTitle')}</h1>
+    <p class="sub">${t('welcomeSub')}</p>
+    ${decisionLearningHTML(true)}
+    <button class="btn btn-primary" id="startBtn">${t('startActivity')}</button>
+  </div>`;
+}
+
+function renderCreate(){
+  const avatarReady = state.avatarType==='icon' || (state.avatarType==='photo' && state.avatarPhoto);
+  const canBegin = state.teamName.trim() && state.charName.trim() && state.personality && avatarReady;
+  return `
+  <div class="stage">
+    ${whatNowHTML(t('createGuide'), true)}
+    <div class="card">
+      <span class="eyebrow">${t('createPhase')}</span>
+      <h2 style="margin-top:6px;color:var(--forest-dark);">${t('discussBefore')}</h2>
+
+      <div class="field">
+        <label for="teamName">${t('teamName')}</label>
+        <input type="text" id="teamName" placeholder="${esc(t('teamPlaceholder'))}" value="${esc(state.teamName)}">
+      </div>
+      <div class="field">
+        <label for="charName">${t('characterName')}</label>
+        <input type="text" id="charName" placeholder="${esc(t('charPlaceholder'))}" value="${esc(state.charName)}">
+      </div>
+      <div class="field">
+        <label>${t('characterPhoto')}</label>
+        <div class="photo-tabs">
+          <button class="photo-tab ${state.avatarType==='photo'?'sel':''}" id="tabPhoto" aria-pressed="${state.avatarType==='photo'}">${t('takePhoto')}</button>
+          <button class="photo-tab ${state.avatarType==='icon'?'sel':''}" id="tabIcon" aria-pressed="${state.avatarType==='icon'}">${t('chooseIcon')}</button>
+        </div>
+
+        ${state.avatarType==='photo' ? `
+          <div class="camera-box">
+            ${state.cameraError ? `<div class="camera-error">${esc(t('cameraError'))}</div>` : ''}
+            ${state.avatarPhoto ? `
+              <img class="camera-preview-img" src="${state.avatarPhoto}" alt="${esc(t('capturedPhoto'))}">
+              <div class="camera-actions">
+                <button class="btn btn-secondary" id="retakeBtn">${t('retakePhoto')}</button>
+              </div>
+            ` : state.cameraStream ? `
+              <video id="cameraVideo" class="camera-video" autoplay playsinline muted style="transform:scaleX(-1);"></video>
+              <div class="camera-actions">
+                <button class="btn btn-primary" id="captureBtn">${t('capture')}</button>
+                <button class="btn btn-ghost" style="color:var(--parchment);border-color:var(--parchment);" id="cancelCameraBtn">${t('cancel')}</button>
+              </div>
+            ` : `
+              <p style="margin:0 0 14px;">${t('pickFace')}</p>
+              <div class="camera-actions">
+                <button class="btn btn-primary" id="startCameraBtn">${t('turnOnCamera')}</button>
+              </div>
+            `}
+            <div class="camera-note">${t('photoPrivacy')}</div>
+          </div>
+        ` : `
+          <div class="choice-grid">
+            ${AVATARS.map(a=>`<button class="avatar-btn ${state.avatar===a?'sel':''}" data-avatar="${a}" aria-pressed="${state.avatar===a}">${a}</button>`).join('')}
+          </div>
+        `}
+      </div>
+      <div class="field">
+        <label>${t('personality')}</label>
+        <div class="pers-grid">
+          ${PERSONALITIES.map(p=>`
+            <button class="pers-btn ${state.personality===p.id?'sel':''}" data-pers="${p.id}" aria-pressed="${state.personality===p.id}">
+              <div class="p-name">${p.icon} ${personalityName(p)}</div>
+              <div class="p-desc">${personalityDesc(p)}</div>
+            </button>`).join('')}
+        </div>
+      </div>
+
+      <div class="action-row">
+        <span style="color:var(--ink-soft);font-size:0.9rem;">${canBegin? '' : t('fillAll')}</span>
+        <button class="btn btn-primary" id="beginLifeBtn" ${canBegin?'':'disabled'}>${t('beginLife')}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderLifeIntro(){
+  const p = PERSONALITIES.find(p=>p.id===state.personality);
+  return `
+  <div class="stage welcome">
+    <div class="welcome-art">${avatarDisplay('4.5rem')}</div>
+    <h1 class="big-title">${t('great')}</h1>
+    <p class="sub" style="font-size:1.4rem;color:var(--forest-dark);font-weight:700;">${t('lifeBegins')}</p>
+    <p class="sub">${t('meetCharacter',{char:esc(state.charName),team:esc(state.teamName),personality:p?personalityName(p).toLowerCase():'',count:EVENTS.length})}</p>
+    ${decisionLearningHTML(false)}
+    <button class="btn btn-primary" id="firstEventBtn">${t('beginEvents')}</button>
+  </div>`;
+}
+
+function lifepathHTML(){
+  return `<div class="lifepath-wrap"><div class="lifepath">
+    ${EVENTS.map((e,i)=>{
+      const done = i<state.eventIndex;
+      const current = i===state.eventIndex && state.screen==='event';
+      return `<div class="lp-node ${done?'done':''} ${current?'current':''}">
+        <div class="lp-dot"></div><div class="lp-age">${e.age}</div>
+      </div>${i<EVENTS.length-1?`<div class="lp-line ${done?'done':''}"></div>`:''}`;
+    }).join('')}
+  </div></div>`;
+}
+
+function renderEvent(){
+  const ev = EVENTS[state.eventIndex];
+  return `
+  <div class="stage">
+    ${whatNowHTML(t('eventGuide'), false)}
+    <div id="timerHolder">${timerBannerHTML()}</div>
+    ${statsBarHTML()}
+    <div class="card">
+      <div class="event-meta">
+        <span class="age-badge">${t('age')} ${ev.age}</span>
+        <span class="stage-badge">${dt(ev.stage)}</span>
+      </div>
+      <h2 class="story-title">${esc(dt(ev.title))}</h2>
+      <p class="story-text">${esc(dt(ev.story))}</p>
+      <div class="discuss-callout">💬 <span><strong>${t('discussTeam')}</strong> ${esc(dt(state.discussionPrompt))}</span></div>
+      ${aiLensHTML()}
+      <div class="choices">
+        ${ev.choices.map((c,i)=>`
+          <button class="choice-card" data-choice="${i}">
+            <span class="choice-label">${esc(dt(c.label))}</span>
+            <span class="choice-blurb">${esc(dt(c.blurb))}</span>
+            <span class="choice-deltas">
+              ${Object.entries(c.deltas).map(([k,v])=>`<span class="delta-tag ${v>0?'delta-pos':'delta-neg'}">${STAT_META[k].icon} ${v>0?'+':''}${v} ${statLabel(k)}</span>`).join('')}
+            </span>
+          </button>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderConfirmOverlay(){
+  if(state.pendingChoice===null) return '';
+  const ev = EVENTS[state.eventIndex];
+  const c = ev.choices[state.pendingChoice];
+  return `
+  <div class="overlay" id="confirmOverlay">
+    <div class="modal">
+      <h3>${t('confirmTitle')}</h3>
+      <p style="color:var(--ink-soft);">${t('yourChoice')} <strong>${esc(dt(c.label))}</strong><br>${t('permanent')}</p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="confirmYes">${t('lockChoice')}</button>
+        <button class="btn btn-ghost" id="confirmNo">${t('continueDiscussing')}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderSevereTrap(){
+  const trap = state.activeTrap;
+  if(!trap) return renderEvent();
+  return `
+  <div class="stage">
+    ${whatNowHTML(t('severeGuide'), true)}
+    <div class="card consequence-card">
+      <div class="consequence-icon">⚠️</div>
+      <span class="eyebrow">${t('age')} ${trap.age} · ${t('consequence')}</span>
+      <h2 class="story-title">${t('seriousSetback')}</h2>
+      <p>${t('choseDuring',{choice:esc(dt(trap.choiceLabel)),title:esc(dt(trap.title))})}</p>
+      <div class="consequence-message">${esc(dt(trap.message))}</div>
+      ${statsBarHTML()}
+      <div class="consequence-actions">
+        <button class="btn btn-primary" id="continueAfterTrapBtn">${t('learnContinue')}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderStoryEnd(){
+  const ending = state.endReason;
+  if(!ending) return renderReflection();
+  return `
+  <div class="stage">
+    ${whatNowHTML(t('endGuide'), true)}
+    <div class="card consequence-card">
+      <div class="consequence-icon">🛑</div>
+      <span class="eyebrow">${t('age')} ${ending.age} · ${t('turningPoint')}</span>
+      <h2 class="story-title">${t('endedEarly')}</h2>
+      <p>${t('choseDuring',{choice:esc(dt(ending.choiceLabel)),title:esc(dt(ending.title))})}</p>
+      <div class="consequence-message">${esc(dt(ending.message))}</div>
+      <div class="consequence-actions">
+        <button class="btn btn-primary" id="finishEarlyBtn">${t('finishReflect')}</button>
+        <button class="btn btn-ghost" id="overrideStoryEndBtn">${t('override')}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderReflection(){
+  return `
+  <div class="stage">
+    ${whatNowHTML(t('reflectionGuide'), true)}
+    ${decisionLearningHTML(false)}
+    <div class="card">
+      <span class="eyebrow">${t('reflectionPhase')}</span>
+      <h2 style="margin-top:6px;color:var(--forest-dark);">${t('discussContinue')}</h2>
+      ${state.reflectionQs.map((q,i)=>`
+        <div class="refl-q">
+          <div class="qtext">${esc(dt(q))}</div>
+          <textarea data-refl="${i}" placeholder="${esc(t('answerPlaceholder'))}">${esc(state.reflectionAnswers[i]||'')}</textarea>
+        </div>`).join('')}
+      <div class="action-row">
+        <span></span>
+        <button class="btn btn-primary" id="toPresentationBtn">${t('seePresentation')}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function computeEnding(){
+  const sorted = [...STATS].sort((a,b)=>state.stats[b]-state.stats[a]);
+  const top2 = STATS.filter(s=>s===sorted[0] || s===sorted[1]);
+  const career = CAREER_MAP[top2.join('|')] || { title:t('roundedCareer'), desc:t('roundedCareerDesc') };
+
+  const achievements = [];
+  STATS.forEach(s=>{
+    if(state.stats[s]>=75) achievements.push(t('champion',{icon:STAT_META[s].icon,stat:statLabel(s)}));
+  });
+  if(achievements.length===0) achievements.push(t('balancedBadge'));
+
+  let best=null, worst=null, biggest=null;
+  state.timeline.forEach(t=>{
+    Object.entries(t.deltas).forEach(([stat,v])=>{
+      if(best===null || v>best.v) best={ ...t, stat, v };
+      if(worst===null || v<worst.v) worst={ ...t, stat, v };
+    });
+    const mag = Object.values(t.deltas).reduce((a,b)=>a+Math.abs(b),0);
+    if(biggest===null || mag>biggest.mag) biggest={ ...t, mag };
+  });
+
+  const fallback = biggest || state.timeline[0] || { age:'—', title:'—', choiceLabel:'—', deltas:{} };
+  if(best===null) best={ ...fallback, stat:sorted[0], v:0 };
+  if(worst===null) worst={ ...fallback, stat:sorted[0], v:0 };
+  if(biggest===null) biggest={ ...fallback, mag:0 };
+
+  const lesson = state.lang==='vi' ? LESSONS_VI[sorted[0]] : LESSONS[sorted[0]];
+  return { career, achievements, best, worst, biggest, topStat:sorted[0], sorted };
+}
+
+function renderPresentation(){
+  const end = computeEnding();
+  const presentClass = state.presentMode ? 'present-active' : '';
+  return `
+  <div class="stage ${presentClass}">
+    ${!state.presentMode ? whatNowHTML(t('presentationGuide'), false) : ''}
+    <div class="card">
+      <div class="present-header">
+        <div class="present-avatar">${avatarDisplay('4rem')}</div>
+        <h1 class="present-name">${esc(state.charName)}</h1>
+        <div class="present-sub">${t('team')} ${esc(state.teamName)} &middot; ${t('finalCareer')}: <strong>${esc(dt(end.career.title))}</strong></div>
+      </div>
+
+      <div class="grid2">
+        <div class="panel">
+          <h4>🧭 ${t('lifeTimeline')}</h4>
+          ${state.timeline.map(item=>`<div class="timeline-item"><span class="t-age">${t('age')} ${item.age}</span><span>${esc(dt(item.title))}: ${t('chose')} “${esc(dt(item.choiceLabel))}”</span></div>`).join('')}
+        </div>
+        <div class="panel">
+          <h4>💼 ${t('finalCareer')}</h4>
+          <p style="margin:0 0 10px;">${esc(dt(end.career.title))}</p>
+          <p style="margin:0;color:var(--ink-soft);font-size:0.92rem;">${esc(dt(end.career.desc))}</p>
+          <h4 style="margin-top:16px;">🏅 ${t('achievements')}</h4>
+          <div class="badge-row">${end.achievements.map(a=>`<span class="badge">${esc(a)}</span>`).join('')}</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h4>📊 ${t('lifeStats')}</h4>
+        ${statsBarHTML()}
+      </div>
+
+      <div class="grid2">
+        <div class="panel">
+          <h4>🌟 ${t('greatestSuccess')}</h4>
+          <p style="margin:0;">${t('successSentence',{age:end.best.age,choice:esc(dt(end.best.choiceLabel)),title:esc(dt(end.best.title)),stat:statLabel(end.best.stat),value:`${end.best.v>0?'+':''}${end.best.v}`})}</p>
+        </div>
+        <div class="panel">
+          <h4>⛰️ ${t('greatestChallenge')}</h4>
+          <p style="margin:0;">${t('challengeSentence',{age:end.worst.age,choice:esc(dt(end.worst.choiceLabel)),title:esc(dt(end.worst.title)),stat:statLabel(end.worst.stat),value:end.worst.v})}</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h4>🔑 ${t('importantDecision')}</h4>
+        <p style="margin:0;">${t('importantSentence',{age:end.biggest.age,title:esc(dt(end.biggest.title)),char:esc(state.charName)})}</p>
+      </div>
+
+      <div class="panel">
+        <h4>💬 ${t('teamReflection')}</h4>
+        <ul>${state.reflectionQs.map((q,i)=>`<li><strong>${esc(dt(q))}</strong><br>${esc(state.reflectionAnswers[i]||t('noAnswer'))}</li>`).join('')}</ul>
+      </div>
+
+      ${decisionLearningHTML(false)}
+
+      <div class="lesson-box">
+        <div class="lb-title">${t('oneLifeLesson')}</div>
+        ${esc(end.lesson)}
+      </div>
+
+      <p style="text-align:center;color:var(--ink-soft);line-height:1.6;margin-top:26px;font-size:0.98rem;">
+        ${t('finalMessage')}
+      </p>
+
+      ${!state.presentMode ? `<div style="text-align:center;">
+        <button class="btn btn-secondary present-mode-btn" id="enterPresentMode">${t('presentMode')}</button>
+        <button class="btn btn-ghost" id="toReportBtn" style="margin-top:14px;">${t('printableReport')}</button>
+      </div>` : `<div style="text-align:center;margin-top:20px;">
+        <button class="btn btn-ghost" id="exitPresentMode">${t('exitPresent')}</button>
+      </div>`}
+    </div>
+  </div>`;
+}
+
+function renderReport(){
+  const end = computeEnding();
+  return `
+  <div class="stage no-print" style="margin-bottom:16px;">
+    <button class="btn btn-ghost" id="backToPresentBtn">${t('backPresentation')}</button>
+    <button class="btn btn-primary" id="printBtn" style="margin-left:10px;">${t('printStory')}</button>
+  </div>
+  <div class="stage report-page">
+    <div class="card">
+      <div style="text-align:center;margin-bottom:16px;">
+        <div>${avatarDisplay('3.2rem')}</div>
+        <h1 style="color:var(--forest-dark);margin:6px 0 2px;">${esc(state.charName)}</h1>
+        <div style="color:var(--ink-soft);">${t('team')} ${esc(state.teamName)} &middot; ${esc(dt(end.career.title))}</div>
+      </div>
+      <div class="panel"><h4>🧭 ${t('timeline')}</h4>
+        ${state.timeline.map(item=>`<div class="timeline-item"><span class="t-age">${t('age')} ${item.age}</span><span>${esc(dt(item.title))}: “${esc(dt(item.choiceLabel))}”</span></div>`).join('')}
+      </div>
+      <div class="panel"><h4>🏅 ${t('achievements')}</h4><div class="badge-row">${end.achievements.map(a=>`<span class="badge">${esc(a)}</span>`).join('')}</div></div>
+      <div class="panel"><h4>📊 ${t('lifeStats')}</h4>${statsBarHTML()}</div>
+      <div class="panel"><h4>🔑 ${t('importantChoices')}</h4>
+        <p style="margin:0 0 8px;"><strong>${t('greatestSuccess')}:</strong> ${t('age')} ${end.best.age} — “${esc(dt(end.best.choiceLabel))}”</p>
+        <p style="margin:0;"><strong>${t('greatestChallenge')}:</strong> ${t('age')} ${end.worst.age} — “${esc(dt(end.worst.choiceLabel))}”</p>
+      </div>
+      <div class="panel"><h4>💬 ${t('reflectionQuestions')}</h4>
+        <ul>${state.reflectionQs.map((q,i)=>`<li><strong>${esc(dt(q))}</strong> ${esc(state.reflectionAnswers[i]||'—')}</li>`).join('')}</ul>
+      </div>
+      <div class="lesson-box"><div class="lb-title">${t('finalLesson')}</div>${esc(end.lesson)}</div>
+    </div>
+  </div>`;
+}
+
+/* ============================= TEACHER MENU ============================= */
+function teacherMenuHTML(){
+  if(!state.teacherOpen) return `<button class="teacher-fab" id="teacherFab">🧑‍🏫 ${t('teacherMenu')}</button>`;
+  return `
+  <button class="teacher-fab" id="teacherFab">🧑‍🏫 ${t('close')}</button>
+  <div class="teacher-panel">
+    <h4>${t('teacherMenu')}</h4>
+    ${timerControlsHTML()}
+    <div class="tm-row"><button class="tm-btn" id="tmSkip">${t('skipEvent')}</button><button class="tm-btn" id="tmNext">${t('nextEvent')}</button></div>
+    <div class="tm-row"><button class="tm-btn" id="tmPause">${state.timerRunning?t('pauseTimer'):t('resumeTimer')}</button><button class="tm-btn" id="tmSummary">${t('showSummary')}</button></div>
+    <div class="tm-row"><button class="tm-btn" id="tmRestart">${t('restartLife')}</button><button class="tm-btn" id="tmSound">${state.soundOn?t('soundOn'):t('soundOff')}</button></div>
+    <div class="tm-row"><button class="tm-btn" id="tmHide">${t('hideInterface')}</button><button class="tm-btn" id="tmPresent">${t('presentationMode')}</button></div>
+  </div>`;
+}
+
+/* ============================= MASTER RENDER ============================= */
+function render(){
+  const app = document.getElementById('app');
+  document.documentElement.lang = state.lang;
+  document.title = state.lang==='vi' ? 'Câu chuyện cuộc đời — Cây quyết định' : 'Life Story — Team Life Simulation';
+  let body='';
+  if(state.screen==='welcome') body = renderWelcome();
+  else if(state.screen==='create') body = renderCreate();
+  else if(state.screen==='lifeIntro') body = renderLifeIntro();
+  else if(state.screen==='event') body = renderEvent();
+  else if(state.screen==='trapSevere') body = renderSevereTrap();
+  else if(state.screen==='storyEnd') body = renderStoryEnd();
+  else if(state.screen==='reflection') body = renderReflection();
+  else if(state.screen==='presentation') body = renderPresentation();
+  else if(state.screen==='report') body = renderReport();
+
+  const showLifepath = ['event'].includes(state.screen);
+  const showTeacher = state.screen!=='report';
+
+  app.innerHTML = `
+    <div class="topbar no-print">
+      <div class="brand"><span class="dot"></span><span>${t('brand')}</span></div>
+      <div class="topbar-right">
+        <span class="pill">${t('team')}: ${esc(state.teamName)||'—'}</span>
+        <span class="pill">${esc(state.charName)? avatarDisplay('1.4rem')+' '+esc(state.charName) : '—'}</span>
+        <button class="lang-toggle" id="langToggle" aria-label="${esc(t('language'))}" title="${esc(t('language'))}">
+          <span class="${state.lang==='en'?'active':''}">EN</span><span class="${state.lang==='vi'?'active':''}">VI</span>
+        </button>
+      </div>
+    </div>
+    ${showLifepath ? lifepathHTML() : ''}
+    <main>${body}</main>
+    <footer class="msg no-print">${t('footer')}</footer>
+    ${state.pendingChoice!==null ? renderConfirmOverlay() : ''}
+    ${showTeacher ? teacherMenuHTML() : ''}
+  `;
+  app.className = state.interfaceHidden ? 'hidden-ui' : '';
+  attachHandlers();
+}
+
+/* ============================= HANDLERS ============================= */
+function attachHandlers(){
+  const q = (id)=>document.getElementById(id);
+
+  if(q('langToggle')) q('langToggle').onclick = ()=>{
+    state.lang = state.lang==='en' ? 'vi' : 'en';
+    render();
+  };
+
+  if(q('startBtn')) q('startBtn').onclick = ()=>{ beep(600); state.screen='create'; render(); };
+
+  if(q('teamName')) q('teamName').oninput = e=>{ state.teamName=e.target.value; };
+  if(q('charName')) q('charName').oninput = e=>{ state.charName=e.target.value; };
+  document.querySelectorAll('[data-avatar]').forEach(b=>{
+    b.onclick = ()=>{ state.avatar=b.dataset.avatar; render(); };
+  });
+  document.querySelectorAll('[data-pers]').forEach(b=>{
+    b.onclick = ()=>{ state.personality=b.dataset.pers; render(); };
+  });
+
+  if(q('tabPhoto')) q('tabPhoto').onclick = ()=>{ state.avatarType='photo'; render(); };
+  if(q('tabIcon')) q('tabIcon').onclick = ()=>{ stopCamera(); state.avatarType='icon'; render(); };
+  if(q('startCameraBtn')) q('startCameraBtn').onclick = ()=> startCamera();
+  if(q('captureBtn')) q('captureBtn').onclick = ()=> capturePhoto();
+  if(q('cancelCameraBtn')) q('cancelCameraBtn').onclick = ()=>{ stopCamera(); render(); };
+  if(q('retakeBtn')) q('retakeBtn').onclick = ()=> retakePhoto();
+  const camVideo = q('cameraVideo');
+  if(camVideo && state.cameraStream && !camVideo.srcObject){ camVideo.srcObject = state.cameraStream; }
+
+  if(q('beginLifeBtn')) q('beginLifeBtn').onclick = ()=>{
+    const p = PERSONALITIES.find(p=>p.id===state.personality);
+    if(p) state.stats[p.stat] = clamp(state.stats[p.stat]+15);
+    stopCamera();
+    beep(650); state.screen='lifeIntro'; render();
+  };
+
+  if(q('firstEventBtn')) q('firstEventBtn').onclick = ()=>{
+    state.eventIndex=0; state.discussionPrompt=pickRandom(DISCUSSION_PROMPTS,1)[0];
+    state.screen='event'; startTimer(); render();
+  };
+
+  document.querySelectorAll('[data-choice]').forEach(b=>{
+    b.onclick = ()=>{ beep(560); state.pendingChoice = parseInt(b.dataset.choice,10); render(); };
+  });
+
+  if(q('confirmYes')) q('confirmYes').onclick = ()=> lockInChoice();
+  if(q('confirmNo')) q('confirmNo').onclick = ()=>{ state.pendingChoice=null; render(); };
+  if(q('continueAfterTrapBtn')) q('continueAfterTrapBtn').onclick = ()=> continueAfterTrap();
+  if(q('finishEarlyBtn')) q('finishEarlyBtn').onclick = ()=>{
+    clearInterval(state.timerInterval);
+    state.screen='reflection';
+    render();
+  };
+  if(q('overrideStoryEndBtn')) q('overrideStoryEndBtn').onclick = ()=> overrideStoryEnd();
+
+  if(q('toPresentationBtn')) q('toPresentationBtn').onclick = ()=>{
+    document.querySelectorAll('[data-refl]').forEach(t=>{ state.reflectionAnswers[t.dataset.refl]=t.value; });
+    state.screen='presentation'; render();
+  };
+  document.querySelectorAll('[data-refl]').forEach(t=>{
+    t.oninput = e=>{ state.reflectionAnswers[e.target.dataset.refl]=e.target.value; };
+  });
+
+  if(q('enterPresentMode')) q('enterPresentMode').onclick = ()=>{ state.presentMode=true; render(); };
+  if(q('exitPresentMode')) q('exitPresentMode').onclick = ()=>{ state.presentMode=false; render(); };
+  if(q('toReportBtn')) q('toReportBtn').onclick = ()=>{ state.screen='report'; render(); };
+  if(q('backToPresentBtn')) q('backToPresentBtn').onclick = ()=>{ state.screen='presentation'; render(); };
+  if(q('printBtn')) q('printBtn').onclick = ()=> window.print();
+
+  if(q('timerSelect')) q('timerSelect').onchange = e=>{ state.timerOption=e.target.value; startTimer(); render(); };
+
+  if(q('teacherFab')) q('teacherFab').onclick = ()=>{ state.teacherOpen=!state.teacherOpen; render(); };
+  if(q('tmSkip')) q('tmSkip').onclick = ()=> advanceEvent(true);
+  if(q('tmNext')) q('tmNext').onclick = ()=> advanceEvent(false);
+  if(q('tmPause')) q('tmPause').onclick = ()=>{ state.timerRunning=!state.timerRunning; render(); };
+  if(q('tmSummary')) q('tmSummary').onclick = ()=>{ state.screen='presentation'; render(); };
+  if(q('tmRestart')) q('tmRestart').onclick = ()=>{ if(confirm(t('restartConfirm'))) restartLife(); };
+  if(q('tmSound')) q('tmSound').onclick = ()=>{ state.soundOn=!state.soundOn; render(); };
+  if(q('tmHide')) q('tmHide').onclick = ()=>{ state.interfaceHidden=!state.interfaceHidden; render(); };
+  if(q('tmPresent')) q('tmPresent').onclick = ()=>{ state.screen='presentation'; state.presentMode=true; render(); };
+}
+
+function lockInChoice(){
+  const ev = EVENTS[state.eventIndex];
+  const choice = ev.choices[state.pendingChoice];
+  Object.entries(choice.deltas).forEach(([k,v])=>{ state.stats[k]=clamp(state.stats[k]+v); });
+  state.timeline.push({ age:ev.age, title:ev.title, choiceLabel:choice.label, deltas:choice.deltas, trap:choice.trap||null });
+  state.pendingChoice=null;
+
+  if(choice.trap==='end'){
+    beep(180,0.3);
+    state.storyEnded=true;
+    state.endReason={ age:ev.age, title:ev.title, choiceLabel:choice.label, message:choice.trapMessage };
+    clearInterval(state.timerInterval);
+    state.screen='storyEnd';
+    render();
+    return;
+  }
+  if(choice.trap==='severe'){
+    beep(260,0.25);
+    state.activeTrap={ type:'severe', age:ev.age, title:ev.title, choiceLabel:choice.label, message:choice.trapMessage };
+    clearInterval(state.timerInterval);
+    state.screen='trapSevere';
+    render();
+    return;
+  }
+  beep(780,0.12);
+  advanceEvent(false);
+}
+
+function continueAfterTrap(){
+  state.activeTrap=null;
+  advanceEvent(false);
+}
+
+function overrideStoryEnd(){
+  // Teacher override: let the team's life continue despite the trap ending
+  state.storyEnded=false;
+  state.endReason=null;
+  advanceEvent(false);
+}
+
+function advanceEvent(isSkip){
+  if(isSkip){
+    // record a neutral skip in timeline without stat change
+    const ev = EVENTS[state.eventIndex];
+    state.timeline.push({ age:ev.age, title:ev.title, choiceLabel:'(skipped by teacher)', deltas:{} });
+  }
+  clearInterval(state.timerInterval);
+  state.eventIndex++;
+  if(state.eventIndex>=EVENTS.length){
+    state.screen='reflection';
+  } else {
+    state.discussionPrompt = pickRandom(DISCUSSION_PROMPTS,1)[0];
+    state.screen='event';
+    startTimer();
+  }
+  render();
+}
+
+function restartLife(){
+  clearInterval(state.timerInterval);
+  stopCamera();
+  state = {
+    ...state,
+    screen:'welcome',
+    teamName:'', charName:'', avatar:AVATARS[0], personality:null,
+    avatarType:'photo', avatarPhoto:null, cameraStream:null, cameraError:'',
+    stats:{ knowledge:50, happiness:50, friendship:50, money:50, health:50 },
+    eventIndex:0, pendingChoice:null, timeline:[],
+    timerOption:'none', timerTotal:0, timerRemaining:0, timerRunning:false, timerDone:false,
+    teacherOpen:false, interfaceHidden:false, presentMode:false,
+    reflectionQs: [pickRandom(AI_REFLECTION_QUESTIONS,1)[0], ...pickRandom(REFLECTION_QUESTIONS,2)], reflectionAnswers:{},
+    discussionPrompt: pickRandom(DISCUSSION_PROMPTS,1)[0],
+    activeTrap:null, storyEnded:false, endReason:null,
+  };
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
