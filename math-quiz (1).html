@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ninja Số — Đố Vui Toán Học</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #F5F7FB;
+    --bg-panel: #FFFFFF;
+    --bg-panel-2: #F0F3F9;
+    --ink: #1B2430;
+    --ink-dim: #667085;
+    --line: #E1E6EF;
+    --good: #1F9D63;
+    --bad: #E0453F;
+    --font-body: 'Inter', sans-serif;
+    --font-display: 'Baloo 2', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --accent: #E8A400;
+    --accent-2: #FF6B6B;
+    --radius: 18px;
+  }
+  .theme-kids{
+    --accent: #F0553D;
+    --accent-2: #FFB238;
+    --font-headline: var(--font-display);
+  }
+  .theme-teens{
+    --accent: #1CA39A;
+    --accent-2: #7C5CFC;
+    --font-headline: var(--font-mono);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 15% 10%, rgba(232,164,0,0.06), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(28,163,154,0.06), transparent 40%),
+      var(--bg);
+    color:var(--ink);
+    font-family:var(--font-body);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:28px 16px;
+  }
+  .app{
+    width:100%;
+    max-width:640px;
+  }
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--accent);
+    margin:0 0 6px 2px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:8px;height:8px;border-radius:50%;
+    background:var(--accent);
+    display:inline-block;
+  }
+  h1{
+    font-family:var(--font-display);
+    font-weight:800;
+    font-size:38px;
+    line-height:1.05;
+    margin:0 0 4px 0;
+    letter-spacing:.2px;
+  }
+  .sub{
+    color:var(--ink-dim);
+    margin:0 0 26px 0;
+    font-size:15px;
+  }
+  .card{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:28px;
+    box-shadow: 0 20px 45px -28px rgba(27,36,48,.25);
+  }
+
+  /* ---------- START SCREEN ---------- */
+  label.field-label{
+    display:block;
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink-dim);
+    margin-bottom:8px;
+  }
+  input#playerName{
+    width:100%;
+    padding:14px 16px;
+    border-radius:12px;
+    border:1px solid var(--line);
+    background:var(--bg-panel-2);
+    color:var(--ink);
+    font-family:var(--font-body);
+    font-size:16px;
+    outline:none;
+    transition:border-color .15s ease;
+  }
+  input#playerName:focus{ border-color:var(--accent); }
+  .photo-section{ margin-top:20px; }
+  .photo-capture{
+    display:flex;
+    align-items:center;
+    gap:16px;
+  }
+  .photo-frame{
+    width:84px;
+    height:84px;
+    border-radius:50%;
+    border:2px dashed var(--line);
+    background:var(--bg-panel-2);
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    position:relative;
+  }
+  .photo-frame.has-photo{ border-style:solid; border-color:var(--accent); }
+  .photo-frame video, .photo-frame img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    transform:scaleX(-1);
+  }
+  .photo-frame .placeholder-icon{ font-size:28px; opacity:.5; }
+  .photo-actions{ display:flex; flex-direction:column; gap:8px; flex:1; }
+  .photo-actions .btn{ width:100%; padding:10px 16px; font-size:13.5px; }
+  .photo-hint{ font-size:12px; color:var(--ink-dim); margin:0; }
+  .levels{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin:22px 0 26px 0;
+  }
+  .level-btn{
+    cursor:pointer;
+    border-radius:14px;
+    border:2px solid var(--line);
+    background:var(--bg-panel-2);
+    padding:18px 14px;
+    text-align:left;
+    transition:transform .12s ease, border-color .12s ease, background .12s ease;
+    color:var(--ink);
+  }
+  .level-btn:hover{ transform:translateY(-2px); }
+  .level-btn .lvl-emoji{ font-size:26px; display:block; margin-bottom:8px; }
+  .level-btn .lvl-name{ font-family:var(--font-display); font-weight:700; font-size:19px; display:block; }
+  .level-btn .lvl-desc{ font-size:12.5px; color:var(--ink-dim); margin-top:4px; display:block; }
+  .level-btn.selected.kids{ border-color:#FF6B6B; background:rgba(255,107,107,0.08); }
+  .level-btn.selected.teens{ border-color:#4ECDC4; background:rgba(78,205,196,0.08); }
+
+  .btn{
+    appearance:none;
+    border:none;
+    cursor:pointer;
+    font-family:var(--font-body);
+    font-weight:700;
+    font-size:15px;
+    border-radius:12px;
+    padding:14px 22px;
+    color:#11151b;
+    background:var(--accent);
+    transition:filter .12s ease, transform .12s ease;
+    width:100%;
+  }
+  .btn:hover{ filter:brightness(1.08); }
+  .btn:disabled{ opacity:.4; cursor:not-allowed; }
+  .btn.secondary{
+    background:transparent;
+    color:var(--ink);
+    border:1px solid var(--line);
+  }
+  .btn-row{ display:flex; gap:10px; margin-top:12px; }
+  .btn-row .btn{ width:auto; flex:1; }
+
+  .link-row{
+    text-align:center;
+    margin-top:18px;
+  }
+  .link-row a{
+    color:var(--ink-dim);
+    font-size:13px;
+    text-decoration:underline;
+    cursor:pointer;
+  }
+
+  /* ---------- QUIZ SCREEN ---------- */
+  .quiz-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:18px;
+  }
+  .progress-wrap{
+    flex:1;
+    margin-right:16px;
+  }
+  .progress-track{
+    height:8px;
+    background:var(--bg-panel-2);
+    border-radius:6px;
+    overflow:hidden;
+    border:1px solid var(--line);
+  }
+  .progress-fill{
+    height:100%;
+    background:linear-gradient(90deg, var(--accent), var(--accent-2));
+    width:0%;
+    transition:width .25s ease;
+  }
+  .progress-label{
+    font-family:var(--font-mono);
+    font-size:11.5px;
+    color:var(--ink-dim);
+    margin-top:6px;
+  }
+  .timer{
+    font-family:var(--font-mono);
+    font-weight:700;
+    font-size:20px;
+    background:var(--bg-panel-2);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:8px 14px;
+    color:var(--accent);
+    min-width:96px;
+    text-align:center;
+  }
+  .q-index{
+    font-family:var(--font-mono);
+    font-size:12px;
+    color:var(--accent);
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    margin-bottom:8px;
+  }
+  .q-text{
+    font-family:var(--font-headline);
+    font-size:26px;
+    font-weight:700;
+    line-height:1.3;
+    margin:0 0 22px 0;
+  }
+  .theme-teens .q-text{ font-size:20px; }
+  .options{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+  .opt-btn{
+    cursor:pointer;
+    text-align:left;
+    padding:16px;
+    border-radius:12px;
+    border:2px solid var(--line);
+    background:var(--bg-panel-2);
+    color:var(--ink);
+    font-family:var(--font-mono);
+    font-size:16px;
+    font-weight:500;
+    transition:border-color .12s ease, transform .1s ease, background .12s ease;
+  }
+  .opt-btn:hover:not(:disabled){ transform:translateY(-1px); border-color:var(--accent); }
+  .opt-btn:disabled{ cursor:default; }
+  .opt-btn.correct{ border-color:var(--good); background:rgba(85,201,138,.12); color:var(--good); }
+  .opt-btn.wrong{ border-color:var(--bad); background:rgba(239,106,106,.12); color:var(--bad); }
+
+  /* ---------- RESULT SCREEN ---------- */
+  .result-hero{ text-align:center; padding:8px 0 6px 0; }
+  .result-score{
+    font-family:var(--font-headline);
+    font-size:58px;
+    font-weight:800;
+    margin:6px 0 2px 0;
+    color:var(--accent);
+  }
+  .result-caption{ color:var(--ink-dim); font-size:14px; margin-bottom:22px; }
+  .stat-row{
+    display:flex;
+    gap:12px;
+    margin:18px 0 22px 0;
+  }
+  .stat{
+    flex:1;
+    background:var(--bg-panel-2);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:14px;
+    text-align:center;
+  }
+  .stat .stat-val{ font-family:var(--font-mono); font-size:20px; font-weight:700; color:var(--ink); }
+  .stat .stat-lbl{ font-size:11px; color:var(--ink-dim); text-transform:uppercase; letter-spacing:.08em; margin-top:4px; }
+
+  /* ---------- LEADERBOARD ---------- */
+  .tabs{
+    display:flex;
+    gap:8px;
+    margin-bottom:18px;
+  }
+  .tab{
+    flex:1;
+    text-align:center;
+    padding:10px;
+    border-radius:10px;
+    border:1px solid var(--line);
+    background:var(--bg-panel-2);
+    color:var(--ink-dim);
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .tab.active{ color:#11151b; background:var(--accent); border-color:var(--accent); }
+  .board-list{ display:flex; flex-direction:column; gap:8px; max-height:360px; overflow-y:auto; }
+  .board-row{
+    display:grid;
+    grid-template-columns:24px 34px 1fr auto auto;
+    align-items:center;
+    gap:12px;
+    padding:12px 14px;
+    background:var(--bg-panel-2);
+    border:1px solid var(--line);
+    border-radius:10px;
+  }
+  .board-rank{ font-family:var(--font-mono); color:var(--ink-dim); font-size:13px; }
+  .board-avatar{
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    object-fit:cover;
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:15px;
+  }
+  .board-name{ font-weight:700; font-size:14.5px; }
+  .board-badge{
+    font-family:var(--font-mono);
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--ink-dim);
+    margin-top:2px;
+  }
+  .board-score{ font-family:var(--font-mono); font-weight:700; color:var(--accent); font-size:14px; text-align:right; }
+  .board-time{ font-family:var(--font-mono); color:var(--ink-dim); font-size:12.5px; text-align:right; }
+  .empty-board{ text-align:center; color:var(--ink-dim); padding:30px 0; font-size:14px; }
+  .board-footer{ display:flex; justify-content:space-between; align-items:center; margin-top:16px; }
+  .clear-link{ color:var(--ink-dim); font-size:12px; text-decoration:underline; cursor:pointer; background:none; border:none; font-family:var(--font-body); }
+
+  .hidden{ display:none !important; }
+
+  @media (max-width:480px){
+    h1{ font-size:30px; }
+    .options{ grid-template-columns:1fr; }
+    .q-text{ font-size:21px; }
+    .result-score{ font-size:46px; }
+  }
+</style>
+</head>
+<body class="theme-kids">
+<div class="app">
+
+  <!-- START SCREEN -->
+  <div id="screen-start">
+    <div class="eyebrow">Ninja Số</div>
+    <h1>Thử Thách Đố Vui Toán</h1>
+    <p class="sub">Chọn cấp độ, nhập tên và chạy đua với đồng hồ.</p>
+    <div class="card">
+      <label class="field-label" for="playerName">Tên của bạn</label>
+      <input id="playerName" type="text" maxlength="20" placeholder="vd: An" autocomplete="off">
+
+      <div class="photo-section">
+        <label class="field-label">Ảnh (không bắt buộc)</label>
+        <div class="photo-capture">
+          <div class="photo-frame" id="photoFrame">
+            <span class="placeholder-icon" id="photoPlaceholder">🙂</span>
+            <video id="photoVideo" class="hidden" autoplay playsinline muted></video>
+            <img id="photoImg" class="hidden" alt="Ảnh của bạn">
+          </div>
+          <div class="photo-actions">
+            <button class="btn secondary" id="cameraBtn" onclick="openCamera()">📷 Chụp ảnh</button>
+            <button class="btn secondary hidden" id="captureBtn" onclick="capturePhoto()">Chụp</button>
+            <button class="btn secondary hidden" id="retakeBtn" onclick="retakePhoto()">Chụp lại</button>
+            <p class="photo-hint" id="photoHint">Hiển thị cạnh tên bạn trên bảng xếp hạng lớp.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="levels">
+        <div class="level-btn kids selected" data-level="kids" onclick="selectLevel('kids')">
+          <span class="lvl-emoji">🧮</span>
+          <span class="lvl-name">Thiếu nhi</span>
+          <span class="lvl-desc">+ − × số một chữ số, từ 1 đến 10, 12 câu hỏi</span>
+        </div>
+        <div class="level-btn teens" data-level="teens" onclick="selectLevel('teens')">
+          <span class="lvl-emoji">💻</span>
+          <span class="lvl-name">Thiếu niên</span>
+          <span class="lvl-desc">+ − × ÷ và kiến thức máy tính, 12 câu hỏi</span>
+        </div>
+      </div>
+
+      <button class="btn" id="startBtn" onclick="startQuiz()">Bắt đầu</button>
+      <div class="link-row"><a onclick="showBoard()">Xem bảng xếp hạng lớp →</a></div>
+    </div>
+  </div>
+
+  <!-- QUIZ SCREEN -->
+  <div id="screen-quiz" class="hidden">
+    <div class="card">
+      <div class="quiz-top">
+        <div class="progress-wrap">
+          <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+          <div class="progress-label" id="progressLabel">Câu 1 / 12</div>
+        </div>
+        <div class="timer" id="timerDisplay">00:00.0</div>
+      </div>
+      <div class="q-index" id="qIndexLabel">Câu 1</div>
+      <div class="q-text" id="qText">Đang tải…</div>
+      <div class="options" id="optionsWrap"></div>
+    </div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="screen-result" class="hidden">
+    <div class="eyebrow" id="resultEyebrow">Đã Hoàn Thành</div>
+    <h1 id="resultHeadline">Làm tốt lắm!</h1>
+    <div class="card">
+      <div class="result-hero">
+        <div class="result-score" id="resultScore">0 / 12</div>
+        <div class="result-caption" id="resultCaption">câu trả lời đúng</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat">
+          <div class="stat-val" id="statTime">00:00.0</div>
+          <div class="stat-lbl">Thời gian</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" id="statLevel">Thiếu nhi</div>
+          <div class="stat-lbl">Cấp độ</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" id="statAccuracy">0%</div>
+          <div class="stat-lbl">Độ chính xác</div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn secondary" onclick="goToStart()">Chơi lại</button>
+        <button class="btn" onclick="showBoard()">Xem bảng xếp hạng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEADERBOARD SCREEN -->
+  <div id="screen-board" class="hidden">
+    <div class="eyebrow">Bảng Xếp Hạng Lớp</div>
+    <h1>Điểm Cao Nhất</h1>
+    <div class="card">
+      <div class="tabs">
+        <div class="tab active" data-filter="all" onclick="setBoardFilter('all')">Tất cả</div>
+        <div class="tab" data-filter="kids" onclick="setBoardFilter('kids')">Thiếu nhi</div>
+        <div class="tab" data-filter="teens" onclick="setBoardFilter('teens')">Thiếu niên</div>
+      </div>
+      <div id="boardList" class="board-list"></div>
+      <div class="board-footer">
+        <button class="btn secondary" style="width:auto;padding:10px 18px;" onclick="goToStart()">← Quay lại</button>
+        <button class="clear-link" onclick="clearBoard()">Xóa bảng xếp hạng (giáo viên)</button>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="photoCanvas" class="hidden" width="220" height="220"></canvas>
+</div>
+
+<script>
+/* ===================== STATE ===================== */
+let selectedLevel = 'kids';
+let playerName = '';
+let questions = [];
+let currentIndex = 0;
+let score = 0;
+let timerStarted = false;
+let timerInterval = null;
+let startTime = 0;
+let elapsedMs = 0;
+let boardFilter = 'all';
+let playerPhoto = null;
+let cameraStream = null;
+
+/* ===================== SCREEN HELPERS ===================== */
+function show(id){
+  ['screen-start','screen-quiz','screen-result','screen-board'].forEach(s=>{
+    document.getElementById(s).classList.toggle('hidden', s !== id);
+  });
+}
+function goToStart(){
+  stopTimer();
+  stopCamera();
+  retakePhoto();
+  document.getElementById('playerName').value = '';
+  show('screen-start');
+}
+
+/* ===================== LEVEL SELECT ===================== */
+function selectLevel(level){
+  selectedLevel = level;
+  document.querySelectorAll('.level-btn').forEach(el=>{
+    el.classList.toggle('selected', el.dataset.level === level);
+  });
+}
+
+/* ===================== QUESTION GENERATION ===================== */
+function rand(min, max){ return Math.floor(Math.random() * (max - min + 1)) + min; }
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function makeNumericOptions(correct, spread){
+  const opts = new Set([correct]);
+  while(opts.size < 4){
+    const delta = rand(1, spread) * (Math.random() < 0.5 ? -1 : 1);
+    const candidate = correct + delta;
+    if(candidate < 0) continue;
+    opts.add(candidate);
+  }
+  return shuffle(Array.from(opts)).map(v => ({ label: String(v), correct: v === correct }));
+}
+
+function genKidsQuestions(){
+  const qs = [];
+  const ops = ['+','-','*'];
+  for(let i=0;i<12;i++){
+    const op = ops[rand(0,2)];
+    let a = rand(1,10), b = rand(1,10);
+    let correct, spread;
+    if(op === '+'){
+      correct = a + b;
+      spread = 5;
+    } else if(op === '-'){
+      if(b > a) [a,b] = [b,a]; // keep result non-negative
+      correct = a - b;
+      spread = 5;
+    } else {
+      correct = a * b;
+      spread = 10;
+    }
+    const symbol = op === '*' ? '×' : op;
+    qs.push({
+      text: `${a} ${symbol} ${b} = ?`,
+      options: makeNumericOptions(correct, spread)
+    });
+  }
+  return shuffle(qs);
+}
+
+const COMPUTER_TRIVIA = [
+  { q: '"CPU" là viết tắt của từ gì?', correct: 'Bộ xử lý trung tâm', distractors: ['Đơn vị máy tính cá nhân','Tiện ích chương trình trung tâm','Lõi xử lý Unibus'] },
+  { q: '"RAM" là viết tắt của từ gì?', correct: 'Bộ nhớ truy cập ngẫu nhiên', distractors: ['Bộ nhớ đọc chủ động','Mô-đun truy cập nhanh','Chạy toàn bộ bộ nhớ'] },
+  { q: 'Công ty nào đã tạo ra hệ điều hành Windows?', correct: 'Microsoft', distractors: ['Apple','Google','IBM'] },
+  { q: '"HTTP" là viết tắt của từ gì?', correct: 'Giao thức truyền tải siêu văn bản', distractors: ['Chương trình truyền văn bản cao cấp','Giao thức truyền công cụ tại nhà','Đường truyền siêu văn bản'] },
+  { q: 'Số 2 trong hệ nhị phân được viết là gì?', correct: '10', distractors: ['2','11','100'] },
+  { q: 'Thiết bị nào sau đây là thiết bị nhập liệu?', correct: 'Bàn phím', distractors: ['Màn hình','Máy in','Loa'] },
+  { q: '"GB" thường là viết tắt của từ gì?', correct: 'Gigabyte', distractors: ['Giga Bit','Byte tổng quát','Cơ sở toàn cầu'] },
+  { q: 'Ngôn ngữ nào nổi tiếng nhất trong việc tạo tương tác cho trang web?', correct: 'JavaScript', distractors: ['HTML','CSS','SQL'] },
+  { q: '"URL" là viết tắt của từ gì?', correct: 'Bộ định vị tài nguyên thống nhất', distractors: ['Liên kết tham chiếu toàn cầu','Bộ định vị tuyến người dùng','Danh sách tài nguyên hợp nhất'] },
+  { q: 'Công ty nào thiết kế ra iPhone?', correct: 'Apple', distractors: ['Samsung','Sony','Nokia'] },
+  { q: '"AI" là viết tắt của từ gì?', correct: 'Trí tuệ nhân tạo', distractors: ['Đầu vào tự động','Giao diện chủ động','Internet ứng dụng'] },
+  { q: 'Thiết bị lưu trữ nào không có bộ phận chuyển động và nhanh hơn ổ cứng truyền thống?', correct: 'Ổ cứng thể rắn (SSD)', distractors: ['Ổ đĩa cứng (HDD)','Đĩa CD-ROM','Đĩa mềm'] },
+  { q: 'Wi-Fi giúp các thiết bị làm được điều gì?', correct: 'Kết nối mạng không dây', distractors: ['Sạc pin không dây','In màu','Làm mát CPU'] },
+  { q: 'Con chip nào thường được gọi là "bộ não của máy tính"?', correct: 'CPU (Bộ xử lý)', distractors: ['GPU','PSU','Thanh RAM'] }
+];
+
+function genTeensQuestions(){
+  const qs = [];
+  // 6 arithmetic questions with independently randomized operators
+  const operatorPool = ['+','-','*','/'];
+  for(let i=0;i<6;i++){
+    const op = operatorPool[rand(0,3)];
+    let a,b,correct,text;
+    if(op === '+'){
+      a = rand(10,99); b = rand(10,99); correct = a+b; text = `${a} + ${b} = ?`;
+    } else if(op === '-'){
+      a = rand(10,99); b = rand(1,a); correct = a-b; text = `${a} − ${b} = ?`;
+    } else if(op === '*'){
+      a = rand(2,12); b = rand(2,12); correct = a*b; text = `${a} × ${b} = ?`;
+    } else {
+      b = rand(2,12); correct = rand(2,12); a = b*correct; text = `${a} ÷ ${b} = ?`;
+    }
+    qs.push({ text, options: makeNumericOptions(correct, Math.max(5, Math.round(correct*0.2))) });
+  }
+  // 6 computer trivia questions
+  const trivia = shuffle(COMPUTER_TRIVIA).slice(0,6);
+  trivia.forEach(t=>{
+    const opts = shuffle([
+      { label: t.correct, correct: true },
+      ...t.distractors.map(d => ({ label: d, correct: false }))
+    ]);
+    qs.push({ text: t.q, options: opts, isTrivia: true });
+  });
+  return shuffle(qs);
+}
+
+/* ===================== PHOTO CAPTURE ===================== */
+async function openCamera(){
+  const hint = document.getElementById('photoHint');
+  try{
+    cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+    const video = document.getElementById('photoVideo');
+    video.srcObject = cameraStream;
+    document.getElementById('photoPlaceholder').classList.add('hidden');
+    document.getElementById('photoImg').classList.add('hidden');
+    video.classList.remove('hidden');
+    document.getElementById('cameraBtn').classList.add('hidden');
+    document.getElementById('captureBtn').classList.remove('hidden');
+    document.getElementById('retakeBtn').classList.add('hidden');
+    hint.textContent = 'Đưa khuôn mặt vào giữa khung hình rồi nhấn Chụp.';
+  } catch(e){
+    hint.textContent = "Không thể truy cập máy ảnh. Hãy kiểm tra quyền truy cập, hoặc bỏ qua bước này — không bắt buộc.";
+  }
+}
+
+function capturePhoto(){
+  const video = document.getElementById('photoVideo');
+  const canvas = document.getElementById('photoCanvas');
+  const size = Math.min(video.videoWidth, video.videoHeight) || 220;
+  canvas.width = 220;
+  canvas.height = 220;
+  const ctx = canvas.getContext('2d');
+  const sx = (video.videoWidth - size) / 2;
+  const sy = (video.videoHeight - size) / 2;
+  // mirror horizontally to match the selfie preview
+  ctx.translate(220, 0);
+  ctx.scale(-1, 1);
+  ctx.drawImage(video, sx, sy, size, size, 0, 0, 220, 220);
+  playerPhoto = canvas.toDataURL('image/jpeg', 0.65);
+
+  stopCamera();
+  const img = document.getElementById('photoImg');
+  img.src = playerPhoto;
+  img.style.transform = 'none'; // already mirrored when drawn
+  img.classList.remove('hidden');
+  document.getElementById('photoVideo').classList.add('hidden');
+  document.getElementById('photoFrame').classList.add('has-photo');
+  document.getElementById('captureBtn').classList.add('hidden');
+  document.getElementById('retakeBtn').classList.remove('hidden');
+  document.getElementById('photoHint').textContent = 'Đẹp rồi! Nhấn Chụp lại nếu muốn thử lại.';
+}
+
+function retakePhoto(){
+  playerPhoto = null;
+  document.getElementById('photoImg').classList.add('hidden');
+  document.getElementById('photoFrame').classList.remove('has-photo');
+  document.getElementById('retakeBtn').classList.add('hidden');
+  document.getElementById('photoPlaceholder').classList.remove('hidden');
+  document.getElementById('cameraBtn').classList.remove('hidden');
+  document.getElementById('photoHint').textContent = 'Hiển thị cạnh tên bạn trên bảng xếp hạng lớp.';
+}
+
+function stopCamera(){
+  if(cameraStream){
+    cameraStream.getTracks().forEach(track => track.stop());
+    cameraStream = null;
+  }
+}
+
+/* ===================== QUIZ FLOW ===================== */
+function startQuiz(){
+  const nameInput = document.getElementById('playerName');
+  playerName = nameInput.value.trim();
+  if(!playerName){
+    nameInput.focus();
+    nameInput.style.borderColor = 'var(--bad)';
+    return;
+  }
+  stopCamera();
+  document.body.className = selectedLevel === 'kids' ? 'theme-kids' : 'theme-teens';
+  questions = selectedLevel === 'kids' ? genKidsQuestions() : genTeensQuestions();
+  currentIndex = 0;
+  score = 0;
+  timerStarted = false;
+  elapsedMs = 0;
+  stopTimer();
+  document.getElementById('timerDisplay').textContent = '00:00.0';
+  show('screen-quiz');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const q = questions[currentIndex];
+  document.getElementById('qIndexLabel').textContent = `Câu ${currentIndex+1}`;
+  document.getElementById('qText').textContent = q.text;
+  document.getElementById('progressLabel').textContent = `Câu ${currentIndex+1} / ${questions.length}`;
+  document.getElementById('progressFill').style.width = `${(currentIndex/questions.length)*100}%`;
+
+  const wrap = document.getElementById('optionsWrap');
+  wrap.innerHTML = '';
+  q.options.forEach(opt=>{
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = opt.label;
+    btn.onclick = () => handleAnswer(opt, btn);
+    wrap.appendChild(btn);
+  });
+}
+
+function handleAnswer(opt, btnEl){
+  if(!timerStarted){
+    timerStarted = true;
+    startTimer();
+  }
+  // lock all options
+  const buttons = document.querySelectorAll('#optionsWrap .opt-btn');
+  buttons.forEach(b => b.disabled = true);
+
+  if(opt.correct){
+    score++;
+    btnEl.classList.add('correct');
+  } else {
+    btnEl.classList.add('wrong');
+    // reveal the correct one too
+    buttons.forEach(b=>{
+      const matching = questions[currentIndex].options.find(o => o.label === b.textContent);
+      if(matching && matching.correct) b.classList.add('correct');
+    });
+  }
+
+  setTimeout(()=>{
+    if(currentIndex < questions.length - 1){
+      currentIndex++;
+      renderQuestion();
+    } else {
+      document.getElementById('progressFill').style.width = '100%';
+      finishQuiz();
+    }
+  }, 650);
+}
+
+function startTimer(){
+  startTime = Date.now();
+  timerInterval = setInterval(()=>{
+    const ms = Date.now() - startTime;
+    document.getElementById('timerDisplay').textContent = formatTime(ms);
+  }, 100);
+}
+function stopTimer(){
+  if(timerInterval){ clearInterval(timerInterval); timerInterval = null; }
+}
+function formatTime(ms){
+  const totalTenths = Math.floor(ms/100);
+  const minutes = Math.floor(totalTenths / 600);
+  const seconds = Math.floor((totalTenths % 600) / 10);
+  const tenths = totalTenths % 10;
+  return `${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}.${tenths}`;
+}
+
+async function finishQuiz(){
+  elapsedMs = Date.now() - startTime;
+  stopTimer();
+
+  document.getElementById('resultEyebrow').textContent = selectedLevel === 'kids' ? 'Cấp độ Thiếu nhi' : 'Cấp độ Thiếu niên';
+  document.getElementById('resultHeadline').textContent = score >= questions.length * 0.8 ? 'Xuất sắc!' : (score >= questions.length * 0.5 ? 'Làm tốt lắm!' : 'Cố gắng nhé!');
+  document.getElementById('resultScore').textContent = `${score} / ${questions.length}`;
+  document.getElementById('statTime').textContent = formatTime(elapsedMs);
+  document.getElementById('statLevel').textContent = selectedLevel === 'kids' ? 'Thiếu nhi' : 'Thiếu niên';
+  document.getElementById('statAccuracy').textContent = `${Math.round((score/questions.length)*100)}%`;
+  show('screen-result');
+
+  await saveScore({
+    id: `${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+    name: playerName,
+    level: selectedLevel,
+    score: score,
+    total: questions.length,
+    timeMs: elapsedMs,
+    date: new Date().toISOString(),
+    photo: playerPhoto
+  });
+}
+
+/* ===================== LEADERBOARD (shared persistent storage) ===================== */
+// Local cache guarantees a finished quiz always shows up in this browser tab,
+// even if shared storage is briefly unavailable or this file is opened outside claude.ai.
+let localBoardCache = [];
+let storageWarned = false;
+
+async function fetchCloudBoard(){
+  const result = await window.storage.get('highscores', true);
+  if(result && result.value) return JSON.parse(result.value);
+  return [];
+}
+
+function mergeBoards(a, b){
+  const merged = a.slice();
+  const seen = new Set(merged.map(e => e.id || `${e.name}-${e.date}`));
+  b.forEach(entry=>{
+    const key = entry.id || `${entry.name}-${entry.date}`;
+    if(!seen.has(key)){
+      merged.push(entry);
+      seen.add(key);
+    }
+  });
+  return merged;
+}
+
+async function loadBoard(){
+  try{
+    const cloudBoard = await fetchCloudBoard();
+    return mergeBoards(cloudBoard, localBoardCache);
+  } catch(e){
+    // shared storage unavailable (e.g. offline, or file opened outside claude.ai) — use local cache
+    if(!storageWarned){
+      console.warn('Shared leaderboard unavailable, showing scores from this device only.', e);
+      storageWarned = true;
+    }
+    return localBoardCache.slice();
+  }
+}
+
+async function saveScore(entry){
+  localBoardCache.push(entry); // always keep a copy so this result shows up immediately, no matter what
+  try{
+    const cloudBoard = await fetchCloudBoard();
+    const merged = mergeBoards(cloudBoard, [entry]);
+    await window.storage.set('highscores', JSON.stringify(merged), true);
+  } catch(e){
+    console.error('Could not sync score to the shared leaderboard — it will still show on this device.', e);
+  }
+}
+
+async function showBoard(){
+  show('screen-board');
+  await renderBoard();
+}
+
+function setBoardFilter(filter){
+  boardFilter = filter;
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.classList.toggle('active', t.dataset.filter === filter);
+  });
+  renderBoard();
+}
+
+async function renderBoard(){
+  const listEl = document.getElementById('boardList');
+  listEl.innerHTML = '<div class="empty-board">Đang tải bảng xếp hạng…</div>';
+  let board = await loadBoard();
+
+  if(boardFilter !== 'all'){
+    board = board.filter(e => e.level === boardFilter);
+  }
+  board.sort((a,b) => {
+    if(b.score !== a.score) return b.score - a.score;
+    return a.timeMs - b.timeMs;
+  });
+  board = board.slice(0, 20);
+
+  if(board.length === 0){
+    listEl.innerHTML = '<div class="empty-board">Chưa có điểm nào — hãy là người đầu tiên hoàn thành bài đố vui!</div>';
+    return;
+  }
+
+  listEl.innerHTML = '';
+  board.forEach((entry, i)=>{
+    const row = document.createElement('div');
+    row.className = 'board-row';
+    const avatar = entry.photo
+      ? `<img class="board-avatar" src="${entry.photo}" alt="${escapeHtml(entry.name)}">`
+      : `<div class="board-avatar">${entry.level === 'kids' ? '🧮' : '💻'}</div>`;
+    row.innerHTML = `
+      <div class="board-rank">#${i+1}</div>
+      ${avatar}
+      <div>
+        <div class="board-name">${escapeHtml(entry.name)}</div>
+        <div class="board-badge">${entry.level === 'kids' ? '🧮 Thiếu nhi' : '💻 Thiếu niên'}</div>
+      </div>
+      <div class="board-score">${entry.score}/${entry.total}</div>
+      <div class="board-time">${formatTime(entry.timeMs)}</div>
+    `;
+    listEl.appendChild(row);
+  });
+}
+
+async function clearBoard(){
+  if(!confirm('Xóa toàn bộ bảng xếp hạng lớp? Hành động này không thể hoàn tác.')) return;
+  localBoardCache = [];
+  try{
+    await window.storage.set('highscores', JSON.stringify([]), true);
+  } catch(e){
+    console.error('Could not clear shared leaderboard', e);
+  }
+  await renderBoard();
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+/* ===================== INIT ===================== */
+document.getElementById('playerName').addEventListener('input', function(){
+  this.style.borderColor = '';
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPIKE Essential — Module Picker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brick-red:#D0011B;
+    --brick-yellow:#FFCD00;
+    --brick-blue:#0057A6;
+    --brick-green:#00A651;
+    --plate-blue:#0a5ea8;
+    --plate-blue-dark:#063e73;
+    --cream:#fffaf0;
+    --ink:#1c2b3a;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:'Nunito',sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 12px 12px, rgba(255,255,255,0.10) 6px, transparent 7px),
+      linear-gradient(160deg, var(--plate-blue) 0%, var(--plate-blue-dark) 100%);
+    background-size: 48px 48px, cover;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    overflow-x:hidden;
+  }
+  h1,h2,h3{font-family:'Baloo 2',sans-serif; margin:0;}
+  .screen{width:100%; max-width:900px; display:none;}
+  #gameScreen, #nameScreen{max-width:560px;}
+  .screen.active{display:block;}
+
+  /* ---------- Name screen ---------- */
+  #nameScreen{max-width:520px; text-align:center;}
+  .studs-row{display:flex; justify-content:center; gap:10px; margin-bottom:18px;}
+  .studs-row span{
+    width:22px;height:22px;border-radius:50%;
+    background:var(--brick-yellow);
+    box-shadow:0 3px 0 rgba(0,0,0,0.25) inset, 0 2px 4px rgba(0,0,0,0.3);
+  }
+  .studs-row span:nth-child(2){background:var(--brick-red);}
+  .studs-row span:nth-child(3){background:var(--brick-green);}
+  .studs-row span:nth-child(4){background:var(--brick-blue);}
+  .card-panel{
+    background:var(--cream);
+    border-radius:24px;
+    padding:36px 30px;
+    box-shadow:0 18px 0 rgba(0,0,0,0.18), 0 24px 40px rgba(0,0,0,0.35);
+  }
+  #nameScreen h1{font-size:2.1rem; color:var(--brick-red); letter-spacing:0.5px;}
+  #nameScreen p{font-size:1.05rem; margin:12px 0 24px; color:#45566b; font-weight:700;}
+  #nameScreen input, #handoffScreen p{
+    width:100%;
+  }
+  #nameScreen input{
+    padding:14px 16px; font-size:1.15rem; font-family:'Nunito',sans-serif;
+    border:3px solid var(--plate-blue); border-radius:14px; outline:none; font-weight:700;
+    text-align:center; margin-bottom:14px;
+  }
+  #nameScreen input:focus{border-color:var(--brick-red);}
+  #handoffScreen{max-width:480px; text-align:center;}
+  #handoffScreen h1{color:var(--brick-blue); font-size:1.9rem;}
+  #handoffScreen .subtitle{font-weight:700; color:#45566b; margin:10px 0 26px; font-size:1.05rem;}
+  .btn{
+    font-family:'Baloo 2',sans-serif;
+    font-size:1.15rem;
+    font-weight:700;
+    color:#fff;
+    background:var(--brick-red);
+    border:none;
+    border-radius:14px;
+    padding:14px 28px;
+    cursor:pointer;
+    box-shadow:0 6px 0 #8f0012;
+    transition:transform .08s ease;
+  }
+  .btn:active{transform:translateY(4px); box-shadow:0 2px 0 #8f0012;}
+  .btn:disabled{opacity:0.5; cursor:not-allowed;}
+  .btn.green{background:var(--brick-green); box-shadow:0 6px 0 #05733a;}
+  .btn.blue{background:var(--brick-blue); box-shadow:0 6px 0 #003b70;}
+
+  /* ---------- Game screen ---------- */
+  #gameScreen .topbar{
+    display:flex; justify-content:space-between; align-items:center;
+    background:var(--cream); border-radius:18px; padding:14px 22px; margin-bottom:18px;
+    box-shadow:0 10px 0 rgba(0,0,0,0.15), 0 14px 26px rgba(0,0,0,0.3);
+    flex-wrap:wrap; gap:10px;
+  }
+  .topbar .who{font-size:1.15rem;}
+  .topbar .who b{color:var(--brick-red);}
+  .flip-status{
+    display:flex; gap:8px;
+  }
+  .pip{
+    width:36px;height:36px;border-radius:50%;
+    background:#dfe6ee; display:flex; align-items:center; justify-content:center;
+    font-family:'Baloo 2',sans-serif; font-weight:700; color:#98a6b8;
+    border:3px solid #c6d0dc;
+  }
+  .pip.used{background:var(--brick-green); color:#fff; border-color:#05733a;}
+
+  .picks-strip{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;}
+  .pick-chip{
+    background:var(--brick-yellow); color:var(--ink); font-weight:800;
+    font-family:'Baloo 2',sans-serif; padding:8px 16px; border-radius:999px;
+    box-shadow:0 4px 0 #b89400;
+    font-size:0.95rem;
+  }
+  .pick-chip.empty{background:#e7ecf2; color:#9aa7b6; box-shadow:0 4px 0 #cfd8e2;}
+
+  .board{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:10px;
+    background:rgba(255,255,255,0.08);
+    padding:14px;
+    border-radius:20px;
+  }
+  .card{
+    aspect-ratio:1/1;
+    perspective:800px;
+    cursor:pointer;
+  }
+  .card.locked{cursor:default;}
+  .card-inner{
+    position:relative; width:100%; height:100%;
+    transition:transform .6s cubic-bezier(.4,.2,.2,1);
+    transform-style:preserve-3d;
+  }
+  .card.flipped .card-inner{transform:rotateY(180deg);}
+  .card-face{
+    position:absolute; inset:0;
+    border-radius:10px;
+    backface-visibility:hidden;
+    display:flex; align-items:center; justify-content:center;
+    padding:6px;
+  }
+  .card-back{
+    background:var(--c1, var(--brick-red));
+    box-shadow:0 4px 0 rgba(0,0,0,0.25), inset 0 -6px 10px rgba(0,0,0,0.15);
+  }
+  .card-back .stud{
+    position:absolute; top:14%; left:50%; transform:translateX(-50%);
+    width:34%; height:34%; border-radius:50%;
+    background:rgba(255,255,255,0.35);
+    box-shadow:inset 0 -3px 4px rgba(0,0,0,0.2), inset 0 2px 3px rgba(255,255,255,0.5);
+  }
+  .card-front{
+    background:#fff;
+    transform:rotateY(180deg);
+    border:3px solid var(--brick-yellow);
+    text-align:center;
+    font-family:'Baloo 2',sans-serif;
+    font-weight:700;
+    font-size:1.05rem;
+    line-height:1.25;
+    color:var(--ink);
+  }
+  .card.picked .card-back{outline:4px solid #fff; outline-offset:-4px;}
+  .card.dim{opacity:0.35;}
+
+  @media (max-width:640px){
+    .board{gap:6px; padding:8px;}
+    .card-front{font-size:0.8rem;}
+  }
+
+  /* ---------- Bonus modal ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(6,20,35,0.75);
+    display:none; align-items:center; justify-content:center; padding:20px; z-index:50;
+  }
+  .modal-overlay.active{display:flex;}
+  .modal-box{
+    background:var(--cream); border-radius:22px; padding:26px; max-width:520px; width:100%;
+    text-align:center;
+    box-shadow:0 20px 50px rgba(0,0,0,0.5);
+  }
+  .modal-box h2{color:var(--brick-red); font-size:1.4rem; margin-bottom:6px;}
+  .modal-box p{font-weight:700; color:#45566b; margin:6px 0 18px;}
+  .bonus-board{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:8px;
+  }
+  .bonus-board .card-front{font-size:1.4rem; color:var(--brick-blue);}
+  .bonus-board .card-back{--c1:var(--brick-blue);}
+
+  /* ---------- Summary screen ---------- */
+  #summaryScreen{text-align:center;}
+  #summaryScreen .card-panel{padding:40px 30px;}
+  #summaryScreen h1{color:var(--brick-green); font-size:2rem;}
+  #summaryScreen .subtitle{font-weight:700; color:#45566b; margin:8px 0 26px;}
+
+  .dual-columns{display:flex; gap:22px; justify-content:center; flex-wrap:wrap; margin-bottom:8px;}
+  .player-col{
+    flex:1; min-width:230px; max-width:320px;
+    background:#f5f8fb; border-radius:18px; padding:20px 18px;
+    border-top:6px solid var(--brick-red);
+  }
+  .player-col.p2{border-top-color:var(--brick-blue);}
+  .player-col h3{font-size:1.2rem; margin-bottom:14px; color:var(--ink);}
+  .player-col.p2 h3{color:var(--brick-blue);}
+  .player-col h3::before{content:"● "; color:var(--brick-red);}
+  .player-col.p2 h3::before{color:var(--brick-blue);}
+
+  .result-cards{display:flex; flex-direction:column; gap:10px;}
+  .result-card{
+    background:#fff; border:4px solid var(--brick-yellow); border-radius:16px;
+    padding:14px 16px; text-align:left;
+    box-shadow:0 6px 0 rgba(0,0,0,0.08);
+  }
+  .result-card .label{font-size:0.75rem; font-weight:800; color:#9aa7b6; text-transform:uppercase; letter-spacing:1px;}
+  .result-card .value{font-family:'Baloo 2',sans-serif; font-weight:700; font-size:1.05rem; margin-top:4px; color:var(--ink);}
+  .result-card.bonus{border-color:var(--brick-blue);}
+  .result-card.bonus .value{color:var(--brick-blue);}
+
+  @media (max-width:640px){
+    .dual-columns{flex-direction:column; align-items:stretch;}
+    .player-col{max-width:none;}
+  }
+
+  #confettiCanvas{position:fixed; inset:0; pointer-events:none; z-index:60;}
+
+  .hint{font-size:0.85rem; color:#aebccb; margin-top:14px; font-weight:700;}
+
+  /* ---------- Timer ---------- */
+  .timer-box{
+    margin-top:8px; padding-top:26px; border-top:3px dashed #e2e8f0;
+  }
+  .timer-label{font-size:0.8rem; font-weight:800; color:#9aa7b6; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;}
+  .timer-display{
+    font-family:'Baloo 2',sans-serif; font-weight:800; font-size:3rem;
+    color:var(--brick-blue); letter-spacing:2px; margin-bottom:16px;
+    transition:color .2s ease, transform .2s ease;
+  }
+  .timer-display.low{color:var(--brick-red);}
+  .timer-display.done{color:var(--brick-red); animation:pulse .5s infinite alternate;}
+  @keyframes pulse{ from{transform:scale(1);} to{transform:scale(1.12);} }
+
+  body.time-up{animation:flashbg .4s infinite alternate;}
+  @keyframes flashbg{
+    from{ background-color:var(--plate-blue); }
+    to{ background-color:var(--brick-red); }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="confettiCanvas"></canvas>
+
+<!-- NAME SCREEN -->
+<div class="screen active" id="nameScreen">
+  <div class="card-panel">
+    <div class="studs-row"><span></span><span></span><span></span><span></span></div>
+    <h1>SPIKE Essential<br>Module Picker</h1>
+    <p>Flip cards to discover your build!</p>
+    <input type="text" id="player1Name" placeholder="Player 1 name..." maxlength="24" autocomplete="off">
+    <input type="text" id="player2Name" placeholder="Player 2 name..." maxlength="24" autocomplete="off">
+    <br>
+    <button class="btn" id="startBtn">Let's Flip!</button>
+  </div>
+</div>
+
+<!-- HANDOFF SCREEN (between Player 1 and Player 2 turns) -->
+<div class="screen" id="handoffScreen">
+  <div class="card-panel">
+    <h1 id="handoffTitle">Nice Picks!</h1>
+    <p class="subtitle" id="handoffSubtitle">Pass the device to Player 2</p>
+    <button class="btn blue" id="handoffBtn">Start Player 2's Turn</button>
+  </div>
+</div>
+
+<!-- GAME SCREEN -->
+<div class="screen" id="gameScreen">
+  <div class="topbar">
+    <div class="who"><span id="turnLabel">Player 1</span>: <b id="kidNameDisplay">—</b></div>
+    <div class="flip-status">
+      <div class="pip" id="pip1">1</div>
+      <div class="pip" id="pip2">2</div>
+    </div>
+  </div>
+
+  <div class="picks-strip" id="picksStrip">
+    <div class="pick-chip empty" id="chip1">Pick 1: ?</div>
+    <div class="pick-chip empty" id="chip2">Pick 2: ?</div>
+  </div>
+
+  <div class="board" id="board"></div>
+  <p class="hint" id="gameHint">Tap any brick to flip it and reveal your module!</p>
+</div>
+
+<!-- BONUS MODAL (tie-breaker, 4x4) -->
+<div class="modal-overlay" id="bonusModal">
+  <div class="modal-box">
+    <h2>Double Match!</h2>
+    <p>You picked the same module twice — flip one more brick for a bonus pick of <b>extra parts</b>!</p>
+    <div class="bonus-board" id="bonusBoard"></div>
+  </div>
+</div>
+
+<!-- SUMMARY SCREEN -->
+<div class="screen" id="summaryScreen">
+  <div class="card-panel">
+    <h1 id="summaryTitle">Build Plans Ready!</h1>
+    <p class="subtitle">Here's what each player is making today:</p>
+    <div class="dual-columns" id="dualColumns"></div>
+
+    <div class="timer-box">
+      <div class="timer-label" id="timerLabel">Build Timer</div>
+      <div class="timer-display" id="timerDisplay">05:00</div>
+      <button class="btn blue" id="timerStartBtn">Start 5-Minute Timer</button>
+      <button class="btn" id="timerStopBtn" style="display:none;">Stop Alarm</button>
+    </div>
+
+    <br>
+    <button class="btn green" id="restartBtn">Next Pair of Players →</button>
+  </div>
+</div>
+
+<script>
+/* ---------------- CONFIG ---------------- */
+// The hardware modules kids can be assigned for their project.
+// Edit MODULE_TYPES to add/remove/rename modules — the board auto-fills to 16 cards,
+// spread as evenly as possible across whatever modules you list here.
+const MODULE_TYPES = [
+  { name: "Engine" },
+  { name: "Light Sensor" },
+  { name: "Light" }
+];
+
+function buildModulePool(size){
+  const names = MODULE_TYPES.map(m => m.name);
+  const pool = [];
+  let i = 0;
+  while(pool.length < size){
+    pool.push(names[i % names.length]);
+    i++;
+  }
+  return pool;
+}
+const MODULES = buildModulePool(16);
+
+// Bonus tie-breaker pool: "extra parts by choice" counts, filling a 4x4 (16-card) board
+const BONUS_VALUES = [1,3,5,7,9,10,13];
+
+const BRICK_COLORS = ["var(--brick-red)","var(--brick-blue)","var(--brick-green)","var(--brick-yellow)","#8e44ad","#ff7f27"];
+
+/* ---------------- STATE ---------------- */
+let players = [
+  { name:"", picks:[], bonus:null },
+  { name:"", picks:[], bonus:null }
+];
+let currentPlayerIndex = 0;
+let kidName = "";
+let picks = [];
+let boardLocked = false;
+let assignment = [];
+let timerInterval = null;
+let alarmInterval = null;
+let audioCtx = null;
+const TIMER_SECONDS = 5 * 60;
+
+/* ---------------- HELPERS ---------------- */
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+/* ---------------- NAME SCREEN ---------------- */
+const player1Input = document.getElementById('player1Name');
+const player2Input = document.getElementById('player2Name');
+document.getElementById('startBtn').addEventListener('click', startGame);
+player2Input.addEventListener('keydown', e=>{ if(e.key === 'Enter') startGame(); });
+
+function startGame(){
+  const n1 = player1Input.value.trim();
+  const n2 = player2Input.value.trim();
+  players = [
+    { name: n1.length ? n1 : "Player 1", picks:[], bonus:null },
+    { name: n2.length ? n2 : "Player 2", picks:[], bonus:null }
+  ];
+  currentPlayerIndex = 0;
+  startPlayerTurn(0);
+}
+
+function startPlayerTurn(idx){
+  currentPlayerIndex = idx;
+  kidName = players[idx].name;
+  picks = [];
+  boardLocked = false;
+  document.getElementById('turnLabel').textContent = 'Player ' + (idx+1);
+  document.getElementById('kidNameDisplay').textContent = kidName;
+  updatePips();
+  updateChips();
+  document.getElementById('gameHint').textContent = "Tap any brick to flip it and reveal your module!";
+  buildBoard();
+  show('gameScreen');
+}
+
+/* ---------------- MAIN BOARD ---------------- */
+const boardEl = document.getElementById('board');
+
+function buildBoard(){
+  assignment = shuffle(MODULES);
+  boardEl.innerHTML = "";
+  assignment.forEach((mod, i)=>{
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.idx = i;
+    card.dataset.module = mod;
+    const color = BRICK_COLORS[i % BRICK_COLORS.length];
+    card.innerHTML = `
+      <div class="card-inner">
+        <div class="card-face card-back" style="--c1:${color}"><div class="stud"></div></div>
+        <div class="card-face card-front"><span>${mod}</span></div>
+      </div>`;
+    card.addEventListener('click', ()=>onCardClick(card));
+    boardEl.appendChild(card);
+  });
+}
+
+function updatePips(){
+  document.getElementById('pip1').className = 'pip' + (picks.length>=1 ? ' used' : '');
+  document.getElementById('pip2').className = 'pip' + (picks.length>=2 ? ' used' : '');
+}
+function updateChips(){
+  const c1 = document.getElementById('chip1');
+  const c2 = document.getElementById('chip2');
+  c1.textContent = 'Pick 1: ' + (picks[0] || '?');
+  c1.className = 'pick-chip' + (picks[0] ? '' : ' empty');
+  c2.textContent = 'Pick 2: ' + (picks[1] || '?');
+  c2.className = 'pick-chip' + (picks[1] ? '' : ' empty');
+}
+
+function onCardClick(card){
+  if(boardLocked || picks.length >= 2) return;
+  const mod = card.dataset.module;
+  boardLocked = true;
+  card.classList.add('flipped','picked');
+
+  document.querySelectorAll('.card').forEach(c=>{
+    if(c !== card) c.classList.add('dim');
+  });
+
+  document.getElementById('gameHint').textContent = mod + "! Great pick, " + kidName + "...";
+
+  setTimeout(()=>{
+    picks.push(mod);
+    updatePips();
+    updateChips();
+
+    // flip everything back down
+    document.querySelectorAll('.card').forEach(c=>{
+      c.classList.remove('flipped','picked','dim');
+    });
+
+    setTimeout(()=>{
+      if(picks.length >= 2){
+        handleTwoPicksComplete();
+      } else {
+        assignment = shuffle(MODULES);
+        document.querySelectorAll('.card').forEach((c,i)=>{
+          const m = assignment[i];
+          c.dataset.module = m;
+          c.querySelector('.card-front span').textContent = m;
+          const color = BRICK_COLORS[i % BRICK_COLORS.length];
+          c.querySelector('.card-back').style.setProperty('--c1', color);
+        });
+        document.getElementById('gameHint').textContent = "Cards reshuffled! Flip again for your second module.";
+        boardLocked = false;
+      }
+    }, 650);
+  }, 1400);
+}
+
+function handleTwoPicksComplete(){
+  if(picks[0] === picks[1]){
+    document.getElementById('gameHint').textContent = "Same module twice — bonus round incoming!";
+    setTimeout(openBonusModal, 400);
+  } else {
+    finalizeTurn(null);
+  }
+}
+
+/* ---------------- BONUS MODAL (4x4) ---------------- */
+const bonusModal = document.getElementById('bonusModal');
+const bonusBoardEl = document.getElementById('bonusBoard');
+let bonusLocked = false;
+
+function buildBonusPool(){
+  const pool = [];
+  while(pool.length < 16){
+    pool.push(...BONUS_VALUES);
+  }
+  return shuffle(pool.slice(0,16));
+}
+
+function openBonusModal(){
+  bonusLocked = false;
+  const pool = buildBonusPool();
+  bonusBoardEl.innerHTML = "";
+  pool.forEach((val,i)=>{
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-inner">
+        <div class="card-face card-back"><div class="stud"></div></div>
+        <div class="card-face card-front"><span>+${val}</span></div>
+      </div>`;
+    card.addEventListener('click', ()=>onBonusClick(card, val));
+    bonusBoardEl.appendChild(card);
+  });
+  bonusModal.classList.add('active');
+}
+
+function onBonusClick(card, val){
+  if(bonusLocked) return;
+  bonusLocked = true;
+  card.classList.add('flipped','picked');
+  document.querySelectorAll('#bonusBoard .card').forEach(c=>{
+    if(c !== card) c.classList.add('dim');
+  });
+  setTimeout(()=>{
+    bonusModal.classList.remove('active');
+    finalizeTurn(val);
+  }, 1300);
+}
+
+/* ---------------- TURN HANDOFF & DUAL SUMMARY ---------------- */
+function finalizeTurn(bonusVal){
+  players[currentPlayerIndex].picks = picks.slice();
+  players[currentPlayerIndex].bonus = bonusVal;
+
+  if(currentPlayerIndex === 0){
+    document.getElementById('handoffTitle').textContent = "Nice Picks, " + players[0].name + "!";
+    document.getElementById('handoffSubtitle').textContent = "Pass the device to " + players[1].name;
+    show('handoffScreen');
+  } else {
+    showDualSummary();
+  }
+}
+
+document.getElementById('handoffBtn').addEventListener('click', ()=>{
+  startPlayerTurn(1);
+});
+
+function renderPlayerColumn(idx){
+  const p = players[idx];
+  return `
+    <div class="player-col ${idx===1 ? 'p2' : ''}">
+      <h3>${p.name}</h3>
+      <div class="result-cards">
+        <div class="result-card">
+          <div class="label">Module 1</div>
+          <div class="value">${p.picks[0]}</div>
+        </div>
+        <div class="result-card">
+          <div class="label">Module 2</div>
+          <div class="value">${p.picks[1]}</div>
+        </div>
+        ${p.bonus ? `
+        <div class="result-card bonus">
+          <div class="label">Bonus Extra Parts</div>
+          <div class="value">+${p.bonus} pieces (your choice)</div>
+        </div>` : ''}
+      </div>
+    </div>`;
+}
+
+function showDualSummary(){
+  document.getElementById('summaryTitle').textContent = "Build Plans Ready!";
+  document.getElementById('dualColumns').innerHTML = renderPlayerColumn(0) + renderPlayerColumn(1);
+  show('summaryScreen');
+  launchConfetti();
+  resetTimer();
+}
+
+document.getElementById('restartBtn').addEventListener('click', ()=>{
+  stopAlarm();
+  clearInterval(timerInterval);
+  player1Input.value = "";
+  player2Input.value = "";
+  show('nameScreen');
+  player1Input.focus();
+});
+
+/* ---------------- CONFETTI ---------------- */
+const canvas = document.getElementById('confettiCanvas');
+const ctx = canvas.getContext('2d');
+function resizeCanvas(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+function launchConfetti(){
+  const colors = ['#D0011B','#0057A6','#00A651','#FFCD00','#8e44ad'];
+  const pieces = Array.from({length:120}, ()=>({
+    x: Math.random()*canvas.width,
+    y: -20 - Math.random()*canvas.height*0.3,
+    size: 5+Math.random()*6,
+    color: colors[Math.floor(Math.random()*colors.length)],
+    speedY: 2+Math.random()*3,
+    speedX: -1.5+Math.random()*3,
+    rot: Math.random()*360,
+    rotSpeed: -6+Math.random()*12
+  }));
+  let frames = 0;
+  function tick(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p=>{
+      p.x += p.speedX; p.y += p.speedY; p.rot += p.rotSpeed;
+      ctx.save();
+      ctx.translate(p.x,p.y);
+      ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size);
+      ctx.restore();
+    });
+    frames++;
+    if(frames < 150){
+      requestAnimationFrame(tick);
+    } else {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+    }
+  }
+  tick();
+}
+
+/* ---------------- BUILD TIMER ---------------- */
+const timerDisplay = document.getElementById('timerDisplay');
+const timerStartBtn = document.getElementById('timerStartBtn');
+const timerStopBtn = document.getElementById('timerStopBtn');
+const timerLabel = document.getElementById('timerLabel');
+let timeLeft = TIMER_SECONDS;
+
+function formatTime(sec){
+  const m = Math.floor(sec/60).toString().padStart(2,'0');
+  const s = (sec%60).toString().padStart(2,'0');
+  return m + ':' + s;
+}
+
+function resetTimer(){
+  clearInterval(timerInterval);
+  stopAlarm();
+  timeLeft = TIMER_SECONDS;
+  timerDisplay.textContent = formatTime(timeLeft);
+  timerDisplay.classList.remove('low','done');
+  timerLabel.textContent = 'Build Timer';
+  timerStartBtn.style.display = 'inline-block';
+  timerStartBtn.disabled = false;
+  timerStartBtn.textContent = 'Start 5-Minute Timer';
+  timerStopBtn.style.display = 'none';
+  document.body.classList.remove('time-up');
+}
+
+timerStartBtn.addEventListener('click', ()=>{
+  if(timerInterval) return;
+  ensureAudio();
+  timerStartBtn.disabled = true;
+  timerStartBtn.textContent = 'Timer Running...';
+  timerLabel.textContent = 'Time Remaining';
+  timerInterval = setInterval(()=>{
+    timeLeft--;
+    timerDisplay.textContent = formatTime(timeLeft);
+    if(timeLeft <= 30) timerDisplay.classList.add('low');
+    if(timeLeft > 0) playTick(timeLeft);
+    if(timeLeft <= 0){
+      clearInterval(timerInterval);
+      timerInterval = null;
+      timeUp();
+    }
+  }, 1000);
+});
+
+function timeUp(){
+  timerDisplay.textContent = "TIME'S UP!";
+  timerDisplay.classList.add('done');
+  timerLabel.textContent = "Time's Up";
+  timerStartBtn.style.display = 'none';
+  timerStopBtn.style.display = 'inline-block';
+  document.body.classList.add('time-up');
+  playAlarm();
+  if(navigator.vibrate) navigator.vibrate([300,150,300,150,300]);
+}
+
+timerStopBtn.addEventListener('click', stopAlarm);
+
+function stopAlarm(){
+  clearInterval(alarmInterval);
+  alarmInterval = null;
+  document.body.classList.remove('time-up');
+  timerStopBtn.style.display = 'none';
+}
+
+function ensureAudio(){
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+function fireTick(freq, vol){
+  const now = audioCtx.currentTime;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'square';
+  osc.frequency.setValueAtTime(freq, now);
+  gain.gain.setValueAtTime(0, now);
+  gain.gain.linearRampToValueAtTime(vol, now + 0.005);
+  gain.gain.linearRampToValueAtTime(0.0001, now + 0.09);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start(now);
+  osc.stop(now + 0.1);
+}
+
+/* Tension-building tick: pitch and volume climb as time runs low,
+   and inside the last 10 seconds a fast second "heartbeat" tick joins in. */
+function playTick(t){
+  ensureAudio();
+  const ramp = t <= 30 ? (30 - t) : 0;
+  const freq = 650 + ramp * 18;
+  const vol = Math.min(0.28 + ramp * 0.02, 0.85);
+  fireTick(freq, vol);
+  if(t <= 10){
+    setTimeout(()=>{ if(timerInterval) fireTick(freq * 1.2, vol); }, 220);
+  }
+}
+
+/* Synthesized, no-download-needed "ringtone": a cheerful repeating
+   little tune, played loud, that loops until Stop Alarm is pressed. */
+function playAlarm(){
+  ensureAudio();
+
+  const melody = [880, 988, 880, 1175, 1319, 1175, 880, 988]; // fun bouncy notes
+  let step = 0;
+
+  function playNote(freq){
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(freq, now);
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.9, now + 0.02);
+    gain.gain.linearRampToValueAtTime(0.0001, now + 0.22);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.24);
+  }
+
+  function tick(){
+    playNote(melody[step % melody.length]);
+    step++;
+  }
+
+  tick();
+  alarmInterval = setInterval(tick, 260);
+}
+</script>
+</body>
+</html>
