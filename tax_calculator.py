@@ -15,7 +15,7 @@ while True:
     print("2. Full-time with contract")
     print("3. Part-time")
     print("4. Part time with contract")
-
+    # Part time có contract thì tax theo fulltime nhưng không có bảo hiểm
     choice = int(input("Enter your choice: "))
 
     if choice == 1 or choice == 3:
