@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SEE SMART — Week 1 | The New Literacy</title>
+<style>
+:root{--navy:#15304d;--navy2:#0c2033;--blue:#0089c6;--cyan:#eaf3fa;--magenta:#9c1457;--pink:#faeaf1;--paper:#f6f7f9;--card:#fff;--ink:#1d2b3a;--muted:#63728a;--line:#e3e7ee;--good:#1f9d55;--goodbg:#e9f8ef;--bad:#c0392b;--badbg:#fdecea;--amber:#8a6d3b;--amberbg:#f7f3ea;--shadow:0 1px 2px rgba(21,48,77,.05),0 8px 22px rgba(21,48,77,.07)}
+*{box-sizing:border-box}html,body{margin:0;background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer}.page{max-width:1160px;margin:auto;padding:18px 18px 70px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:14px;padding:11px 16px;box-shadow:var(--shadow);position:sticky;top:8px;z-index:30}.brand{font-size:14px;font-weight:800;color:var(--navy);display:flex;align-items:center;gap:8px}.dot{width:9px;height:9px;border-radius:50%;background:var(--magenta)}.toggles{display:flex;gap:6px;flex-wrap:wrap}.toggles button{border:1px solid var(--line);background:var(--paper);color:var(--muted);padding:7px 11px;border-radius:9px;font-size:12px;font-weight:700}.toggles button.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.hero{margin-top:16px;background:linear-gradient(135deg,var(--navy2),var(--navy) 60%,#046a9a 140%);border-radius:18px;padding:30px 34px;color:#fff;box-shadow:var(--shadow);overflow:hidden;position:relative}.hero:after{content:"";position:absolute;width:260px;height:260px;right:-80px;top:-80px;border-radius:50%;background:radial-gradient(circle,rgba(74,151,194,.26),transparent 70%)}.eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:#b9ddff}.hero h1{margin:10px 0 4px;font-size:clamp(34px,6vw,64px);letter-spacing:-.04em}.hero p{margin:0;color:#d5e8fa;max-width:760px;line-height:1.5}.progress{margin-top:18px;max-width:470px}.bar{height:9px;border-radius:99px;background:rgba(255,255,255,.14);overflow:hidden}.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#7db8dd,#fff);transition:.35s}.plabel{font-size:12px;color:#dcecff;margin-top:6px;font-weight:600}
+.series{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin:18px 0 10px}.series span{font-size:11px;font-weight:800;color:var(--muted);background:#fff;border:1px solid var(--line);padding:6px 10px;border-radius:999px}.series b{color:#c8ced8}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.mission{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:9px;min-height:220px}.mission.locked{opacity:.55}.mhead{display:flex;justify-content:space-between;align-items:center}.num{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:var(--navy);color:#fff;font-weight:900}.badge{font-size:10px;padding:4px 9px;border-radius:999px;font-weight:800;background:var(--cyan);color:#046a9a}.badge.done{background:var(--goodbg);color:var(--good)}.mission h3{margin:0;color:var(--navy);font-size:16px}.mission p{margin:0;color:var(--muted);font-size:13px;line-height:1.5;flex:1}.mission .meta{font-size:11px;color:var(--muted);font-weight:700}.mission button{border:0;background:var(--blue);color:white;font-weight:800;border-radius:10px;padding:10px 13px}.mission button:disabled{background:var(--line);color:var(--muted);cursor:not-allowed}
+.overlay{display:none;position:fixed;inset:0;background:rgba(12,32,51,.58);z-index:80;overflow-y:auto;padding:24px 12px}.overlay.open{display:block}.modal{max-width:900px;margin:auto;background:var(--paper);border-radius:18px;overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.3)}.mbar{background:linear-gradient(120deg,var(--navy2),var(--navy));color:#fff;padding:16px 20px;display:flex;justify-content:space-between;gap:12px;align-items:center}.mbar h2{margin:0;font-size:17px}.mbar p{margin:3px 0 0;font-size:11px;color:#cfe4ff}.close{border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.12);color:#fff;border-radius:8px;padding:6px 10px;font-weight:700}.mbody{padding:20px}.round{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--magenta);font-weight:900;margin-bottom:7px}.prompt{background:var(--cyan);border:1px solid #d3e6f2;border-radius:12px;padding:12px 14px;color:var(--navy);font-size:13px;line-height:1.55;margin-bottom:14px}.scene{width:100%;max-height:430px;object-fit:cover;border-radius:14px;border:1px solid var(--line);display:block;background:#ddd}.scene.crop{height:330px;object-fit:cover}.crop-a{object-position:46% 48%;transform:scale(1.8)}.crop-b{object-position:50% 52%;transform:scale(1.9)}.image-frame{overflow:hidden;border-radius:14px;border:1px solid var(--line);background:#ddd;max-height:430px}.image-frame img{border:0;border-radius:0}
+.tasks{display:grid;grid-template-columns:1fr;gap:14px}.task{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px}.task h4{margin:0 0 8px;color:var(--navy);font-size:14px}.choices{display:flex;gap:8px;flex-wrap:wrap}.choices button,.chip{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:9px 12px;font-weight:700;color:var(--ink);font-size:12.5px}.choices button.pick,.chip.pick{border-color:var(--blue);background:var(--cyan);color:#046a9a}.choices button.correct{border-color:var(--good);background:var(--goodbg);color:var(--good)}.choices button.wrong{border-color:var(--bad);background:var(--badbg);color:var(--bad)}.feedback{display:none;margin-top:10px;padding:10px 12px;border-radius:10px;font-size:12.5px;font-weight:600}.feedback.show{display:block}.feedback.good{background:var(--goodbg);color:var(--good)}.feedback.bad{background:var(--badbg);color:var(--bad)}.next{display:inline-flex;margin-top:14px;border:0;background:var(--navy);color:#fff;border-radius:10px;padding:10px 15px;font-weight:800}textarea{width:100%;min-height:72px;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;resize:vertical;color:var(--ink)}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.sortzones{display:grid;grid-template-columns:1fr 1fr;gap:12px}.zone{min-height:110px;border:2px dashed var(--line);border-radius:12px;padding:10px}.zone h5{margin:0 0 7px;font-size:11px;text-transform:uppercase;color:var(--muted)}.placed{display:inline-block;background:var(--goodbg);color:var(--good);border:1px solid #cdeedb;border-radius:999px;padding:5px 9px;margin:0 5px 5px 0;font-size:11px;font-weight:700}.teacher-note{background:var(--amberbg);border:1px solid #e7dcc3;border-radius:12px;padding:13px 14px;margin-top:14px}.teacher-note b{color:var(--amber)}.teacher-note p,.teacher-note li{font-size:12.5px;line-height:1.5;color:#5b4d34}.teacher-note ul{margin:8px 0 0;padding-left:17px}.teacher-only{display:none}body.teacher .teacher-only{display:block}
+.caption-tabs{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.caption-tabs button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 10px;font-size:11.5px;font-weight:800;color:var(--muted)}.caption-tabs button.active{background:var(--magenta);color:#fff;border-color:var(--magenta)}.captionline{font-size:18px;font-weight:800;text-align:center;color:var(--navy);margin:12px 0}.react{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.react button{font-size:22px;border:1px solid var(--line);background:#fff;border-radius:10px;padding:7px 10px}.react button.pick{border-color:var(--blue);background:var(--cyan)}
+.sign-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}.sign-card{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff;text-align:center}.sign-card .sym{font-size:36px}.builder{display:grid;grid-template-columns:220px 1fr;gap:14px}.controls label{display:block;font-size:11px;color:var(--muted);font-weight:700;margin-bottom:9px}select,input[type=text]{width:100%;border:1.5px solid var(--line);border-radius:9px;padding:9px;background:#fff}canvas{width:100%;height:auto;border-radius:14px;border:1px solid var(--line);background:#fff}.checklist{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.checklist label{display:flex;gap:7px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px;font-size:12px}
+#teacherView{display:none}.teacher-section{margin-top:20px}.teacher-section h3{color:var(--navy);border-bottom:1px solid var(--line);padding-bottom:8px;font-size:14px;text-transform:uppercase;letter-spacing:.05em}.overview{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.ov{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}.ov small{display:block;color:var(--muted);font-weight:800;text-transform:uppercase}.ov b{display:block;margin-top:4px;color:var(--ink);font-size:13px}.lesson-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}.lesson-card h4{margin:0 0 7px;color:var(--navy)}.lesson-card p,.lesson-card li{font-size:12.5px;line-height:1.6;color:var(--muted)}.lesson-card ul{margin:6px 0;padding-left:18px}.kgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.knowledge{background:var(--cyan);border:1px solid #d3e6f2;border-radius:11px;padding:11px}.knowledge b{font-size:12px;color:#046a9a}.knowledge p{margin:5px 0 0;color:#35526d}
+.finish{display:none;margin-top:18px;background:linear-gradient(120deg,var(--navy2),var(--blue));color:#fff;border-radius:18px;padding:22px;text-align:center}.finish h3{margin:0 0 7px}.finish p{color:#dcecff}
+@media(max-width:820px){.grid{grid-template-columns:1fr 1fr}.overview{grid-template-columns:1fr 1fr}.builder,.kgrid{grid-template-columns:1fr}}@media(max-width:560px){.page{padding:10px 10px 50px}.grid,.overview,.sign-grid,.two,.sortzones,.checklist{grid-template-columns:1fr}.hero{padding:24px 20px}.topbar{top:4px}.mbody{padding:14px}}
+
+/* v4 high-resolution online-photo activities */
+.remote-note{font-size:11px;color:var(--muted);margin:6px 0 0}
+.scene.hq{width:100%;max-height:520px;object-fit:contain;background:#eef2f7}
+.mission-thumb{width:100%;height:150px;object-fit:cover;border-radius:11px;border:1px solid var(--line);display:block;margin:5px 0 4px;background:#eef2f7}
+.flash-wrap{position:relative;border-radius:14px;overflow:hidden;background:#e9eef5}
+.flash-cover{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:30px;background:linear-gradient(135deg,#173a5d,#0c2033);color:white;font-weight:800;font-size:22px}
+.quiz-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px}
+.quiz-card{border:1px solid var(--line);border-radius:12px;background:#fff;padding:12px}
+.quiz-card b{display:block;color:var(--navy);margin-bottom:7px}
+.attention-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.attention-grid button{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:13px 8px;font-weight:800;color:var(--ink)}
+.attention-grid button.pick{border-color:var(--blue);background:var(--cyan);color:var(--blue2)}
+.crop-stage{height:420px;border-radius:14px;overflow:hidden;background:#111;position:relative}
+.crop-stage img{width:100%;height:100%;object-fit:cover;transition:transform .45s ease,object-position .45s ease}
+.crop-birthday-tight{transform:scale(2.35);object-position:50% 58%}
+.crop-birthday-medium{transform:scale(1.55);object-position:50% 55%}
+.crop-birthday-full{transform:scale(1);object-position:50% 50%}
+.crop-controls,.source-grid,.evidence-grid,.remix-controls{display:grid;gap:9px;margin-top:12px}
+.crop-controls{grid-template-columns:repeat(3,1fr)}
+.source-grid{grid-template-columns:repeat(3,1fr)}
+.source-card,.evidence-card{border:1.5px solid var(--line);border-radius:13px;background:#fff;padding:14px;text-align:left;color:var(--ink);font-weight:700}
+.source-card small,.evidence-card small{display:block;color:var(--muted);font-weight:500;margin-top:5px;line-height:1.35}
+.source-card.pick,.evidence-card.pick{border-color:var(--blue);background:var(--cyan)}
+.evidence-grid{grid-template-columns:1fr 1fr}
+.meterbox{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;margin-top:12px}
+.meterbox input[type=range]{width:100%;accent-color:var(--blue)}
+.meter-value{font-size:28px;font-weight:900;color:var(--navy);text-align:center}
+.clue{background:#f6f8fb;border-left:4px solid var(--blue);padding:11px 13px;border-radius:8px;margin-top:10px}
+.remix-stage{position:relative;height:430px;border-radius:14px;overflow:hidden;background:#101820}
+.remix-stage img{width:100%;height:100%;object-fit:cover;transition:transform .35s ease,object-position .35s ease,filter .35s ease}
+.remix-headline{position:absolute;left:18px;right:18px;bottom:18px;background:rgba(8,24,42,.84);color:#fff;border-radius:11px;padding:12px 14px;font-weight:900;font-size:clamp(18px,3vw,30px);line-height:1.08}
+.remix-full{transform:scale(1);object-position:50% 50%}
+.remix-hands{transform:scale(1.75);object-position:50% 78%}
+.remix-student{transform:scale(1.7);object-position:83% 35%}
+.remix-controls{grid-template-columns:repeat(3,1fr)}
+.remix-controls label{font-size:11px;font-weight:800;color:var(--muted)}
+.credit-box{margin-top:18px;background:#fff;border:1px solid var(--line);border-radius:13px;padding:14px;font-size:11.5px;color:var(--muted);line-height:1.55}
+.credit-box a{color:var(--blue2)}
+@media(max-width:720px){
+ .attention-grid,.crop-controls,.source-grid,.remix-controls{grid-template-columns:1fr 1fr}
+ .evidence-grid{grid-template-columns:1fr}
+ .crop-stage,.remix-stage{height:330px}
+}
+@media(max-width:480px){
+ .attention-grid,.crop-controls,.source-grid,.remix-controls{grid-template-columns:1fr}
+}
+
+</style>
+</head>
+<body class="student lang-en">
+<div class="page">
+<div class="topbar"><div class="brand"><span class="dot"></span><span class="en">The New Literacy · Week 1 · SEE SMART</span><span class="vn">The New Literacy · Tuần 1 · SEE SMART</span></div><div class="toggles"><button id="playBtn" class="active">🎮 <span class="en">Student</span><span class="vn">Học sinh</span></button><button id="teachBtn">📋 <span class="en">Teacher</span><span class="vn">Giáo viên</span></button><button id="langBtn">VI</button></div></div>
+<div id="gameView">
+<header class="hero"><div class="eyebrow">THE NEW LITERACY · WEEK 1</div><h1>SEE SMART</h1><p class="en">Can you read a picture? Complete six missions — each with multiple tasks — to learn how images guide attention, change meaning, hide context, and communicate ideas.</p><p class="vn">Bạn có thật sự “đọc” được một bức ảnh? Hoàn thành 6 nhiệm vụ — mỗi nhiệm vụ gồm nhiều thử thách — để khám phá cách hình ảnh dẫn dắt sự chú ý, thay đổi ý nghĩa, che khuất bối cảnh và truyền đạt thông tin.</p><div class="progress"><div class="bar"><i id="pfill"></i></div><div class="plabel" id="plabel">0 / 6</div></div></header>
+<div class="series"><span>1 LOOK</span><b>→</b><span>2 CONTEXT</span><b>→</b><span>3 FRAME</span><b>→</b><span>4 VERIFY</span><b>→</b><span>5 DECODE</span><b>→</b><span>6 REMIX</span></div>
+<div class="grid" id="missionGrid"></div>
+<div class="finish" id="finish"><div class="eyebrow">WEEK 1 COMPLETE</div><h3 class="en">You learned to SEE SMART.</h3><h3 class="vn">Bạn đã học cách SEE SMART.</h3><p class="en">SEE → THINK → QUESTION → CREATE. Next week: DATA SMART — can numbers tell a story?</p><p class="vn">SEE → THINK → QUESTION → CREATE. Tuần tới: DATA SMART — những con số có thể kể chuyện không?</p></div>
+</div>
+<div id="teacherView">
+<header class="hero"><div class="eyebrow">TEACHER LESSON PLAN</div><h1>SEE SMART</h1><p class="en">90-minute visual literacy Tech Club. Student experience and teacher knowledge are kept in the same file.</p><p class="vn">Tech Club 90 phút về năng lực đọc hiểu hình ảnh. Phần trải nghiệm học sinh và kiến thức dành cho giáo viên nằm trong cùng một file.</p></header>
+<div class="teacher-section"><h3 class="en">Lesson Overview</h3><h3 class="vn">Tổng quan buổi học</h3><div class="overview"><div class="ov"><small>Duration</small><b>90 minutes</b></div><div class="ov"><small>Focus</small><b>Visual Literacy</b></div><div class="ov"><small>Roadmap</small><b>Digital Literacy + Creativity</b></div><div class="ov"><small>Method</small><b>Experience → Discuss → Knowledge → Apply</b></div><div class="ov"><small>Output</small><b>Visual remix + wordless message</b></div><div class="ov"><small>Series</small><b>Week 1 of 4</b></div></div></div>
+<div class="teacher-section"><h3 class="en">Core Knowledge</h3><h3 class="vn">Kiến thức cốt lõi</h3><div class="kgrid"><div class="knowledge"><b class="en">Visual literacy</b><b class="vn">Năng lực đọc hiểu hình ảnh</b><p class="en">The ability to understand, question, and communicate meaning through images, symbols, layout, colour, charts, video, and other visual forms.</p><p class="vn">Khả năng hiểu, đặt câu hỏi và truyền đạt ý nghĩa thông qua hình ảnh, biểu tượng, bố cục, màu sắc, biểu đồ, video và các hình thức trực quan khác.</p></div><div class="knowledge"><b class="en">Observation vs interpretation</b><b class="vn">Quan sát vs diễn giải</b><p class="en">“I see…” describes visible evidence. “I think…” adds a conclusion or assumption. Strong visual readers know the difference.</p><p class="vn">“Mình thấy…” mô tả bằng chứng nhìn thấy được. “Mình nghĩ…” thêm kết luận hoặc suy đoán. Người đọc hình ảnh tốt biết phân biệt hai điều này.</p></div><div class="knowledge"><b class="en">Context & framing</b><b class="vn">Bối cảnh & framing</b><p class="en">Captions, crops, camera angle, timing and surrounding information can change interpretation without changing the visible pixels.</p><p class="vn">Caption, phần ảnh bị cắt, góc máy, thời điểm và thông tin xung quanh có thể làm thay đổi cách hiểu dù nội dung nhìn thấy không bị chỉnh sửa.</p></div><div class="knowledge"><b class="en">Verification</b><b class="vn">Kiểm chứng</b><p class="en">A visual claim becomes more trustworthy when source, date, context and corroborating evidence support it. Confidence should change when stronger evidence appears.</p><p class="vn">Một thông tin trực quan đáng tin hơn khi nguồn, ngày tháng, bối cảnh và bằng chứng đối chiếu hỗ trợ cho nó. Mức độ tin tưởng cần thay đổi khi có bằng chứng mạnh hơn.</p></div><div class="knowledge"><b class="en">Visual communication</b><b class="vn">Giao tiếp bằng hình ảnh</b><p class="en">Symbols, colour, position, contrast and hierarchy guide attention and convey meaning. A successful visual is clear for its intended audience, not merely attractive.</p><p class="vn">Biểu tượng, màu sắc, vị trí, độ tương phản và thứ bậc thị giác dẫn dắt sự chú ý và truyền đạt ý nghĩa. Hình ảnh hiệu quả phải rõ với đúng người xem, không chỉ đẹp.</p></div><div class="knowledge"><b class="en">Design for purpose</b><b class="vn">Thiết kế theo mục đích</b><p class="en">Start with: Who is the audience? What should they notice, understand, feel, or do? Decoration comes after clarity.</p><p class="vn">Bắt đầu từ: Người xem là ai? Họ cần chú ý, hiểu, cảm nhận hoặc làm gì? Trang trí chỉ nên đến sau sự rõ ràng.</p></div></div></div>
+<div class="teacher-section" id="teacherMissions"></div>
+<div class="teacher-section"><h3 class="en">Image Sources</h3><h3 class="vn">Nguồn hình ảnh</h3>
+<div class="credit-box">
+<span class="en">High-resolution activity photographs are loaded from Pexels and are marked free to use on their source pages. Internet access is required for the photographs to load. Each mission uses its own image set.</span>
+<span class="vn">Hình ảnh độ phân giải cao trong hoạt động được tải từ Pexels và được đánh dấu miễn phí sử dụng trên trang nguồn. Cần có Internet để tải hình. Mỗi nhiệm vụ sử dụng một bộ hình riêng.</span>
+<br><br>
+<a href="https://www.pexels.com/photo/a-children-playing-together-8535146/" target="_blank">M1 · Ksenia Chernaya</a> ·
+<a href="https://www.pexels.com/photo/teenage-boy-using-a-laptop-with-headphones-on-6256012/" target="_blank">M2 · Karola G</a> ·
+<a href="https://www.pexels.com/photo/children-at-a-birthday-party-7099896/" target="_blank">M3 · Vlada Karpovich</a> ·
+<a href="https://www.pexels.com/photo/a-pond-on-a-field-in-front-of-a-school-building-14872500/" target="_blank">M4 · Valentin Angel Fernandez</a> ·
+<a href="https://www.pexels.com/photo/flood-on-street-8568719/" target="_blank">M4 · Sveta K</a> ·
+<a href="https://www.pexels.com/photo/close-up-of-a-road-sign-forbidding-riding-a-bicycle-5061059/" target="_blank">M5 · Tima Miroshnichenko</a> ·
+<a href="https://www.pexels.com/photo/wet-floor-warning-sign-25473524/" target="_blank">M5 · Photosynthesis adrilyn</a> ·
+<a href="https://www.pexels.com/photo/young-students-doing-robotics-together-7869041/" target="_blank">M6 · Vanessa Loring</a>.
+</div></div>
+
+</div>
+</div>
+<div class="overlay" id="overlay"><div class="modal"><div class="mbar"><div><h2 id="mtitle"></h2><p id="msub"></p></div><button class="close" id="closeBtn">✕ Close</button></div><div class="mbody" id="mbody"></div></div></div>
+<script>
+const IMG={
+ look:"https://images.pexels.com/photos/8535146/pexels-photo-8535146.jpeg?auto=compress&cs=tinysrgb&w=1800",
+ caption:"https://images.pexels.com/photos/6256012/pexels-photo-6256012.jpeg?auto=compress&cs=tinysrgb&w=1800",
+ birthday:"https://images.pexels.com/photos/7099896/pexels-photo-7099896.jpeg?auto=compress&cs=tinysrgb&w=1800",
+ school:"https://images.pexels.com/photos/14872500/pexels-photo-14872500.jpeg?auto=compress&cs=tinysrgb&w=1800",
+ flood:"https://images.pexels.com/photos/8568719/pexels-photo-8568719.jpeg?auto=compress&cs=tinysrgb&w=1800",
+ bike:"https://images.pexels.com/photos/5061059/pexels-photo-5061059.jpeg?auto=compress&cs=tinysrgb&w=1600",
+ wet:"https://images.pexels.com/photos/25473524/pexels-photo-25473524.jpeg?auto=compress&cs=tinysrgb&w=1600",
+ robot:"https://images.pexels.com/photos/7869041/pexels-photo-7869041.jpeg?auto=compress&cs=tinysrgb&w=1800"
+};
+
+const MISSIONS=[
+{n:1,titleEn:'LOOK CLOSER',titleVn:'NHÌN KỸ HƠN',descEn:'Train attention, memory, and the difference between observation and assumption.',descVn:'Luyện sự chú ý, trí nhớ và phân biệt quan sát với suy đoán.',time:'15 min',tasks:3,img:'look'},
+{n:2,titleEn:'CAPTION SWITCH',titleVn:'ĐỔI CAPTION',descEn:'See how words can change the story we build around the same image.',descVn:'Khám phá cách câu chữ làm thay đổi câu chuyện ta gắn vào cùng một hình ảnh.',time:'12–15 min',tasks:3,img:'caption'},
+{n:3,titleEn:"WHAT'S MISSING?",titleVn:'ĐIỀU GÌ ĐANG BỊ THIẾU?',descEn:'Use crop and framing to discover how context changes interpretation.',descVn:'Dùng crop và framing để khám phá cách bối cảnh làm thay đổi cách hiểu.',time:'15 min',tasks:3,img:'birthday'},
+{n:4,titleEn:'TRUST THE PICTURE?',titleVn:'TIN BỨC ẢNH NÀY KHÔNG?',descEn:'Check sources, hunt for evidence, and update confidence when new information appears.',descVn:'Kiểm tra nguồn, tìm bằng chứng và điều chỉnh mức độ tin tưởng khi có thông tin mới.',time:'15 min',tasks:3,img:'school'},
+{n:5,titleEn:'READ WITHOUT WORDS',titleVn:'ĐỌC KHÔNG CẦN CHỮ',descEn:'Decode real-world visual signs, then build a wordless message.',descVn:'Giải mã biển báo trực quan ngoài đời rồi tạo một thông điệp không cần chữ.',time:'15 min',tasks:3,img:'bike'},
+{n:6,titleEn:'REMIX THE MESSAGE',titleVn:'REMIX THÔNG ĐIỆP',descEn:'Crop, frame, and caption the same image to intentionally shape a story.',descVn:'Crop, framing và caption cùng một hình để chủ động định hình câu chuyện.',time:'15 min',tasks:3,img:'robot'}
+];
+
+let lang='en',mode='student',state={done:{}};
+function t(en,vn){return lang==='en'?en:vn}
+function imgTag(key,cls='scene hq'){return `<img class="${cls}" src="${IMG[key]}" alt="" loading="eager" referrerpolicy="no-referrer">`}
+function renderHub(){
+ const g=document.getElementById('missionGrid');g.innerHTML='';
+ MISSIONS.forEach(m=>{
+   const done=!!state.done[m.n], c=document.createElement('div');c.className='mission';
+   c.innerHTML=`<div class="mhead"><div class="num">${m.n}</div><span class="badge ${done?'done':''}">${done?'✓ '+t('Complete','Hoàn thành'):t('Ready','Sẵn sàng')}</span></div>
+   <h3>${lang==='en'?m.titleEn:m.titleVn}</h3><p>${lang==='en'?m.descEn:m.descVn}</p>
+   <img class="mission-thumb" src="${IMG[m.img]}" alt="" referrerpolicy="no-referrer">
+   <div class="meta">⏱ ${m.time} · ${m.tasks} ${t('tasks','nhiệm vụ nhỏ')}</div>
+   <button>${done?t('Play again','Chơi lại'):t('Start mission','Bắt đầu')}</button>`;
+   c.querySelector('button').onclick=()=>openMission(m.n);g.appendChild(c);
+ });
+ const n=Object.keys(state.done).length;document.getElementById('pfill').style.width=(n/6*100)+'%';document.getElementById('plabel').textContent=n+' / 6';document.getElementById('finish').style.display=n===6?'block':'none';
+}
+function setMode(m){mode=m;document.body.classList.toggle('teacher',m==='teacher');document.body.classList.toggle('student',m==='student');document.getElementById('gameView').style.display=m==='student'?'block':'none';document.getElementById('teacherView').style.display=m==='teacher'?'block':'none';document.getElementById('playBtn').classList.toggle('active',m==='student');document.getElementById('teachBtn').classList.toggle('active',m==='teacher')}
+document.getElementById('playBtn').onclick=()=>setMode('student');document.getElementById('teachBtn').onclick=()=>setMode('teacher');
+document.getElementById('langBtn').onclick=()=>{lang=lang==='en'?'vn':'en';document.body.classList.toggle('lang-vn',lang==='vn');document.body.classList.toggle('lang-en',lang==='en');document.getElementById('langBtn').textContent=lang==='en'?'VI':'EN';document.querySelectorAll('.en').forEach(x=>x.style.display=lang==='en'?'':'none');document.querySelectorAll('.vn').forEach(x=>x.style.display=lang==='vn'?'':'none');document.getElementById('overlay').classList.remove('open');renderHub();renderTeacher()};
+document.getElementById('closeBtn').onclick=()=>document.getElementById('overlay').classList.remove('open');
+function openMission(n){document.getElementById('overlay').classList.add('open');const m=MISSIONS[n-1];document.getElementById('mtitle').textContent=`${n} · ${lang==='en'?m.titleEn:m.titleVn}`;document.getElementById('msub').textContent=m.time+' · '+m.tasks+' '+t('tasks','nhiệm vụ nhỏ');({1:m1,2:m2,3:m3,4:m4,5:m5,6:m6})[n]()}
+function good(el,msg){el.className='feedback show good';el.innerHTML=msg}function bad(el,msg){el.className='feedback show bad';el.innerHTML=msg}
+function finishMission(n){state.done[n]=true;renderHub();document.getElementById('overlay').classList.remove('open')}
+function teacherBox(titleEn,titleVn,knowledgeEn,knowledgeVn,qsEn,qsVn,landEn,landVn){return `<div class="teacher-note teacher-only"><b>🎓 ${t(titleEn,titleVn)}</b><p>${t(knowledgeEn,knowledgeVn)}</p><ul>${(lang==='en'?qsEn:qsVn).map(q=>'<li>'+q+'</li>').join('')}</ul><p><b>${t('Land this:','Chốt ý:')}</b> ${t(landEn,landVn)}</p></div>`}
+function nextBtn(label,fn){const b=document.createElement('button');b.className='next';b.textContent=label;b.onclick=fn;return b}
+
+/* M1 — LOOK CLOSER */
+function m1(){
+ let task=1;const body=document.getElementById('mbody');
+ function flash(){
+   body.innerHTML=`<div class="round">${t('Task','Nhiệm vụ')} 1 / 3 · FLASH LOOK</div>
+   <div class="prompt">${t('You will get 10 seconds. Look carefully — then the image disappears.','Bạn có 10 giây. Hãy quan sát thật kỹ — sau đó hình sẽ biến mất.')}</div>
+   <div class="flash-wrap">${imgTag('look')}<div class="flash-cover" id="cover">${t('Ready? Press START.','Sẵn sàng? Nhấn BẮT ĐẦU.')}</div></div>
+   <button class="next" id="start">${t('START 10 SECONDS','BẮT ĐẦU 10 GIÂY')}</button><div id="quiz"></div>
+   ${teacherBox('Teacher knowledge','Kiến thức cho giáo viên',
+   'Attention is selective. A busy image contains more information than we can consciously process at once, so our brain prioritizes some details and misses others.',
+   'Sự chú ý có tính chọn lọc. Một hình ảnh nhiều chi tiết chứa nhiều thông tin hơn khả năng xử lý có ý thức, nên não ưu tiên một số chi tiết và bỏ sót những chi tiết khác.',
+   ['Ask what students deliberately chose to look at.','Do not frame missed details as failure; use them to discuss attention.'],
+   ['Hỏi học sinh đã chủ động nhìn vào đâu.','Không coi việc bỏ sót chi tiết là thất bại; dùng nó để nói về sự chú ý.'],
+   'Seeing everything at once is impossible; smart viewing means knowing where your attention went.',
+   'Không thể nhìn thấy mọi thứ cùng lúc; quan sát thông minh là biết sự chú ý của mình đã đi đâu.')}`;
+   document.getElementById('start').onclick=()=>{
+     const cover=document.getElementById('cover');cover.style.display='none';let s=10;
+     const btn=document.getElementById('start');btn.disabled=true;btn.textContent='10';
+     const iv=setInterval(()=>{s--;btn.textContent=s>0?String(s):t('TIME!','HẾT GIỜ!');if(s<=0){clearInterval(iv);cover.style.display='grid';cover.textContent=t('Image hidden. What do you remember?','Hình đã ẩn. Bạn nhớ được gì?');renderQuiz()}},1000);
+   };
+ }
+ function renderQuiz(){
+   const q=document.getElementById('quiz');if(q.dataset.ready)return;q.dataset.ready='1';
+   const data=[
+    [t('How many children are clearly visible?','Có bao nhiêu trẻ em nhìn thấy rõ?'),['2','3','4'],'3'],
+    [t('What colour is the activity board?','Bảng hoạt động màu gì?'),[t('Blue','Xanh dương'),t('Yellow','Vàng'),t('Red','Đỏ')],t('Yellow','Vàng')],
+    [t('Which detail is visible in the background?','Chi tiết nào xuất hiện ở phía sau?'),[t('Stacked boxes','Các hộp xếp chồng'),t('A bicycle','Một chiếc xe đạp'),t('A television','Một chiếc TV')],t('Stacked boxes','Các hộp xếp chồng')]
+   ];
+   q.innerHTML='<div class="quiz-grid" id="qgrid"></div><div id="fb" class="feedback"></div>';
+   data.forEach(([question,opts,ans],i)=>{const c=document.createElement('div');c.className='quiz-card';c.innerHTML=`<b>${question}</b><div class="choices"></div>`;opts.forEach(o=>{const b=document.createElement('button');b.textContent=o;b.onclick=()=>{c.querySelectorAll('button').forEach(x=>x.classList.remove('pick'));b.classList.add('pick');c.dataset.answer=o===ans?'1':'0'};c.querySelector('.choices').appendChild(b)});document.getElementById('qgrid').appendChild(c)});
+   const check=nextBtn(t('Check memory →','Kiểm tra trí nhớ →'),()=>{const cards=[...document.querySelectorAll('#qgrid .quiz-card')];if(cards.some(c=>!c.dataset.answer)){bad(document.getElementById('fb'),t('Answer all three first.','Hãy trả lời đủ 3 câu trước.'));return}const score=cards.filter(c=>c.dataset.answer==='1').length;good(document.getElementById('fb'),t(`You remembered ${score}/3. Now look again — what you missed is part of the lesson.`,`Bạn nhớ đúng ${score}/3. Bây giờ hãy xem lại — điều bạn bỏ sót cũng chính là một phần bài học.`));q.appendChild(nextBtn(t('Task 2 →','Nhiệm vụ 2 →'),sortTask))});q.appendChild(check);
+ }
+ function sortTask(){
+   const items=[
+    {x:t('Three children are gathered around a table.','Ba bạn nhỏ đang ở quanh một chiếc bàn.'),cat:'see'},
+    {x:t('The activity board is yellow.','Bảng hoạt động màu vàng.'),cat:'see'},
+    {x:t('Adult hands are reaching toward the board.','Có bàn tay người lớn đang hướng vào bảng.'),cat:'see'},
+    {x:t('The children are competing against each other.','Các bạn đang thi đấu với nhau.'),cat:'think'},
+    {x:t('The adult is explaining the correct answer.','Người lớn đang giải thích đáp án đúng.'),cat:'think'},
+    {x:t('One child is the leader of the group.','Một bạn là trưởng nhóm.'),cat:'think'}
+   ].sort(()=>Math.random()-.5);
+   body.innerHTML=`<div class="round">${t('Task','Nhiệm vụ')} 2 / 3 · I SEE / I THINK</div><div class="prompt">${t('Separate visible evidence from the story your brain adds.','Tách bằng chứng nhìn thấy được khỏi câu chuyện mà não tự thêm vào.')}</div>${imgTag('look')}
+   <div class="task"><div id="pool" class="choices"></div><div class="sortzones" style="margin-top:10px"><div class="zone"><h5>I SEE</h5><div id="zsee"></div><button class="chip" id="seeBtn">I SEE</button></div><div class="zone"><h5>I THINK</h5><div id="zthink"></div><button class="chip" id="thinkBtn">I THINK</button></div></div><div id="fb" class="feedback"></div></div>
+   ${teacherBox('Teacher knowledge','Kiến thức cho giáo viên',
+   'Observation describes visible evidence. Interpretation adds cause, motive, emotion, prediction, or conclusion. Both are useful, but they are not the same.',
+   'Quan sát mô tả bằng chứng nhìn thấy được. Diễn giải thêm nguyên nhân, động cơ, cảm xúc, dự đoán hoặc kết luận. Cả hai đều hữu ích nhưng không giống nhau.',
+   ['Keep asking: “Can you point to the evidence?”','Use “I see…” and “I think…” language aloud.'],
+   ['Liên tục hỏi: “Em chỉ vào bằng chứng được không?”','Dùng ngôn ngữ “Mình thấy…” và “Mình nghĩ…” thành tiếng.'],
+   'Evidence first, interpretation second.',
+   'Bằng chứng trước, diễn giải sau.')}`;
+   let selected=null,placed=0;const pool=document.getElementById('pool');
+   items.forEach((it,i)=>{const b=document.createElement('button');b.textContent=it.x;b.onclick=()=>{pool.querySelectorAll('button').forEach(x=>x.classList.remove('pick'));b.classList.add('pick');selected={it,b}};pool.appendChild(b)});
+   function place(cat){if(!selected)return;if(selected.it.cat!==cat){bad(document.getElementById('fb'),t('Try again: can you directly point to that in the photo?','Thử lại: em có thể chỉ trực tiếp điều đó trong ảnh không?'));return}const z=document.getElementById(cat==='see'?'zsee':'zthink');const s=document.createElement('span');s.className='placed';s.textContent=selected.it.x;z.appendChild(s);selected.b.remove();selected=null;placed++;good(document.getElementById('fb'),t('Good reasoning.','Lập luận tốt.'));if(placed===items.length)document.querySelector('.task').appendChild(nextBtn(t('Task 3 →','Nhiệm vụ 3 →'),attentionTask))}
+   document.getElementById('seeBtn').onclick=()=>place('see');document.getElementById('thinkBtn').onclick=()=>place('think');
+ }
+ function attentionTask(){
+   body.innerHTML=`<div class="round">${t('Task','Nhiệm vụ')} 3 / 3 · ATTENTION MAP</div><div class="prompt">${t('What grabbed your attention first? There is no single correct answer.','Điều gì thu hút sự chú ý của bạn đầu tiên? Không có một đáp án đúng duy nhất.')}</div>${imgTag('look')}
+   <div class="attention-grid" id="att"><button>🙂 ${t('Faces','Khuôn mặt')}</button><button>🟨 ${t('Yellow board','Bảng vàng')}</button><button>👐 ${t('Hands','Bàn tay')}</button><button>🧱 ${t('Background','Phông nền')}</button></div>
+   <div id="fb" class="feedback"></div>
+   ${teacherBox('Teacher knowledge','Kiến thức cho giáo viên',
+   'Visual salience is what makes something attract attention. Size, contrast, colour, faces, movement and position can make one element stand out.',
+   'Độ nổi bật thị giác là điều khiến một yếu tố thu hút sự chú ý. Kích thước, độ tương phản, màu sắc, khuôn mặt, chuyển động và vị trí có thể làm một chi tiết nổi bật.',
+   ['Compare answers across the room.','Connect to thumbnails, ads, game UI and app buttons.'],
+   ['So sánh lựa chọn của cả lớp.','Liên hệ thumbnail, quảng cáo, giao diện game và nút trong app.'],
+   'Design can guide attention — so viewers should notice when their attention is being guided.',
+   'Thiết kế có thể dẫn dắt sự chú ý — vì vậy người xem nên nhận ra khi sự chú ý của mình đang bị dẫn dắt.')}`;
+   document.querySelectorAll('#att button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#att button').forEach(x=>x.classList.remove('pick'));b.classList.add('pick');good(document.getElementById('fb'),t('Different viewers notice different things first. That is why attention is part of visual literacy.','Những người xem khác nhau có thể chú ý những thứ khác nhau trước. Vì vậy, hiểu sự chú ý là một phần của năng lực đọc hình ảnh.'));if(!document.getElementById('finish1')){const x=nextBtn(t('Finish mission →','Hoàn thành nhiệm vụ →'),()=>finishMission(1));x.id='finish1';body.appendChild(x)}})
+ }
+ flash();
+}
+
+/* M2 — CAPTION SWITCH */
+function m2(){
+ let task=1;const body=document.getElementById('mbody');
+ function captionTask(){
+   const caps=[
+    [t('Focused student prepares for an important exam.','Học sinh tập trung chuẩn bị cho một kỳ thi quan trọng.'),'📚'],
+    [t('Teen relaxes with videos after a long day.','Bạn trẻ thư giãn xem video sau một ngày dài.'),'😌'],
+    [t('He waits nervously for a video call.','Bạn ấy hồi hộp chờ một cuộc gọi video.'),'😟']
+   ];
+   body.innerHTML=`<div class="round">${t('Task','Nhiệm vụ')} 1 / 3 · CAPTION SWITCH</div><div class="prompt">${t('The photo never changes. Try all three captions and react to how the story feels.','Bức ảnh không đổi. Hãy thử cả 3 caption và cảm nhận câu chuyện thay đổi thế nào.')}</div>${imgTag('caption')}
+   <div class="caption-tabs" id="caps"></div><div class="captionline" id="line">${t('Choose a caption','Chọn một caption')}</div><div class="react"><button>😊</button><button>😟</button><button>😮</button><button>🤔</button></div><div id="fb" class="feedback"></div>
+   ${teacherBox('Teacher knowledge','Kiến thức cho giáo viên',
+   'Captions provide context and can steer interpretation. The same visual evidence can feel very different when surrounded by different words.',
+   'Caption cung cấp bối cảnh và có thể dẫn hướng cách diễn giải. Cùng một bằng chứng hình ảnh có thể mang cảm giác rất khác khi đi cùng câu chữ khác.',
+   ['Do not reveal the lesson before all captions are tried.','Ask what changed: the pixels or the story in the viewer’s head?'],
+   ['Đừng chốt bài trước khi thử đủ caption.','Hỏi điều gì thay đổi: pixel hay câu chuyện trong đầu người xem?'],
+   'Words around an image are part of how we read the image.',
+   'Câu chữ xung quanh hình ảnh là một phần của cách chúng ta “đọc” hình.')}`;
+   let seen=new Set();caps.forEach((c,i)=>{const b=document.createElement('button');b.textContent=c[0];b.onclick=()=>{document.querySelectorAll('#caps button').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById('line').textContent='“'+c[0]+'”';seen.add(i)};document.getElementById('caps').appendChild(b)});
+   document.querySelectorAll('.react button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.react button').forEach(x=>x.classList.remove('pick'));b.classList.add('pick')});
+   body.appendChild(nextBtn(t('Task 2 →','Nhiệm vụ 2 →'),()=>{if(seen.size<3){bad(document.getElementById('fb'),t('Try all three captions first.','Hãy thử đủ cả 3 caption trước.'));return}proofTask()}));
+ }
+ function proofTask(){
+   body.innerHTML=`<div class="round">${t('Task','Nhiệm vụ')} 2 / 3 · WHAT DOES THE PHOTO PROVE?</div><div class="prompt">${t('Choose the statement that stays closest to visible evidence.','Chọn câu bám sát nhất bằng chứng nhìn thấy được.')}</div>${imgTag('caption')}
+   <div class="choices" id="proof"><button data-v="e">${t('A teenager is wearing headphones and using a laptop.','Một bạn trẻ đang đeo tai nghe và dùng laptop.')}</button><button data-v="i">${t('He is studying for tomorrow’s exam.','Bạn ấy đang học cho kỳ thi ngày mai.')}</button><button data-v="i">${t('He is talking to a close friend.','Bạn ấy đang nói chuyện với một người bạn thân.')}</button></div><div id="fb" class="feedback"></div>
+   ${teacherBox('Teacher knowledge','Kiến thức cho giáo viên',
+   'A neutral observation names visible details without claiming a hidden motive, emotion, cause or event.',
+   'Một quan sát trung tính nêu các chi tiết nhìn thấy được mà không khẳng định động cơ, cảm xúc, nguyên nhân hay sự kiện ẩn phía sau.',
+   ['Ask students to turn an interpretation into a neutral observation.'],
+   ['Yêu cầu học sinh biến một câu diễn giải thành một câu quan sát trung tính.'],
+   'Describe first; explain second.',
+   'Mô tả trước; giải thích sau.')}`;
+   document.querySelectorAll('#proof button').forEach(b=>b.onclick=()=>{if(b.dataset.v==='e'){b.classList.add('correct');good(document.getElementById('fb'),t('Yes — the photo supports that directly.','Đúng — bức ảnh hỗ trợ trực tiếp cho câu đó.'));body.appendChild(nextBtn(t('Task 3 →','Nhiệm vụ 3 →'),neutralTask))}else{b.classList.add('wrong');bad(document.getElementById('fb'),t('Possible, but the photo does not prove it.','Có thể đúng, nhưng bức ảnh không chứng minh được.'))}})
+ }
+ function neutralTask(){
+   body.innerHTML=`<div class="round">${t('Task','Nhiệm vụ')} 3 / 3 · WRITE IT NEUTRAL</div><div class="prompt">${t('Write a caption that describes the photo without inventing a hidden story.','Viết một caption mô tả bức ảnh mà không tự thêm câu chuyện ẩn.')}</div>${imgTag('caption')}
+   <textarea id="neutral" placeholder="${t('Your neutral caption...','Caption trung tính của bạn...')}"></textarea><button class="next" id="show">${t('Compare with a model caption','So sánh với caption mẫu')}</button><div id="fb" class="feedback"></div>
+   ${teacherBox('Teacher knowledge','Kiến thức cho giáo viên',
+   'Neutral language is useful when accuracy matters. Creative or emotional captions are not “bad,” but readers should know when language is descriptive versus persuasive.',
+   'Ngôn ngữ trung tính hữu ích khi độ chính xác quan trọng. Caption sáng tạo hoặc cảm xúc không “xấu”, nhưng người đọc cần nhận ra khi ngôn ngữ đang mô tả hay đang thuyết phục.',
+   ['Ask where neutral captions matter most: reports, news, evidence, instructions.'],
+   ['Hỏi caption trung tính quan trọng nhất ở đâu: báo cáo, tin tức, bằng chứng, hướng dẫn.'],
+   'The purpose of the message should guide the language.',
+   'Mục đích thông điệp nên quyết định cách dùng ngôn ngữ.')}`;
+   document.getElementById('show').onclick=()=>{if(document.getElementById('neutral').value.trim().length<5){bad(document.getElementById('fb'),t('Write a short caption first.','Hãy viết một caption ngắn trước.'));return}good(document.getElementById('fb'),t('Model: “A teenager wearing orange headphones looks at a laptop while sitting on a sofa.” Compare it with yours: did you add anything the photo cannot prove?','Mẫu: “Một bạn trẻ đeo tai nghe màu cam nhìn vào laptop khi ngồi trên sofa.” So sánh với câu của bạn: bạn có thêm điều gì mà ảnh không chứng minh được không?'));body.appendChild(nextBtn(t('Finish mission →','Hoàn thành nhiệm vụ →'),()=>finishMission(2)))}
+ }
+ captionTask();
+}
+
+/* M3 — WHAT'S MISSING? */
+function m3(){
+ const body=document.getElementById('mbody');
+ function cropGuess(){
+   body.innerHTML=`<div class="round">${t('Task','Nhiệm vụ')} 1 / 3 · TIGHT CROP</div><div class="prompt">${t('You are only seeing a tight crop. Which statement is safest?','Bạn chỉ đang thấy một phần ảnh bị crop sát. Câu nào an toàn nhất?')}</div>
+   <div class="crop-stage"><img id="birthdayImg" class="crop-birthday-tight" src="${IMG.birthday}" alt="" referrerpolicy="no-referrer"></div>
+   <div class="choices" id="cg"><button data-v="safe">${t('A child is near a cake.','Một bạn nhỏ đang ở gần một chiếc bánh.')}</button><button data-v="story">${t('This is definitely a birthday party.','Đây chắc chắn là một bữa tiệc sinh nhật.')}</button><button data-v="story">${t('The child won a competition.','Bạn nhỏ vừa thắng một cuộc thi.')}</button></div><div id="fb" class="feedback"></div>
+   ${teacherBox('Teacher knowledge','Kiến thức cho giáo viên',
+   'Cropping removes information from outside the frame. A crop can be completely genuine while still creating an incomplete impression.',
+   'Crop loại bỏ thông tin nằm ngoài khung. Một phần ảnh crop có thể hoàn toàn thật nhưng vẫn tạo ra ấn tượng chưa đầy đủ.',
+   ['Ask what information the crop does NOT give us.'],
+   ['Hỏi phần crop KHÔNG cho chúng ta biết điều gì.'],
+   'A real image can still be an incomplete image.',
+   'Ảnh thật vẫn có thể là ảnh chưa đầy đủ.')}`;
+   document.querySelectorAll('#cg button').forEach(b=>b.onclick=()=>{if(b.dataset.v==='safe'){b.classList.add('correct');good(document.getElementById('fb'),t('Yes — that statement stays close to what is visible.','Đúng — câu này bám sát những gì đang nhìn thấy.'));body.appendChild(nextBtn(t('Zoom out →','Nhìn rộng ra →'),zoomOut))}else{b.classList.add('wrong');bad(document.getElementById('fb'),t('The crop does not give enough evidence for that full story.','Phần crop chưa cung cấp đủ bằng chứng cho câu chuyện đó.'))}})
+ }
+ function zoomOut(){
+   body.innerHTML=`<div class="round">${t('Task','Nhiệm vụ')} 2 / 3 · ZOOM OUT</div><div class="prompt">${t('Now see the full photo. Which new clues make the situation easier to understand? Select all that help.','Bây giờ xem toàn bộ ảnh. Những dấu hiệu mới nào giúp bạn hiểu tình huống rõ hơn? Chọn tất cả dấu hiệu hữu ích.')}</div>
+   <div class="crop-stage"><img class="crop-birthday-full" src="${IMG.birthday}" alt="" referrerpolicy="no-referrer"></div>
+   <div class="choices" id="newclues"><button data-good="1">${t('Several children are together','Có nhiều bạn nhỏ cùng nhau')}</button><button data-good="1">${t('Party decorations are visible','Có đồ trang trí tiệc')}</button><button data-good="1">${t('Cake and celebration items are visible','Có bánh và các vật dụng ăn mừng')}</button><button data-good="0">${t('We now know exactly what every child is thinking','Giờ ta biết chính xác mọi bạn đang nghĩ gì')}</button></div><div id="fb" class="feedback"></div>
+   ${teacherBox('Teacher knowledge','Kiến thức cho giáo viên',
+   'Context does not make every interpretation certain, but it can make some interpretations better supported than others.',
+   'Bối cảnh không khiến mọi cách hiểu trở thành chắc chắn, nhưng có thể khiến một số cách hiểu được hỗ trợ tốt hơn những cách khác.',
+   ['Ask: “What changed your confidence?”'],
+   ['Hỏi: “Điều gì làm mức độ chắc chắn của em thay đổi?”'],
+   'Better context should update your judgment.',
+   'Bối cảnh tốt hơn nên làm cách đánh giá của chúng ta thay đổi.')}`;
+   let picks=new Set();document.querySelectorAll('#newclues button').forEach((b,i)=>b.onclick=()=>{b.classList.toggle('pick');b.classList.contains('pick')?picks.add(b):picks.delete(b)});
+   body.appendChild(nextBtn(t('Check clues →','Kiểm tra dấu hiệu →'),()=>{const badPick=[...picks].some(b=>b.dataset.good==='0'),goodCount=[...picks].filter(b=>b.dataset.good==='1').length;if(badPick||goodCount<2){bad(document.getElementById('fb'),t('Choose details that are actually visible and help with context.','Hãy chọn các chi tiết thực sự nhìn thấy được và giúp bổ sung bối cảnh.'));return}good(document.getElementById('fb'),t('Good. More context makes the birthday-party interpretation much better supported.','Tốt. Bối cảnh đầy đủ hơn khiến cách hiểu “tiệc sinh nhật” được hỗ trợ tốt hơn nhiều.'));body.appendChild(nextBtn(t('Task 3 →','Nhiệm vụ 3 →'),frameChoice))}));
+ }
+ function frameChoice(){
+   body.innerHTML=`<div class="round">${t('Task','Nhiệm vụ')} 3 / 3 · CHOOSE THE FRAME</div><div class="prompt">${t('Your goal is to communicate “a group celebration.” Which frame supports that message best without hiding important context?','Mục tiêu là truyền đạt “một hoạt động ăn mừng của cả nhóm”. Khung nào hỗ trợ thông điệp đó tốt nhất mà không giấu bối cảnh quan trọng?')}</div>
+   <div class="crop-stage"><img id="frameImg" class="crop-birthday-full" src="${IMG.birthday}" alt="" referrerpolicy="no-referrer"></div>
+   <div class="crop-controls" id="frames"><button data-c="tight">${t('A · Cake only','A · Chỉ bánh')}</button><button data-c="medium">${t('B · Child + cake','B · Một bạn + bánh')}</button><button data-c="full">${t('C · Full group','C · Cả nhóm')}</button></div><div id="fb" class="feedback"></div>
+   ${teacherBox('Teacher knowledge','Kiến thức cho giáo viên',
+   'Framing is a design choice. A closer crop can create focus; a wider crop can preserve relationships and context. The best frame depends on purpose.',
+   'Framing là một lựa chọn thiết kế. Crop gần có thể tạo điểm tập trung; khung rộng có thể giữ lại mối quan hệ và bối cảnh. Khung tốt nhất phụ thuộc mục đích.',
+   ['Ask when a close crop is useful and when it becomes misleading.'],
+   ['Hỏi khi nào crop gần hữu ích và khi nào nó bắt đầu gây hiểu sai.'],
+   'Choose a frame that serves the message without hiding evidence the audience needs.',
+   'Chọn khung phục vụ thông điệp mà không giấu bằng chứng người xem cần.')}`;
+   document.querySelectorAll('#frames button').forEach(b=>b.onclick=()=>{const im=document.getElementById('frameImg');im.className=b.dataset.c==='tight'?'crop-birthday-tight':b.dataset.c==='medium'?'crop-birthday-medium':'crop-birthday-full';document.querySelectorAll('#frames button').forEach(x=>x.classList.remove('pick'));b.classList.add('pick');if(b.dataset.c==='full'){good(document.getElementById('fb'),t('Best fit for “group celebration”: the full frame preserves the relationships and context.','Phù hợp nhất với “hoạt động ăn mừng của cả nhóm”: khung đầy đủ giữ lại mối quan hệ và bối cảnh.'));if(!document.getElementById('f3')){const x=nextBtn(t('Finish mission →','Hoàn thành nhiệm vụ →'),()=>finishMission(3));x.id='f3';body.appendChild(x)}}else bad(document.getElementById('fb'),t('This creates focus, but it hides part of the group context.','Khung này tạo điểm tập trung nhưng giấu bớt bối cảnh của cả nhóm.'))})
+ }
+ cropGuess();
+}
+
+/* M4 — TRUST THE PICTURE? */
+function m4(){
+ const body=document.getElementById('mbody');
+ function sourceShuffle(){
+   body.innerHTML=`<div class="round">${t('Task','Nhiệm vụ')} 1 / 3 · SOURCE SHUFFLE</div><div class="prompt">${t('Scenario: someone posts this school photo with the claim “School is closed tomorrow.” The SAME image appears in three places. Which source should you check first?','Tình huống: ai đó đăng ảnh trường kèm thông tin “Ngày mai trường nghỉ.” CÙNG một bức ảnh xuất hiện ở 3 nơi. Bạn nên kiểm tra nguồn nào trước?')}</div>
+   ${imgTag('school')}<div class="source-grid" id="sources"><button class="source-card" data-v="official">🏫 ${t('Official school website','Website chính thức của trường')}<small>${t('Directly responsible for school announcements','Nguồn chịu trách nhiệm trực tiếp cho thông báo của trường')}</small></button><button class="source-card" data-v="social">📱 ${t('Random social account','Tài khoản mạng xã hội ngẫu nhiên')}<small>${t('No clear author or link','Không rõ tác giả hoặc nguồn')}</small></button><button class="source-card" data-v="news">📰 ${t('Local news site','Trang tin địa phương')}<small>${t('May report the closure, but is not the school itself','Có thể đưa tin nhưng không phải chính nhà trường')}</small></button></div><div id="fb" class="feedback"></div>
+   <div class="remote-note">${t('The source cards are a classroom simulation; the photo itself is a stock photo.','Các thẻ nguồn là tình huống mô phỏng trong lớp; bản thân ảnh là ảnh stock.')}</div>
+   ${teacherBox('Teacher knowledge','Kiến thức cho giáo viên',
+   'Source quality depends on the claim. For a school-closure claim, the school itself is usually the most direct authoritative source. A trustworthy source should be relevant, identifiable, current, and accountable.',
+   'Chất lượng nguồn phụ thuộc vào loại thông tin. Với thông tin trường nghỉ, chính nhà trường thường là nguồn trực tiếp và có thẩm quyền nhất. Nguồn đáng tin nên liên quan, xác định được, cập nhật và có trách nhiệm.',
+   ['Ask: “Who is actually responsible for knowing this?”','Distinguish popularity from authority.'],
+   ['Hỏi: “Ai thực sự chịu trách nhiệm biết thông tin này?”','Phân biệt độ phổ biến với thẩm quyền nguồn.'],
+   'Trust the evidence chain, not just the picture.',
+   'Hãy tin vào chuỗi bằng chứng, không chỉ tin vào bức ảnh.')}`;
+   document.querySelectorAll('#sources button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#sources button').forEach(x=>x.classList.remove('pick'));b.classList.add('pick');if(b.dataset.v==='official'){good(document.getElementById('fb'),t('Best first check: the official school source.','Nguồn nên kiểm tra đầu tiên: kênh chính thức của trường.'));body.appendChild(nextBtn(t('Task 2 →','Nhiệm vụ 2 →'),evidenceHunt))}else bad(document.getElementById('fb'),t('Useful maybe — but there is a more direct source for this claim.','Có thể hữu ích — nhưng vẫn có nguồn trực tiếp hơn cho thông tin này.'))})
+ }
+ function evidenceHunt(){
+   const evidence=[
+    ['school',t('Official school announcement dated today','Thông báo chính thức của trường có ngày hôm nay'),t('Direct source for the closure','Nguồn trực tiếp cho việc trường nghỉ')],
+    ['city',t('Local authority flood / road alert','Cảnh báo ngập / đường sá từ cơ quan địa phương'),t('Independent supporting context','Bối cảnh hỗ trợ độc lập')],
+    ['origin',t('Original photo page with date and location','Trang gốc của ảnh có ngày và địa điểm'),t('Helps verify whether the image is actually local/current','Giúp kiểm tra ảnh có đúng địa điểm/thời điểm hay không')],
+    ['likes',t('The post has 25,000 likes','Bài đăng có 25.000 lượt thích'),t('Popularity is not evidence','Độ phổ biến không phải bằng chứng')],
+    ['friend',t('A friend says “I think it is true”','Một người bạn nói “Mình nghĩ là thật”'),t('Opinion without source','Ý kiến không có nguồn')],
+    ['detector',t('An AI detector says the photo is 91% real','Một công cụ AI nói ảnh “91% thật”'),t('Does not prove the school-closure claim','Không chứng minh thông tin trường nghỉ')]
+   ];
+   body.innerHTML=`<div class="round">${t('Task','Nhiệm vụ')} 2 / 3 · EVIDENCE HUNT</div><div class="prompt">${t('A flood photo is being used to support the closure claim. Pick the THREE pieces of evidence that would strengthen your judgment most.','Một ảnh ngập được dùng để hỗ trợ thông tin trường nghỉ. Hãy chọn BA bằng chứng giúp đánh giá đáng tin hơn nhất.')}</div>
+   ${imgTag('flood')}<div class="evidence-grid" id="evidence"></div><div id="fb" class="feedback"></div>
+   ${teacherBox('Teacher knowledge','Kiến thức cho giáo viên',
+   'Strong verification combines direct sources, provenance (where something came from), date/location, and independent corroboration. Likes, confidence, and automated scores can look impressive without proving the claim.',
+   'Kiểm chứng tốt kết hợp nguồn trực tiếp, xuất xứ (nội dung đến từ đâu), ngày/địa điểm và thông tin đối chiếu độc lập. Lượt thích, sự tự tin hay điểm tự động có thể trông thuyết phục nhưng không chứng minh thông tin.',
+   ['Ask why “real photo” and “true claim” are different questions.'],
+   ['Hỏi vì sao “ảnh thật” và “thông tin đúng” là hai câu hỏi khác nhau.'],
+   'Verify the claim, not only the image.',
+   'Hãy kiểm chứng thông tin, không chỉ kiểm chứng bức ảnh.')}`;
+   evidence.forEach(([id,title,sub])=>{const b=document.createElement('button');b.className='evidence-card';b.dataset.v=id;b.innerHTML=`${title}<small>${sub}</small>`;b.onclick=()=>{b.classList.toggle('pick');if(document.querySelectorAll('#evidence .pick').length>3)b.classList.remove('pick')};document.getElementById('evidence').appendChild(b)});
+   body.appendChild(nextBtn(t('Check evidence →','Kiểm tra bằng chứng →'),()=>{const sel=[...document.querySelectorAll('#evidence .pick')].map(x=>x.dataset.v).sort().join(','),ans=['city','origin','school'].sort().join(',');if(sel===ans){good(document.getElementById('fb'),t('Excellent: direct source + local supporting evidence + photo provenance.','Rất tốt: nguồn trực tiếp + bằng chứng địa phương + xuất xứ của ảnh.'));body.appendChild(nextBtn(t('Task 3 →','Nhiệm vụ 3 →'),trustMeter))}else bad(document.getElementById('fb'),t('Look for evidence that is direct, current, traceable, and independently supportive.','Hãy tìm bằng chứng trực tiếp, cập nhật, truy vết được và có thể đối chiếu độc lập.'))}));
+ }
+ function trustMeter(){
+   let step=0;const clues=[
+    t('Clue 1: A social post says “School closed tomorrow” but gives no date, author, or source.','Dấu hiệu 1: Một bài mạng xã hội nói “Ngày mai trường nghỉ” nhưng không có ngày, tác giả hay nguồn.'),
+    t('Clue 2: The official school website posts a closure notice for tomorrow.','Dấu hiệu 2: Website chính thức của trường đăng thông báo nghỉ học cho ngày mai.'),
+    t('Clue 3: The dramatic flood photo in the social post was actually taken in another city.','Dấu hiệu 3: Ảnh ngập gây chú ý trong bài mạng xã hội thực ra được chụp ở một thành phố khác.')
+   ];
+   body.innerHTML=`<div class="round">${t('Task','Nhiệm vụ')} 3 / 3 · TRUST METER</div><div class="prompt">${t('Claim: “School is closed tomorrow because of flooding.” Set your confidence, then update it as new evidence appears.','Thông tin: “Ngày mai trường nghỉ vì ngập.” Đặt mức độ tin tưởng, rồi điều chỉnh khi có bằng chứng mới.')}</div>${imgTag('school')}
+   <div class="meterbox"><div class="meter-value"><span id="mv">50</span>%</div><input id="meter" type="range" min="0" max="100" value="50"><div id="clue" class="clue">${clues[0]}</div><button class="next" id="nextClue">${t('Lock confidence & reveal next clue','Chốt mức độ tin tưởng & xem dấu hiệu tiếp')}</button><div id="fb" class="feedback"></div></div>
+   ${teacherBox('Teacher knowledge','Kiến thức cho giáo viên',
+   'Good judgment is updateable. Confidence should rise or fall when evidence quality changes. A misleading photo can weaken one piece of evidence without cancelling a separate authoritative source.',
+   'Đánh giá tốt phải có khả năng cập nhật. Mức độ tin tưởng nên tăng hoặc giảm khi chất lượng bằng chứng thay đổi. Một ảnh gây hiểu sai có thể làm yếu một bằng chứng nhưng không xóa bỏ một nguồn chính thức độc lập.',
+   ['Ask students to explain WHY they moved the slider, not just where they placed it.','Separate confidence in the closure claim from confidence in the flood photo.'],
+   ['Yêu cầu học sinh giải thích VÌ SAO họ di chuyển thanh, không chỉ chọn bao nhiêu %.','Tách mức độ tin vào thông tin trường nghỉ khỏi mức độ tin vào ảnh ngập.'],
+   'Digital intelligence means changing your mind when better evidence appears.',
+   'Digital Intelligence bao gồm khả năng thay đổi đánh giá khi có bằng chứng tốt hơn.')}`;
+   const meter=document.getElementById('meter'),mv=document.getElementById('mv');meter.oninput=()=>mv.textContent=meter.value;
+   document.getElementById('nextClue').onclick=()=>{step++;if(step<clues.length){document.getElementById('clue').textContent=clues[step];good(document.getElementById('fb'),t('Update your confidence again. Explain what changed.','Hãy điều chỉnh lại mức độ tin tưởng. Giải thích điều gì đã thay đổi.'))}else{good(document.getElementById('fb'),t('Key idea: the official notice strongly supports the closure claim, even though the flood photo was misleading context. Judge each piece of evidence separately.','Ý chính: thông báo chính thức hỗ trợ mạnh cho việc trường nghỉ, dù ảnh ngập là bối cảnh gây hiểu sai. Hãy đánh giá từng bằng chứng riêng.'));const b=document.getElementById('nextClue');b.textContent=t('Finish mission →','Hoàn thành nhiệm vụ →');b.onclick=()=>finishMission(4)}};
+ }
+ sourceShuffle();
+}
+
+/* M5 — READ WITHOUT WORDS */
+function m5(){
+ const body=document.getElementById('mbody');
+ function bike(){
+   body.innerHTML=`<div class="round">${t('Task','Nhiệm vụ')} 1 / 3 · DECODE</div><div class="prompt">${t('Without relying on text, what does the main symbol communicate?','Không dựa vào chữ, biểu tượng chính truyền đạt điều gì?')}</div>${imgTag('bike')}
+   <div class="choices" id="bq"><button data-v="yes">${t('Bicycles are not allowed here','Không được đi xe đạp ở đây')}</button><button data-v="no">${t('Bicycle parking','Chỗ đậu xe đạp')}</button><button data-v="no">${t('Bicycle repair','Sửa xe đạp')}</button></div><div id="fb" class="feedback"></div>
+   ${teacherBox('Teacher knowledge','Kiến thức cho giáo viên',
+   'Symbols work because people learn conventions. A red diagonal slash commonly communicates prohibition; a recognizable bicycle pictogram identifies what is prohibited.',
+   'Biểu tượng hoạt động vì chúng ta học các quy ước. Gạch chéo đỏ thường truyền đạt sự cấm; hình xe đạp giúp xác định điều bị cấm.',
+   ['Ask which part they understood first: shape, colour, or object.'],
+   ['Hỏi học sinh hiểu từ yếu tố nào trước: hình dạng, màu hay vật thể.'],
+   'Visual language combines symbol + convention + context.',
+   'Ngôn ngữ hình ảnh kết hợp biểu tượng + quy ước + bối cảnh.')}`;
+   document.querySelectorAll('#bq button').forEach(b=>b.onclick=()=>{if(b.dataset.v==='yes'){b.classList.add('correct');good(document.getElementById('fb'),t('Correct.','Đúng.'));body.appendChild(nextBtn(t('Task 2 →','Nhiệm vụ 2 →'),wet))}else{b.classList.add('wrong');bad(document.getElementById('fb'),t('Look at the red slash and bicycle symbol together.','Hãy nhìn gạch chéo đỏ và biểu tượng xe đạp cùng nhau.'))}})
+ }
+ function wet(){
+   body.innerHTML=`<div class="round">${t('Task','Nhiệm vụ')} 2 / 3 · READ FAST</div><div class="prompt">${t('Imagine you are walking quickly. What should this visual make you understand immediately?','Hãy tưởng tượng bạn đang đi nhanh. Hình ảnh này cần giúp bạn hiểu ngay điều gì?')}</div>${imgTag('wet')}
+   <div class="choices" id="wq"><button data-v="yes">${t('Slow down — slipping hazard','Đi chậm lại — nguy cơ trượt ngã')}</button><button data-v="no">${t('Run through this area','Chạy nhanh qua khu vực này')}</button><button data-v="no">${t('Cleaning supplies are for sale','Có bán dụng cụ vệ sinh')}</button></div><div id="fb" class="feedback"></div>
+   ${teacherBox('Teacher knowledge','Kiến thức cho giáo viên',
+   'Safety visuals are designed for fast recognition. High contrast, familiar warning colours, and simple pictograms reduce the amount of reading needed.',
+   'Hình cảnh báo an toàn được thiết kế để nhận ra nhanh. Độ tương phản cao, màu cảnh báo quen thuộc và pictogram đơn giản giúp giảm lượng chữ cần đọc.',
+   ['Ask why the sign is yellow and large.','Discuss situations where visuals are faster than words.'],
+   ['Hỏi vì sao biển báo màu vàng và kích thước lớn.','Thảo luận khi nào hình ảnh nhanh hơn chữ.'],
+   'Good visual communication reduces the time needed to understand.',
+   'Giao tiếp trực quan tốt làm giảm thời gian cần để hiểu.')}`;
+   document.querySelectorAll('#wq button').forEach(b=>b.onclick=()=>{if(b.dataset.v==='yes'){b.classList.add('correct');good(document.getElementById('fb'),t('Exactly. The message needs to work before someone slips.','Chính xác. Thông điệp phải hoạt động trước khi ai đó bị trượt.'));body.appendChild(nextBtn(t('Task 3 →','Nhiệm vụ 3 →'),createSign))}else{b.classList.add('wrong');bad(document.getElementById('fb'),t('Look at the warning shape and slipping figure.','Hãy nhìn hình cảnh báo và biểu tượng người đang trượt.'))}})
+ }
+ function createSign(){
+   body.innerHTML=`<div class="round">${t('Task','Nhiệm vụ')} 3 / 3 · BUILD A WORDLESS MESSAGE</div><div class="prompt">${t('Create a message using symbols only. Then test whether another student can understand it without explanation.','Tạo một thông điệp chỉ bằng biểu tượng. Sau đó thử xem một bạn khác có hiểu mà không cần giải thích không.')}</div>
+   <div class="builder"><div class="controls"><label>${t('Goal','Mục tiêu')}<select id="goal"><option>No food allowed</option><option>Danger: wet floor</option><option>Go this way</option><option>Save electricity</option></select></label><label>${t('Choose up to 4 symbols','Chọn tối đa 4 biểu tượng')}</label><div class="choices" id="sym"></div></div>
+   <div class="task"><div id="canvasMsg" style="min-height:220px;border:2px dashed var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;gap:12px;font-size:54px;flex-wrap:wrap;padding:20px"></div><button class="next" id="clear">${t('Clear','Xóa')}</button><button class="next" id="test">${t('Partner test','Thử với bạn')}</button><div id="fb" class="feedback"></div></div></div>
+   ${teacherBox('Teacher knowledge','Kiến thức cho giáo viên',
+   'A successful visual is judged by audience understanding, not by whether the creator personally thinks it is obvious.',
+   'Một hình ảnh thành công được đánh giá bằng việc người xem hiểu được, không phải bằng việc người tạo tự thấy nó “rõ”.',
+   ['If a partner misunderstands, change one symbol or its order and test again.'],
+   ['Nếu bạn hiểu sai, hãy đổi một biểu tượng hoặc thứ tự rồi thử lại.'],
+   'Communication is successful when the receiver understands the intended message.',
+   'Giao tiếp thành công khi người nhận hiểu đúng thông điệp dự định.')}`;
+   const symbols=['🚫','🍔','⚠️','💧','➡️','⚡','💡','✅','❌','📍'];let picked=[];symbols.forEach(s=>{const b=document.createElement('button');b.textContent=s;b.onclick=()=>{if(picked.length>=4)return;picked.push(s);document.getElementById('canvasMsg').textContent=picked.join(' ')};document.getElementById('sym').appendChild(b)});
+   document.getElementById('clear').onclick=()=>{picked=[];document.getElementById('canvasMsg').textContent=''};document.getElementById('test').onclick=()=>{if(picked.length<2){bad(document.getElementById('fb'),t('Use at least two symbols.','Hãy dùng ít nhất hai biểu tượng.'));return}good(document.getElementById('fb'),t('Show ONLY the symbols to a partner. Ask what they think it means. If they misunderstand, redesign and test again.','Chỉ cho bạn xem CÁC BIỂU TƯỢNG. Hỏi bạn nghĩ nó nghĩa là gì. Nếu hiểu sai, hãy thiết kế lại và thử lại.'));body.appendChild(nextBtn(t('Finish mission →','Hoàn thành nhiệm vụ →'),()=>finishMission(5)))}
+ }
+ bike();
+}
+
+/* M6 — REMIX THE MESSAGE */
+function m6(){
+ const body=document.getElementById('mbody');
+ function cropIt(){
+   body.innerHTML=`<div class="round">${t('Task','Nhiệm vụ')} 1 / 3 · CROP IT</div><div class="prompt">${t('Goal: tell a story about TEAMWORK. Which crop best supports that goal? Try all three.','Mục tiêu: kể một câu chuyện về LÀM VIỆC NHÓM. Crop nào hỗ trợ mục tiêu đó tốt nhất? Hãy thử cả ba.')}</div>
+   <div class="remix-stage"><img id="remix1" class="remix-full" src="${IMG.robot}" alt="" referrerpolicy="no-referrer"></div>
+   <div class="crop-controls" id="rcrops"><button data-c="student">${t('A · One student','A · Một học sinh')}</button><button data-c="hands">${t('B · Hands + robot','B · Tay + robot')}</button><button data-c="full">${t('C · Full team','C · Cả nhóm')}</button></div><div id="fb" class="feedback"></div>
+   ${teacherBox('Teacher knowledge','Kiến thức cho giáo viên',
+   'Cropping is not only about removing information; it is also a creative tool for directing attention. The best crop depends on the message you intend to communicate.',
+   'Crop không chỉ loại bỏ thông tin; nó còn là công cụ sáng tạo để dẫn dắt sự chú ý. Crop tốt nhất phụ thuộc vào thông điệp bạn muốn truyền đạt.',
+   ['Compare how each crop changes the main subject.','Ask whether the crop still represents the situation fairly.'],
+   ['So sánh mỗi crop làm chủ thể chính thay đổi thế nào.','Hỏi crop có còn thể hiện tình huống công bằng không.'],
+   'Creative framing should serve the purpose without inventing unsupported facts.',
+   'Framing sáng tạo nên phục vụ mục đích mà không tạo ra “sự thật” không có bằng chứng.')}`;
+   document.querySelectorAll('#rcrops button').forEach(b=>b.onclick=()=>{const im=document.getElementById('remix1');im.className=b.dataset.c==='student'?'remix-student':b.dataset.c==='hands'?'remix-hands':'remix-full';document.querySelectorAll('#rcrops button').forEach(x=>x.classList.remove('pick'));b.classList.add('pick');if(b.dataset.c==='full'){good(document.getElementById('fb'),t('Best fit for TEAMWORK: the full frame keeps all three students and their shared project visible.','Phù hợp nhất với LÀM VIỆC NHÓM: khung đầy đủ giữ cả ba học sinh và dự án chung trong ảnh.'));if(!document.getElementById('n6a')){const x=nextBtn(t('Task 2 →','Nhiệm vụ 2 →'),frameIt);x.id='n6a';body.appendChild(x)}}else bad(document.getElementById('fb'),t('This crop creates a different emphasis. Useful for another story, but weaker for “teamwork.”','Crop này tạo trọng tâm khác. Hữu ích cho câu chuyện khác nhưng yếu hơn với “làm việc nhóm”.'))})
+ }
+ function frameIt(){
+   const captions=[
+    ['team',t('Young engineers build a robot together.','Các kỹ sư nhí cùng nhau chế tạo robot.')],
+    ['worry',t('Robot project goes wrong in class.','Dự án robot gặp sự cố trong lớp.')],
+    ['bored',t('Another boring school assignment.','Lại thêm một bài tập nhàm chán ở trường.')]
+   ];
+   body.innerHTML=`<div class="round">${t('Task','Nhiệm vụ')} 2 / 3 · FRAME IT WITH WORDS</div><div class="prompt">${t('Goal: make the SAME photo feel worrying. Which caption does that most strongly?','Mục tiêu: khiến CÙNG bức ảnh mang cảm giác đáng lo. Caption nào làm điều đó mạnh nhất?')}</div>
+   <div class="remix-stage"><img class="remix-full" src="${IMG.robot}" alt="" referrerpolicy="no-referrer"><div class="remix-headline" id="rh">${t('Choose a caption','Chọn một caption')}</div></div><div class="choices" id="captions"></div><div id="fb" class="feedback"></div>
+   ${teacherBox('Teacher knowledge','Kiến thức cho giáo viên',
+   'Headlines and captions frame interpretation. Emotional wording can make a neutral image feel exciting, alarming, negative, or positive.',
+   'Tiêu đề và caption đóng khung cách diễn giải. Ngôn ngữ cảm xúc có thể khiến một ảnh trung tính trở nên hào hứng, đáng lo, tiêu cực hoặc tích cực.',
+   ['Ask whether the worrying caption is actually supported by the photo.','Connect to clickbait and persuasive media.'],
+   ['Hỏi caption đáng lo có thực sự được ảnh hỗ trợ hay không.','Liên hệ clickbait và nội dung thuyết phục.'],
+   'A caption can shape a story without changing a single pixel.',
+   'Caption có thể định hình câu chuyện mà không thay đổi một pixel nào.')}`;
+   captions.forEach(([id,txt])=>{const b=document.createElement('button');b.textContent=txt;b.dataset.v=id;b.onclick=()=>{document.getElementById('rh').textContent=txt;document.querySelectorAll('#captions button').forEach(x=>x.classList.remove('pick'));b.classList.add('pick');if(id==='worry'){good(document.getElementById('fb'),t('Yes — but notice: the photo itself does not prove anything went wrong. The caption creates that interpretation.','Đúng — nhưng lưu ý: bản thân ảnh không chứng minh có sự cố. Caption tạo ra cách hiểu đó.'));if(!document.getElementById('n6b')){const x=nextBtn(t('Task 3 →','Nhiệm vụ 3 →'),makeVersion);x.id='n6b';body.appendChild(x)}}else bad(document.getElementById('fb'),t('That creates a different tone. Try the caption that makes the situation feel risky or negative.','Caption đó tạo sắc thái khác. Hãy thử câu khiến tình huống mang cảm giác rủi ro hoặc tiêu cực.'))};document.getElementById('captions').appendChild(b)})
+ }
+ function makeVersion(){
+   body.innerHTML=`<div class="round">${t('Task','Nhiệm vụ')} 3 / 3 · MAKE YOUR VERSION</div><div class="prompt">${t('Now you are the editor. Choose a purpose, crop, and headline. Then test whether your partner reads the story you intended.','Bây giờ bạn là biên tập viên. Chọn mục đích, crop và headline. Sau đó thử xem bạn học có đọc ra câu chuyện bạn muốn truyền đạt không.')}</div>
+   <div class="builder"><div class="controls">
+   <label>${t('Purpose','Mục đích')}<select id="purpose"><option value="team">${t('Show teamwork','Thể hiện làm việc nhóm')}</option><option value="detail">${t('Highlight technical work','Nhấn mạnh thao tác kỹ thuật')}</option><option value="person">${t('Focus on one creator','Tập trung vào một người')}</option></select></label>
+   <label>${t('Crop','Crop')}<select id="cropSel"><option value="full">${t('Full team','Cả nhóm')}</option><option value="hands">${t('Hands + robot','Tay + robot')}</option><option value="student">${t('One student','Một học sinh')}</option></select></label>
+   <label>${t('Headline','Headline')}<input type="text" id="headline" maxlength="60" value="${t('Young engineers build together','Các kỹ sư nhí cùng sáng tạo')}"></label>
+   </div><div><div class="remix-stage"><img id="finalImg" class="remix-full" src="${IMG.robot}" alt="" referrerpolicy="no-referrer"><div class="remix-headline" id="finalHeadline">${t('Young engineers build together','Các kỹ sư nhí cùng sáng tạo')}</div></div><button class="next" id="partner">${t('Partner test','Thử với bạn')}</button><div id="fb" class="feedback"></div></div></div>
+   ${teacherBox('Teacher knowledge','Kiến thức cho giáo viên',
+   'Visual creators make choices about focus, framing and language. Those choices can communicate effectively, but they also create responsibility: do not present a dramatic interpretation as fact when the evidence does not support it.',
+   'Người tạo hình ảnh lựa chọn điểm tập trung, framing và ngôn ngữ. Những lựa chọn đó giúp truyền đạt hiệu quả nhưng cũng tạo trách nhiệm: không trình bày một cách diễn giải kịch tính như sự thật khi bằng chứng không hỗ trợ.',
+   ['Ask students what changed most: crop or words?','Have partners state the perceived story before the creator explains the goal.'],
+   ['Hỏi điều gì thay đổi câu chuyện mạnh hơn: crop hay câu chữ?','Cho bạn học nói câu chuyện họ cảm nhận trước khi người tạo giải thích mục tiêu.'],
+   'Create intentionally, communicate clearly, and stay honest about what the image proves.',
+   'Sáng tạo có chủ đích, truyền đạt rõ ràng và trung thực về điều bức ảnh thực sự chứng minh.')}`;
+   function update(){const crop=document.getElementById('cropSel').value,im=document.getElementById('finalImg');im.className=crop==='full'?'remix-full':crop==='hands'?'remix-hands':'remix-student';document.getElementById('finalHeadline').textContent=document.getElementById('headline').value||t('Your story','Câu chuyện của bạn')}
+   document.getElementById('cropSel').onchange=update;document.getElementById('headline').oninput=update;document.getElementById('purpose').onchange=e=>{const map={team:t('Young engineers build together','Các kỹ sư nhí cùng sáng tạo'),detail:t('Careful hands bring a robot to life','Đôi tay tỉ mỉ làm robot hoạt động'),person:t('Meet one young maker','Gặp gỡ một nhà sáng tạo trẻ')};document.getElementById('headline').value=map[e.target.value];document.getElementById('cropSel').value=e.target.value==='team'?'full':e.target.value==='detail'?'hands':'student';update()};
+   document.getElementById('partner').onclick=()=>{good(document.getElementById('fb'),t('Show the remix to a partner WITHOUT explaining your goal. Ask: “What story does this tell?” If their answer is different, adjust the crop or headline and test again.','Cho bạn xem bản remix mà KHÔNG giải thích mục tiêu. Hỏi: “Hình này đang kể câu chuyện gì?” Nếu câu trả lời khác, hãy chỉnh crop hoặc headline rồi thử lại.'));body.appendChild(nextBtn(t('Finish mission →','Hoàn thành nhiệm vụ →'),()=>finishMission(6)))}
+ }
+ cropIt();
+}
+
+function renderTeacher(){
+ const host=document.getElementById('teacherMissions');host.innerHTML='<h3>'+t('Mission Flow & Teaching Notes','Flow nhiệm vụ & ghi chú giảng dạy')+'</h3>';
+ const cards=[
+  ['1 · LOOK CLOSER','15 min',t('Flash Look → I SEE/I THINK → Attention Map','Flash Look → I SEE/I THINK → Attention Map'),t('Teach selective attention, observation vs interpretation, and visual salience.','Dạy sự chú ý chọn lọc, quan sát vs diễn giải và độ nổi bật thị giác.')],
+  ['2 · CAPTION SWITCH','12–15 min',t('Caption Switch → What Does It Prove? → Neutral Caption','Caption Switch → Ảnh chứng minh gì? → Caption trung tính'),t('Teach context, descriptive vs persuasive language, and evidence-based description.','Dạy bối cảnh, ngôn ngữ mô tả vs thuyết phục và mô tả dựa trên bằng chứng.')],
+  ["3 · WHAT'S MISSING?",'15 min',t('Tight Crop → Zoom Out → Choose the Frame','Crop sát → Nhìn rộng → Chọn khung'),t('Teach framing, missing context, and choosing a crop based on purpose.','Dạy framing, bối cảnh bị thiếu và cách chọn crop theo mục đích.')],
+  ['4 · TRUST THE PICTURE?','15 min',t('Source Shuffle → Evidence Hunt → Trust Meter','Source Shuffle → Evidence Hunt → Trust Meter'),t('Teach source authority, provenance, corroboration, and updating confidence.','Dạy thẩm quyền nguồn, xuất xứ, đối chiếu và cập nhật mức độ tin tưởng.')],
+  ['5 · READ WITHOUT WORDS','15 min',t('Decode No-Bicycle → Read Wet-Floor → Build a Wordless Message','Giải mã cấm xe đạp → Đọc cảnh báo sàn ướt → Tạo thông điệp không chữ'),t('Teach symbols, conventions, rapid visual communication, and audience testing.','Dạy biểu tượng, quy ước, giao tiếp trực quan nhanh và kiểm tra với người xem.')],
+  ['6 · REMIX THE MESSAGE','15 min',t('Crop It → Frame It → Make Your Version','Crop It → Frame It → Make Your Version'),t('Teach purposeful editing, caption framing, creative responsibility, and partner testing.','Dạy chỉnh sửa có mục đích, framing bằng caption, trách nhiệm sáng tạo và thử với bạn học.')]
+ ];
+ cards.forEach(([title,time,flow,teach])=>{const d=document.createElement('div');d.className='lesson-card';d.innerHTML=`<h4>${title} <span style="float:right;color:var(--muted);font-size:11px">${time}</span></h4><p><b>${t('Student flow:','Flow học sinh:')}</b> ${flow}</p><p><b>${t('Trainer focus:','Trọng tâm GV:')}</b> ${teach}</p>`;host.appendChild(d)});
+}
+
+renderHub();renderTeacher();setMode('student');
+</script>
+</body></html>
