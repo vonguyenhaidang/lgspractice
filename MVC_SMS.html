@@ -1,0 +1,2198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Tkinter · OOP + MVC · Student Management System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F6F5F0;
+  --panel:#FFFFFF;
+  --ink:#122238;
+  --ink-soft:#55636F;
+  --ink-faint:#8B96A0;
+  --line:#E1DFD5;
+  --line-soft:#EAE8DE;
+  --blue:#2F6FED;
+  --blue-dark:#1D4FC4;
+  --blue-pale:#EAF0FF;
+  --amber:#E8983A;
+  --amber-pale:#FCEEDA;
+  --green:#2E8B57;
+  --green-pale:#E4F3EA;
+  --red:#D6455D;
+  --red-pale:#FBE6EA;
+  --code-bg:#0F1D2E;
+  --code-line:#1E3049;
+  --code-ink:#DCE6F0;
+  --code-key:#6FA8FF;
+  --code-str:#E8B15C;
+  --code-com:#5E7185;
+  --code-fn:#7FD9C4;
+  --code-num:#E58AC9;
+  --radius-s:8px;
+  --radius-m:14px;
+  --radius-l:20px;
+  --sidebar-w:272px;
+  --font-display:'Space Grotesk',sans-serif;
+  --font-body:'Inter',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --shadow-card:0 1px 2px rgba(18,34,56,.04), 0 8px 24px -12px rgba(18,34,56,.12);
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} *{animation-duration:.001ms !important; transition-duration:.001ms !important;} }
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--font-body);
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--blue);}
+h1,h2,h3,h4{font-family:var(--font-display); color:var(--ink); margin:0 0 .5em; line-height:1.2;}
+p{margin:0 0 1em;}
+button{font-family:var(--font-body); cursor:pointer;}
+::selection{background:var(--blue-pale); color:var(--blue-dark);}
+:focus-visible{outline:2.5px solid var(--blue); outline-offset:2px;}
+
+/* ---------- Layout ---------- */
+.app{display:flex; min-height:100vh;}
+.sidebar{
+  width:var(--sidebar-w);
+  flex-shrink:0;
+  position:sticky;
+  top:0;
+  height:100vh;
+  overflow-y:auto;
+  background:var(--panel);
+  border-right:1px solid var(--line);
+  display:flex;
+  flex-direction:column;
+  z-index:40;
+}
+.sidebar-brand{
+  padding:20px 22px 16px;
+  border-bottom:1px solid var(--line-soft);
+}
+.sidebar-brand .mark{
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:var(--font-mono); font-size:12px; letter-spacing:.02em;
+  color:var(--blue); background:var(--blue-pale); border-radius:100px;
+  padding:4px 10px; margin-bottom:10px;
+}
+.sidebar-brand h1{font-size:17px; margin:0 0 2px;}
+.sidebar-brand p{font-size:12.5px; color:var(--ink-soft); margin:0;}
+
+.progress-block{padding:16px 22px; border-bottom:1px solid var(--line-soft);}
+.progress-block .label{display:flex; justify-content:space-between; font-size:12px; color:var(--ink-soft); margin-bottom:8px;}
+.progress-block .label strong{color:var(--ink); font-family:var(--font-mono); font-weight:600;}
+.progress-track{height:7px; background:var(--line-soft); border-radius:100px; overflow:hidden;}
+.progress-fill{height:100%; width:0%; background:linear-gradient(90deg,var(--blue),var(--code-fn)); border-radius:100px; transition:width .4s ease;}
+
+.mode-toggle{
+  margin:14px 22px 4px; display:flex; align-items:center; justify-content:space-between;
+  background:var(--bg); border:1px solid var(--line); border-radius:100px; padding:4px;
+}
+.mode-toggle button{
+  flex:1; border:none; background:transparent; font-size:12.5px; font-weight:600;
+  padding:7px 8px; border-radius:100px; color:var(--ink-soft); transition:.15s;
+}
+.mode-toggle button.active{background:var(--ink); color:#fff;}
+.mode-toggle button.active.teacher-active{background:var(--amber); color:#3A2400;}
+
+nav.toc{padding:10px 12px 26px; flex:1;}
+nav.toc a{
+  display:flex; align-items:baseline; gap:10px;
+  text-decoration:none; color:var(--ink-soft);
+  font-size:13.5px; padding:8px 10px; border-radius:var(--radius-s);
+  transition:background .15s, color .15s;
+}
+nav.toc a .n{font-family:var(--font-mono); font-size:11px; color:var(--ink-faint); width:18px; flex-shrink:0;}
+nav.toc a:hover{background:var(--bg); color:var(--ink);}
+nav.toc a.active{background:var(--blue-pale); color:var(--blue-dark); font-weight:600;}
+nav.toc a.active .n{color:var(--blue);}
+
+.sidebar-toggle{
+  display:none; position:fixed; top:14px; right:14px; z-index:60;
+  width:44px; height:44px; border-radius:12px; border:1px solid var(--line);
+  background:var(--panel); box-shadow:var(--shadow-card); align-items:center; justify-content:center;
+}
+.sidebar-toggle span, .sidebar-toggle span::before, .sidebar-toggle span::after{
+  content:''; display:block; width:18px; height:2px; background:var(--ink); position:relative; transition:.2s;
+}
+.sidebar-toggle span::before{position:absolute; top:-6px;}
+.sidebar-toggle span::after{position:absolute; top:6px;}
+
+main.content{flex:1; min-width:0; max-width:980px; margin:0 auto; padding:0 40px 120px;}
+
+section.lesson-section{padding:64px 0 8px; border-bottom:1px solid var(--line-soft); scroll-margin-top:24px;}
+section.lesson-section:last-of-type{border-bottom:none;}
+.eyebrow{
+  display:inline-flex; align-items:center; gap:8px; font-family:var(--font-mono);
+  font-size:12px; color:var(--blue); background:var(--blue-pale); padding:4px 11px;
+  border-radius:100px; margin-bottom:14px;
+}
+.section-title{font-size:30px; margin-bottom:10px;}
+.section-lede{font-size:16px; color:var(--ink-soft); max-width:640px; margin-bottom:30px;}
+
+/* ---------- Cards & panels ---------- */
+.card{
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--radius-m);
+  padding:22px 24px; box-shadow:var(--shadow-card);
+}
+.card + .card{margin-top:16px;}
+.grid-2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+.grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+.grid-4{display:grid; grid-template-columns:repeat(4,1fr); gap:14px;}
+@media (max-width:760px){ .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;} }
+
+.badge{
+  display:inline-block; font-family:var(--font-mono); font-size:11.5px; font-weight:600;
+  padding:3px 9px; border-radius:100px; letter-spacing:.02em;
+}
+.badge.blue{background:var(--blue-pale); color:var(--blue-dark);}
+.badge.amber{background:var(--amber-pale); color:#8A5215;}
+.badge.green{background:var(--green-pale); color:#1E6B41;}
+.badge.red{background:var(--red-pale); color:#A02E44;}
+
+.callout{
+  border-left:3px solid var(--blue); background:var(--blue-pale);
+  border-radius:0 var(--radius-s) var(--radius-s) 0; padding:14px 18px; margin:18px 0;
+  font-size:14.5px;
+}
+.callout.warn{border-color:var(--red); background:var(--red-pale);}
+.callout.win{border-color:var(--green); background:var(--green-pale);}
+
+/* Teacher mode boxes */
+.teacher-box{
+  display:none; margin:14px 0; padding:14px 18px; border-radius:var(--radius-s);
+  border:1px dashed var(--amber); background:var(--amber-pale); font-size:14px;
+}
+.teacher-box .tb-label{font-family:var(--font-mono); font-size:11.5px; font-weight:700; color:#8A5215; text-transform:uppercase; letter-spacing:.04em; margin-bottom:4px; display:block;}
+body.teacher-mode .teacher-box{display:block;}
+
+/* ---------- Code panels ---------- */
+.code-panel{
+  background:var(--code-bg); border-radius:var(--radius-m); overflow:hidden;
+  margin:18px 0; border:1px solid var(--code-line);
+}
+.code-panel-header{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 16px; background:#0B1522; border-bottom:1px solid var(--code-line);
+  font-family:var(--font-mono); font-size:12.5px; color:var(--code-ink);
+}
+.code-panel-header .dots{display:flex; gap:6px;}
+.code-panel-header .dots span{width:9px; height:9px; border-radius:50%; display:inline-block;}
+.code-panel-header .dots span:nth-child(1){background:#EA5F5F;}
+.code-panel-header .dots span:nth-child(2){background:#EAC15F;}
+.code-panel-header .dots span:nth-child(3){background:#5FEA8C;}
+.code-panel-header .fname{color:var(--code-ink); opacity:.75;}
+.copy-btn{
+  background:rgba(255,255,255,.07); color:var(--code-ink); border:1px solid rgba(255,255,255,.12);
+  border-radius:6px; padding:5px 11px; font-size:11.5px; font-family:var(--font-mono); transition:.15s;
+}
+.copy-btn:hover{background:rgba(255,255,255,.14);}
+.copy-btn.copied{background:var(--green); color:#fff; border-color:var(--green);}
+pre.code-block{margin:0; padding:18px 20px; overflow-x:auto; max-height:520px;}
+pre.code-block code{
+  font-family:var(--font-mono); font-size:13px; line-height:1.65; color:var(--code-ink); white-space:pre;
+}
+.tok-kw{color:var(--code-key); font-weight:600;}
+.tok-str{color:var(--code-str);}
+.tok-com{color:var(--code-com); font-style:italic;}
+.tok-fn{color:var(--code-fn);}
+.tok-num{color:var(--code-num);}
+.tok-cls{color:#9FD9FF; font-weight:600;}
+
+/* code tabs */
+.code-tabs{display:flex; gap:4px; flex-wrap:wrap; margin-bottom:0; padding:6px; background:var(--panel); border:1px solid var(--line); border-radius:var(--radius-m) var(--radius-m) 0 0; border-bottom:none;}
+.code-tab-btn{
+  border:none; background:transparent; padding:8px 14px; border-radius:8px; font-size:12.5px;
+  font-family:var(--font-mono); color:var(--ink-soft);
+}
+.code-tab-btn.active{background:var(--ink); color:#fff;}
+.code-tab-panel{display:none;}
+.code-tab-panel.active{display:block;}
+.tabbed-code .code-panel{margin-top:0; border-radius:0 0 var(--radius-m) var(--radius-m);}
+
+/* buttons */
+.btn{
+  display:inline-flex; align-items:center; gap:8px; border:none; border-radius:100px;
+  padding:12px 22px; font-size:14.5px; font-weight:600; background:var(--ink); color:#fff; transition:.15s;
+}
+.btn:hover{background:var(--blue-dark);}
+.btn.ghost{background:transparent; color:var(--ink); border:1.5px solid var(--line);}
+.btn.ghost:hover{border-color:var(--blue); color:var(--blue-dark); background:var(--blue-pale);}
+.btn.sm{padding:8px 15px; font-size:13px;}
+
+/* checklist */
+.check-list{display:flex; flex-direction:column; gap:2px;}
+.check-item{
+  display:flex; align-items:flex-start; gap:12px; padding:11px 12px; border-radius:var(--radius-s);
+  cursor:pointer; transition:background .15s;
+}
+.check-item:hover{background:var(--bg);}
+.check-item input{margin-top:3px; width:17px; height:17px; accent-color:var(--blue); flex-shrink:0;}
+.check-item span{font-size:14.5px;}
+.check-item.checked span{color:var(--ink-faint); text-decoration:line-through;}
+
+/* mini progress */
+.mini-progress{display:flex; align-items:center; gap:12px; margin-bottom:18px;}
+.mini-progress .track{flex:1; height:8px; background:var(--line-soft); border-radius:100px; overflow:hidden;}
+.mini-progress .fill{height:100%; width:0%; background:var(--green); border-radius:100px; transition:width .3s;}
+.mini-progress .count{font-family:var(--font-mono); font-size:13px; color:var(--ink-soft); white-space:nowrap;}
+
+/* diagram flow */
+.flow{display:flex; flex-direction:column; align-items:center; gap:2px; margin:22px 0;}
+.flow .node{
+  background:var(--panel); border:1.5px solid var(--line); border-radius:var(--radius-s);
+  padding:11px 22px; font-family:var(--font-mono); font-size:13.5px; font-weight:600; color:var(--ink);
+  box-shadow:var(--shadow-card);
+}
+.flow .node.hi{border-color:var(--blue); color:var(--blue-dark); background:var(--blue-pale);}
+.flow .arrow{color:var(--ink-faint); font-size:16px; line-height:1;}
+.flow-row{display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:center;}
+
+.mvc-diagram{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin:24px 0;}
+.mvc-box{border-radius:var(--radius-m); padding:22px 18px; text-align:center; border:1.5px solid var(--line);}
+.mvc-box h4{font-family:var(--font-mono); font-size:12px; letter-spacing:.05em; margin-bottom:6px; text-transform:uppercase;}
+.mvc-box p{font-size:13.5px; color:var(--ink-soft); margin:0;}
+.mvc-box.model{background:var(--green-pale); border-color:#BFE2CC;}
+.mvc-box.view{background:var(--blue-pale); border-color:#C7D8FA;}
+.mvc-box.controller{background:var(--amber-pale); border-color:#F3D9AE;}
+@media (max-width:760px){ .mvc-diagram{grid-template-columns:1fr;} }
+
+table.spec-table{width:100%; border-collapse:collapse; font-size:14px; margin:18px 0;}
+table.spec-table th, table.spec-table td{text-align:left; padding:10px 14px; border-bottom:1px solid var(--line-soft);}
+table.spec-table th{font-family:var(--font-mono); font-size:11.5px; text-transform:uppercase; letter-spacing:.03em; color:var(--ink-soft);}
+table.spec-table td code{font-family:var(--font-mono); font-size:12.5px; background:var(--bg); padding:2px 6px; border-radius:4px;}
+
+/* accordion */
+.accordion-item{border:1px solid var(--line); border-radius:var(--radius-s); margin-bottom:8px; overflow:hidden;}
+.accordion-head{
+  width:100%; display:flex; align-items:center; justify-content:space-between; background:var(--panel);
+  border:none; padding:14px 18px; font-size:14.5px; font-weight:600; text-align:left; color:var(--ink);
+}
+.accordion-head .chev{transition:transform .2s; color:var(--ink-faint);}
+.accordion-item.open .accordion-head .chev{transform:rotate(180deg);}
+.accordion-body{max-height:0; overflow:hidden; transition:max-height .25s ease;}
+.accordion-item.open .accordion-body{max-height:900px;}
+.accordion-body-inner{padding:4px 18px 18px;}
+
+/* quiz + challenge */
+.quiz-card, .challenge-card{border:1px solid var(--line); border-radius:var(--radius-m); padding:20px 22px; margin-bottom:14px; background:var(--panel);}
+.quiz-card h4, .challenge-card h4{font-size:15.5px; margin-bottom:12px;}
+.quiz-opts{display:flex; flex-direction:column; gap:8px;}
+.quiz-opt{border:1.5px solid var(--line); border-radius:var(--radius-s); padding:10px 14px; font-size:14px; background:var(--panel); text-align:left; transition:.12s;}
+.quiz-opt:hover{border-color:var(--blue);}
+.quiz-opt.correct{border-color:var(--green); background:var(--green-pale); font-weight:600;}
+.quiz-opt.incorrect{border-color:var(--red); background:var(--red-pale);}
+.quiz-opt:disabled{cursor:default;}
+.quiz-result{margin-top:26px; padding:22px; border-radius:var(--radius-m); background:var(--ink); color:#fff; text-align:center; display:none;}
+.quiz-result.show{display:block;}
+.quiz-result .score{font-family:var(--font-display); font-size:34px;}
+
+.challenge-card .meta{display:flex; gap:8px; margin-bottom:10px;}
+.challenge-card .hint{font-size:13.5px; color:var(--ink-soft); background:var(--bg); border-radius:var(--radius-s); padding:10px 14px; margin:10px 0; display:none;}
+.challenge-card .hint.show{display:block;}
+.challenge-card .answer{display:none; margin-top:12px;}
+.challenge-card .answer.show{display:block;}
+
+/* roadmap */
+.roadmap{display:flex; flex-direction:column; gap:0; margin:24px 0;}
+.roadmap .step{display:flex; gap:16px; position:relative; padding-bottom:26px;}
+.roadmap .step:last-child{padding-bottom:0;}
+.roadmap .step::before{content:''; position:absolute; left:13px; top:30px; bottom:0; width:1.5px; background:var(--line);}
+.roadmap .step:last-child::before{display:none;}
+.roadmap .dot{width:28px; height:28px; border-radius:50%; background:var(--blue-pale); color:var(--blue-dark); display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:12px; font-weight:700; flex-shrink:0; z-index:1;}
+.roadmap .step h4{font-size:14.5px; margin-bottom:3px;}
+.roadmap .step p{font-size:13.5px; color:var(--ink-soft); margin:0;}
+
+/* mockup app preview */
+.app-mockup{border:1px solid var(--line); border-radius:var(--radius-m); overflow:hidden; background:#EDEBE2; box-shadow:var(--shadow-card);}
+.app-mockup .titlebar{background:#D8D5C8; padding:9px 14px; display:flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:11.5px; color:#5B5748;}
+.app-mockup .titlebar span{width:9px; height:9px; border-radius:50%; background:#B8B4A4;}
+.app-mockup-body{padding:20px; background:#F4F2EA;}
+.mock-form{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px;}
+.mock-field label{display:block; font-size:11.5px; color:var(--ink-soft); margin-bottom:4px; font-family:var(--font-mono);}
+.mock-field .box{background:#fff; border:1px solid #D5D2C4; border-radius:5px; height:30px;}
+.mock-btns{display:flex; gap:8px; margin-bottom:16px;}
+.mock-btns .mb{background:#fff; border:1px solid #C9C6B7; border-radius:5px; padding:7px 16px; font-size:12.5px; font-weight:600; color:var(--ink);}
+.mock-btns .mb.primary{background:var(--blue); color:#fff; border-color:var(--blue);}
+.mock-table{width:100%; border-collapse:collapse; background:#fff; border-radius:6px; overflow:hidden; border:1px solid #D5D2C4;}
+.mock-table th, .mock-table td{padding:8px 12px; font-size:12.5px; text-align:left; border-bottom:1px solid #EEECE1;}
+.mock-table th{background:#F7F5EC; font-family:var(--font-mono); font-size:10.5px; text-transform:uppercase; color:var(--ink-soft);}
+
+/* hero */
+.hero{
+  padding:76px 0 56px; position:relative; overflow:hidden;
+}
+.hero-topline{font-family:var(--font-mono); font-size:12.5px; letter-spacing:.03em; color:var(--blue); background:var(--blue-pale); display:inline-flex; padding:5px 12px; border-radius:100px; margin-bottom:22px;}
+.hero h1{font-size:46px; line-height:1.08; max-width:680px;}
+.hero h1 em{font-style:normal; color:var(--blue);}
+.hero .sub{font-size:17px; color:var(--ink-soft); max-width:520px; margin:16px 0 30px;}
+.hero-meta{display:flex; gap:28px; flex-wrap:wrap; margin:34px 0 30px;}
+.hero-meta div{display:flex; flex-direction:column; gap:2px;}
+.hero-meta .k{font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-faint);}
+.hero-meta .v{font-size:15px; font-weight:600;}
+.hero-topics{display:flex; gap:8px; flex-wrap:wrap;}
+.blueprint-grid{
+  position:absolute; inset:0; z-index:-1; opacity:.5;
+  background-image:linear-gradient(var(--line-soft) 1px,transparent 1px), linear-gradient(90deg,var(--line-soft) 1px,transparent 1px);
+  background-size:34px 34px;
+  mask-image:radial-gradient(ellipse 800px 380px at 30% 0%, black 40%, transparent 78%);
+}
+
+footer.lesson-footer{padding:60px 0 40px; text-align:center; color:var(--ink-faint); font-size:13px;}
+
+.toast{
+  position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(20px);
+  background:var(--ink); color:#fff; padding:12px 20px; border-radius:100px; font-size:13.5px;
+  font-weight:600; opacity:0; pointer-events:none; transition:.25s; z-index:100; display:flex; align-items:center; gap:8px;
+}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+@media (max-width:980px){
+  main.content{max-width:none; padding:0 24px 100px;}
+}
+@media (max-width:900px){
+  .sidebar-toggle{display:flex;}
+  .sidebar{position:fixed; left:-300px; top:0; transition:left .25s ease; box-shadow:0 0 0 2000px rgba(0,0,0,0);}
+  .sidebar.open{left:0; box-shadow:20px 0 60px rgba(0,0,0,.25);}
+  main.content{padding-top:70px;}
+  .hero h1{font-size:32px;}
+}
+</style>
+</head>
+<body>
+
+<button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle navigation"><span></span></button>
+
+<div class="app">
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <span class="mark">&lt;/&gt; coding lesson</span>
+    <h1>Student Management System</h1>
+    <p>Python · Tkinter · OOP · MVC</p>
+  </div>
+
+  <div class="progress-block">
+    <div class="label"><span>Lesson progress</span><strong id="progressPct">0%</strong></div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
+  <div class="mode-toggle">
+    <button id="btnStudentMode" class="active">Student mode</button>
+    <button id="btnTeacherMode">Teacher mode</button>
+  </div>
+
+  <nav class="toc" id="toc">
+    <a href="#sec-welcome" data-target="sec-welcome"><span class="n">01</span>Welcome</a>
+    <a href="#sec-objectives" data-target="sec-objectives"><span class="n">02</span>Objectives</a>
+    <a href="#sec-project" data-target="sec-project"><span class="n">03</span>Project</a>
+    <a href="#sec-oop" data-target="sec-oop"><span class="n">04</span>OOP</a>
+    <a href="#sec-tkinter" data-target="sec-tkinter"><span class="n">05</span>Tkinter</a>
+    <a href="#sec-events" data-target="sec-events"><span class="n">06</span>Events</a>
+    <a href="#sec-mvc" data-target="sec-mvc"><span class="n">07</span>MVC</a>
+    <a href="#sec-architecture" data-target="sec-architecture"><span class="n">08</span>Architecture</a>
+    <a href="#sec-model" data-target="sec-model"><span class="n">09</span>Model</a>
+    <a href="#sec-view" data-target="sec-view"><span class="n">10</span>View</a>
+    <a href="#sec-controller" data-target="sec-controller"><span class="n">11</span>Controller</a>
+    <a href="#sec-crud" data-target="sec-crud"><span class="n">12</span>CRUD</a>
+    <a href="#sec-validation" data-target="sec-validation"><span class="n">13</span>Validation</a>
+    <a href="#sec-search" data-target="sec-search"><span class="n">14</span>Search</a>
+    <a href="#sec-update" data-target="sec-update"><span class="n">15</span>Update</a>
+    <a href="#sec-delete" data-target="sec-delete"><span class="n">16</span>Delete</a>
+    <a href="#sec-fullcode" data-target="sec-fullcode"><span class="n">17</span>Full code</a>
+    <a href="#sec-testing" data-target="sec-testing"><span class="n">18</span>Testing</a>
+    <a href="#sec-challenges" data-target="sec-challenges"><span class="n">19</span>Challenges</a>
+    <a href="#sec-quiz" data-target="sec-quiz"><span class="n">20</span>Quiz</a>
+    <a href="#sec-recap" data-target="sec-recap"><span class="n">21</span>Recap</a>
+    <a href="#sec-nextlevel" data-target="sec-nextlevel"><span class="n">22</span>Next level</a>
+  </nav>
+</aside>
+
+<main class="content">
+
+<!-- 01 WELCOME -->
+<section class="lesson-section hero" id="sec-welcome">
+  <div class="blueprint-grid"></div>
+  <span class="hero-topline">Interactive lesson · 90 minutes</span>
+  <h1>Python Tkinter, <em>OOP + MVC</em>,<br>built as one real desktop app.</h1>
+  <p class="sub">You'll build a working Student Management System from scratch — a class that models a student, a Tkinter interface people can click, and an MVC architecture that keeps the whole thing from turning into spaghetti.</p>
+  <button class="btn" id="startLessonBtn">Start lesson ↓</button>
+
+  <div class="hero-meta">
+    <div><span class="k">Time</span><span class="v">90 minutes</span></div>
+    <div><span class="k">Level</span><span class="v">Intermediate beginner</span></div>
+    <div><span class="k">Prerequisites</span><span class="v">Variables, loops, functions</span></div>
+  </div>
+  <div class="hero-topics">
+    <span class="badge blue">Python</span>
+    <span class="badge amber">OOP</span>
+    <span class="badge green">Tkinter</span>
+    <span class="badge red">MVC</span>
+    <span class="badge blue">CRUD</span>
+  </div>
+
+  <div class="teacher-box">
+    <span class="tb-label">🎓 Teaching tip</span>
+    Run this as a live-coding session — type the app alongside students instead of showing finished code first. The "Full Code" tab (section 17) is there for them to check their work against, not to read from top to bottom.
+  </div>
+</section>
+
+<!-- 02 OBJECTIVES -->
+<section class="lesson-section" id="sec-objectives">
+  <span class="eyebrow">02 · Warm-up</span>
+  <h2 class="section-title">What you'll be able to do</h2>
+  <p class="section-lede">Tick each one off as it clicks for you. This list is also your progress marker for the lesson — it has nothing to do with finishing sections, just with understanding them.</p>
+
+  <div class="card">
+    <div class="mini-progress">
+      <div class="track"><div class="fill" id="objFill"></div></div>
+      <span class="count" id="objCount">0 / 14 completed</span>
+    </div>
+    <div class="check-list" id="objectivesList">
+      <label class="check-item"><input type="checkbox"><span>Explain what a class is, in one sentence</span></label>
+      <label class="check-item"><input type="checkbox"><span>Create an object from a class</span></label>
+      <label class="check-item"><input type="checkbox"><span>Use and update an object's attributes</span></label>
+      <label class="check-item"><input type="checkbox"><span>Write a method that belongs to a class</span></label>
+      <label class="check-item"><input type="checkbox"><span>Build a Tkinter window with labels, entries and buttons</span></label>
+      <label class="check-item"><input type="checkbox"><span>Wire a button click to a Python function</span></label>
+      <label class="check-item"><input type="checkbox"><span>Show tabular data in a Treeview</span></label>
+      <label class="check-item"><input type="checkbox"><span>Explain what MVC stands for and why it helps</span></label>
+      <label class="check-item"><input type="checkbox"><span>Split one app into separate Model / View / Controller files</span></label>
+      <label class="check-item"><input type="checkbox"><span>Implement Create, Read, Update, Delete</span></label>
+      <label class="check-item"><input type="checkbox"><span>Validate user input before trusting it</span></label>
+      <label class="check-item"><input type="checkbox"><span>Search a list of students by name</span></label>
+      <label class="check-item"><input type="checkbox"><span>Update a record selected from a table</span></label>
+      <label class="check-item"><input type="checkbox"><span>Delete a record, safely, with confirmation</span></label>
+    </div>
+  </div>
+</section>
+
+<!-- 03 PROJECT PREVIEW -->
+<section class="lesson-section" id="sec-project">
+  <span class="eyebrow">03 · Preview</span>
+  <h2 class="section-title">What you're building</h2>
+  <p class="section-lede">A small desktop window: a form on top, a table underneath. Add a student, click a row to edit it, search by name, delete with confirmation. Nothing exotic — but built properly, it will teach you how real applications are structured.</p>
+
+  <div class="app-mockup">
+    <div class="titlebar"><span></span><span></span><span></span>Student Management System</div>
+    <div class="app-mockup-body">
+      <div class="mock-form">
+        <div class="mock-field"><label>Student ID</label><div class="box"></div></div>
+        <div class="mock-field"><label>Name</label><div class="box"></div></div>
+        <div class="mock-field"><label>Age</label><div class="box"></div></div>
+        <div class="mock-field"><label>Grade</label><div class="box"></div></div>
+      </div>
+      <div class="mock-btns">
+        <span class="mb primary">Add</span><span class="mb">Update</span><span class="mb">Delete</span><span class="mb">Clear</span>
+      </div>
+      <div class="mock-btns" style="margin-bottom:16px;">
+        <div class="box" style="width:220px;"></div><span class="mb primary">Search</span>
+      </div>
+      <table class="mock-table">
+        <thead><tr><th>Student ID</th><th>Name</th><th>Age</th><th>Grade</th></tr></thead>
+        <tbody>
+          <tr><td>S001</td><td>Nguyen Van An</td><td>15</td><td>Grade 9</td></tr>
+          <tr><td>S002</td><td>Tran Minh Anh</td><td>16</td><td>Grade 10</td></tr>
+          <tr><td>S003</td><td>Le Hoang Nam</td><td>17</td><td>Grade 11</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="teacher-box">
+    <span class="tb-label">💡 Ask students</span>
+    "If we click row S002, what should happen to the form above the table?" Get them to say it out loud before section 15 confirms it.
+  </div>
+</section>
+
+<!-- 04 OOP -->
+<section class="lesson-section" id="sec-oop">
+  <span class="eyebrow">04 · Concept</span>
+  <h2 class="section-title">What is OOP?</h2>
+  <p class="section-lede">Object-Oriented Programming is just a way of grouping data and the functions that act on that data into one unit — instead of scattering variables and functions everywhere.</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <span class="badge blue">Class</span>
+      <p style="margin-top:10px;">A blueprint. It describes what a thing has (attributes) and what it can do (methods) — but it isn't a real thing yet, the same way a house blueprint isn't a house.</p>
+    </div>
+    <div class="card">
+      <span class="badge green">Object</span>
+      <p style="margin-top:10px;">A real thing built from that blueprint. You can build many objects from one class, each with its own data.</p>
+    </div>
+  </div>
+
+  <div class="flow">
+    <div class="node hi">Student (class)</div>
+    <div class="arrow">↓ creates</div>
+    <div class="flow-row">
+      <div class="node">student1</div>
+      <div class="node">student2</div>
+      <div class="node">student3</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h4 style="font-size:14.5px;">Attributes</h4>
+      <p style="font-size:14px; margin:0;"><code>student_id</code>, <code>name</code>, <code>age</code>, <code>grade</code> — the data each student object carries around.</p>
+    </div>
+    <div class="card">
+      <h4 style="font-size:14.5px;">Methods</h4>
+      <p style="font-size:14px; margin:0;"><code>get_info()</code>, <code>update()</code>, <code>is_adult()</code> — the actions a student object knows how to perform.</p>
+    </div>
+  </div>
+
+  <h3 style="margin-top:36px;">The Student class</h3>
+  <p>Here's the whole class. Click any line group below to see what it does.</p>
+
+  <div class="code-panel">
+    <div class="code-panel-header">
+      <div class="dots"><span></span><span></span><span></span></div>
+      <span class="fname">models/student.py</span>
+      <button class="copy-btn" data-target="code-student-oop">Copy</button>
+    </div>
+    <pre class="code-block"><code id="code-student-oop" class="py-code">class Student:
+
+    def __init__(self, student_id, name, age, grade):
+        self.student_id = student_id
+        self.name = name
+        self.age = age
+        self.grade = grade
+
+    def get_info(self):
+        return (self.student_id, self.name, self.age, self.grade)
+
+    def update(self, name, age, grade):
+        self.name = name
+        self.age = age
+        self.grade = grade
+
+    def is_adult(self):
+        return self.age >= 18</code></pre>
+  </div>
+
+  <div class="accordion" id="oopAccordion">
+    <div class="accordion-item">
+      <button class="accordion-head"><span><code>__init__</code> — the constructor</span><span class="chev">⌄</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner">Runs automatically the moment you write <code>Student("S001", "An", 15, "Grade 9")</code>. It's where a new object receives its starting data and stores it on <code>self</code>.</div></div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-head"><span><code>self</code> — "this specific object"</span><span class="chev">⌄</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner">Every method's first parameter. It's how <code>student1.get_info()</code> knows to return student1's data and not student2's — Python passes the object itself in automatically.</div></div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-head"><span><code>get_info()</code> — reading data</span><span class="chev">⌄</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner">Returns a tuple of the object's four attributes, in a fixed order — this is exactly the order the Treeview table will expect them in later.</div></div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-head"><span><code>update()</code> and <code>is_adult()</code> — behavior</span><span class="chev">⌄</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner"><code>update()</code> changes the object in place (notice: no <code>student_id</code> parameter — an ID never changes). <code>is_adult()</code> derives a new fact from existing data instead of storing it separately.</div></div>
+    </div>
+  </div>
+
+  <div class="teacher-box">
+    <span class="tb-label">⚠ Common mistake</span>
+    Students often forget <code>self.</code> when assigning attributes inside <code>__init__</code> — writing <code>name = name</code> instead of <code>self.name = name</code> silently does nothing useful.
+  </div>
+</section>
+
+<!-- 05 TKINTER -->
+<section class="lesson-section" id="sec-tkinter">
+  <span class="eyebrow">05 · Concept</span>
+  <h2 class="section-title">What is Tkinter?</h2>
+  <p class="section-lede">Tkinter is the GUI toolkit that ships with Python — no install needed. It gives you windows, and widgets that live inside those windows.</p>
+
+  <div class="flow">
+    <div class="node hi">Tk() — the window</div>
+    <div class="arrow">↓</div>
+    <div class="node">Frame — a container</div>
+    <div class="arrow">↓</div>
+    <div class="flow-row">
+      <div class="node">Label</div><div class="node">Entry</div><div class="node">Button</div>
+    </div>
+    <div class="arrow">↓</div>
+    <div class="node">Treeview — a table</div>
+  </div>
+
+  <h3>Building the window</h3>
+  <div class="code-panel">
+    <div class="code-panel-header"><div class="dots"><span></span><span></span><span></span></div><span class="fname">sketch.py</span><button class="copy-btn" data-target="code-tk-window">Copy</button></div>
+    <pre class="code-block"><code id="code-tk-window" class="py-code">import tkinter as tk
+from tkinter import ttk
+
+root = tk.Tk()
+root.title("Student Management System")
+root.geometry("850x650")
+
+root.mainloop()</code></pre>
+  </div>
+  <p style="font-size:14px; color:var(--ink-soft);"><strong>Expected result:</strong> an empty 850×650 window titled "Student Management System". <code>mainloop()</code> keeps it open and listening for clicks.</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <span class="badge blue">Label</span>
+      <pre class="code-block" style="background:transparent; padding:10px 0;"><code class="py-code" style="color:var(--ink);">tk.Label(root, text="Name")</code></pre>
+      <p style="margin:0; font-size:13.5px;">Displays static text — a caption, never editable by the user.</p>
+    </div>
+    <div class="card">
+      <span class="badge green">Entry</span>
+      <pre class="code-block" style="background:transparent; padding:10px 0;"><code class="py-code" style="color:var(--ink);">tk.Entry(root, width=25)</code></pre>
+      <p style="margin:0; font-size:13.5px;">A single-line input box. <code>.get()</code> reads what the user typed.</p>
+    </div>
+    <div class="card">
+      <span class="badge amber">Button</span>
+      <pre class="code-block" style="background:transparent; padding:10px 0;"><code class="py-code" style="color:var(--ink);">tk.Button(root, text="Add")</code></pre>
+      <p style="margin:0; font-size:13.5px;">Clickable. Does nothing on its own until you give it a <code>command</code> — see section 06.</p>
+    </div>
+    <div class="card">
+      <span class="badge red">Treeview</span>
+      <pre class="code-block" style="background:transparent; padding:10px 0;"><code class="py-code" style="color:var(--ink);">ttk.Treeview(root, columns=(...))</code></pre>
+      <p style="margin:0; font-size:13.5px;">A table widget — rows and named columns. This is where every student will be listed.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 06 EVENTS -->
+<section class="lesson-section" id="sec-events">
+  <span class="eyebrow">06 · Concept</span>
+  <h2 class="section-title">Event handling</h2>
+  <p class="section-lede">A GUI that only displays things is a poster, not an app. It needs to react — and in Tkinter, reacting means connecting a widget to a function.</p>
+
+  <div class="code-panel">
+    <div class="code-panel-header"><div class="dots"><span></span><span></span><span></span></div><span class="fname">sketch.py</span><button class="copy-btn" data-target="code-events">Copy</button></div>
+    <pre class="code-block"><code id="code-events" class="py-code">def say_hello():
+    print("Hello!")
+
+button = tk.Button(
+    root,
+    text="Click Me",
+    command=say_hello
+)</code></pre>
+  </div>
+
+  <div class="grid-2">
+    <div class="card" style="border-color:#BFE2CC; background:var(--green-pale);">
+      <span class="badge green">Correct</span>
+      <p style="margin:8px 0 0; font-family:var(--font-mono); font-size:13.5px;">command=say_hello</p>
+      <p style="font-size:13.5px; margin:6px 0 0;">Passes the function itself — Tkinter calls it later, on click.</p>
+    </div>
+    <div class="card" style="border-color:#F3B9C4; background:var(--red-pale);">
+      <span class="badge red">Wrong</span>
+      <p style="margin:8px 0 0; font-family:var(--font-mono); font-size:13.5px; text-decoration:line-through;">command=say_hello()</p>
+      <p style="font-size:13.5px; margin:6px 0 0;">Calls the function immediately, once, while building the window — and hands Tkinter its return value instead.</p>
+    </div>
+  </div>
+
+  <div class="teacher-box">
+    <span class="tb-label">⚠ Common mistake</span>
+    <code>command=my_function()</code> — the parentheses are the single most common bug in every student's first Tkinter app. Say it out loud: "no parentheses, we're handing over the function, not the result."
+  </div>
+
+  <h3 style="margin-top:32px;">The problem: what if we put everything in one file?</h3>
+  <p>Imagine one script that builds the window, stores the student list, validates input, searches, and saves — all mixed together, top to bottom.</p>
+  <div class="grid-2">
+    <div class="card">
+      <p style="margin:0; font-size:14px;">GUI code, data, validation, search and CRUD logic all live in the same function, referencing the same global variables.</p>
+    </div>
+    <div class="card">
+      <p style="margin-bottom:10px; font-weight:600; font-size:14px;">Would this be easy to maintain?</p>
+      <p style="margin:0; font-size:14px; color:var(--red);">❌ Hard to read &nbsp;·&nbsp; ❌ Hard to debug<br>❌ Hard to modify &nbsp;·&nbsp; ❌ Hard to scale</p>
+    </div>
+  </div>
+  <p>That pain is exactly what MVC exists to prevent — next section.</p>
+</section>
+
+<!-- 07 MVC -->
+<section class="lesson-section" id="sec-mvc">
+  <span class="eyebrow">07 · Concept</span>
+  <h2 class="section-title">What is MVC?</h2>
+  <p class="section-lede">Model-View-Controller splits an app into three responsibilities that are never allowed to blur into each other.</p>
+
+  <div class="mvc-diagram">
+    <div class="mvc-box model"><h4>Model</h4><p>The data. Student objects, the list of students, and the rules for changing them. No GUI code here at all.</p></div>
+    <div class="mvc-box view"><h4>View</h4><p>The GUI. Every widget the user sees and clicks. No business logic here — it doesn't decide anything.</p></div>
+    <div class="mvc-box controller"><h4>Controller</h4><p>The logic. Reads from the View, validates, updates the Model, tells the View to refresh.</p></div>
+  </div>
+
+  <div class="flow">
+    <div class="node">User clicks a button</div>
+    <div class="arrow">↓</div>
+    <div class="node hi">View</div>
+    <div class="arrow">↓</div>
+    <div class="node hi">Controller</div>
+    <div class="arrow">↓</div>
+    <div class="node hi">Model</div>
+    <div class="arrow">↑ updated data</div>
+    <div class="node hi">Controller</div>
+    <div class="arrow">↑ refresh</div>
+    <div class="node hi">View</div>
+  </div>
+
+  <div class="callout">The View never talks to the Model directly. Every change flows through the Controller — that single rule is what keeps the app maintainable as it grows.</div>
+
+  <div class="teacher-box">
+    <span class="tb-label">🎓 Teaching tip</span>
+    Don't lead with the definition. Lead with the messy one-file version from section 06, let students feel the pain, then introduce MVC as the fix — not as a rule to memorize.
+  </div>
+</section>
+
+<!-- 08 ARCHITECTURE -->
+<section class="lesson-section" id="sec-architecture">
+  <span class="eyebrow">08 · Structure</span>
+  <h2 class="section-title">Project architecture</h2>
+  <p class="section-lede">Here's how the three responsibilities map onto actual files.</p>
+
+  <div class="code-panel">
+    <div class="code-panel-header"><div class="dots"><span></span><span></span><span></span></div><span class="fname">project structure</span><button class="copy-btn" data-target="code-structure">Copy</button></div>
+    <pre class="code-block"><code id="code-structure">student_management/
+│
+├── main.py
+│
+├── models/
+│   ├── __init__.py
+│   ├── student.py
+│   └── student_manager.py
+│
+├── views/
+│   ├── __init__.py
+│   └── student_view.py
+│
+└── controllers/
+    ├── __init__.py
+    └── student_controller.py</code></pre>
+  </div>
+
+  <table class="spec-table">
+    <thead><tr><th>File</th><th>Role</th></tr></thead>
+    <tbody>
+      <tr><td><code>models/student.py</code></td><td>One <code>Student</code> object's data and behavior</td></tr>
+      <tr><td><code>models/student_manager.py</code></td><td>The full list of students, plus create / read / update / delete</td></tr>
+      <tr><td><code>views/student_view.py</code></td><td>Every Tkinter widget — window, form, buttons, table</td></tr>
+      <tr><td><code>controllers/student_controller.py</code></td><td>Wires buttons to actions, validates, talks to the Model, refreshes the View</td></tr>
+      <tr><td><code>main.py</code></td><td>Creates the window, the View and the Controller, then starts the app</td></tr>
+      <tr><td><code>__init__.py</code></td><td>Empty files that tell Python each folder is a package</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 09 MODEL -->
+<section class="lesson-section" id="sec-model">
+  <span class="eyebrow">09 · Model</span>
+  <h2 class="section-title">The Model</h2>
+  <p class="section-lede"><code>Student</code> represents one student. <code>StudentManager</code> owns the whole list and every CRUD operation on it — the Controller will never touch <code>self.students</code> directly.</p>
+
+  <div class="code-panel">
+    <div class="code-panel-header"><div class="dots"><span></span><span></span><span></span></div><span class="fname">models/student.py</span><button class="copy-btn" data-target="code-model-student">Copy</button></div>
+    <pre class="code-block"><code id="code-model-student" class="py-code">class Student:
+
+    def __init__(self, student_id, name, age, grade):
+        self.student_id = student_id
+        self.name = name
+        self.age = age
+        self.grade = grade
+
+    def get_info(self):
+        return (self.student_id, self.name, self.age, self.grade)
+
+    def update(self, name, age, grade):
+        self.name = name
+        self.age = age
+        self.grade = grade
+
+    def is_adult(self):
+        return self.age >= 18</code></pre>
+  </div>
+
+  <div class="code-panel">
+    <div class="code-panel-header"><div class="dots"><span></span><span></span><span></span></div><span class="fname">models/student_manager.py</span><button class="copy-btn" data-target="code-model-manager">Copy</button></div>
+    <pre class="code-block"><code id="code-model-manager" class="py-code">class StudentManager:
+
+    def __init__(self):
+        self.students = []
+
+    def add_student(self, student):
+        self.students.append(student)
+
+    def get_all_students(self):
+        return self.students
+
+    def find_student(self, student_id):
+        for student in self.students:
+            if student.student_id == student_id:
+                return student
+        return None
+
+    def update_student(self, student_id, name, age, grade):
+        student = self.find_student(student_id)
+        if student:
+            student.update(name, age, grade)
+            return True
+        return False
+
+    def delete_student(self, student_id):
+        student = self.find_student(student_id)
+        if student:
+            self.students.remove(student)
+            return True
+        return False
+
+    def count_students(self):
+        return len(self.students)</code></pre>
+  </div>
+
+  <div class="callout win">Notice: <code>StudentManager</code> never imports <code>tkinter</code>. That's the test for "is this really the Model?" — if it needs to know about widgets, it isn't.</div>
+</section>
+
+<!-- 10 VIEW -->
+<section class="lesson-section" id="sec-view">
+  <span class="eyebrow">10 · View</span>
+  <h2 class="section-title">The View</h2>
+  <p class="section-lede"><code>StudentView</code> builds every widget and exposes them as attributes — <code>self.btn_add</code>, <code>self.tree</code> — but leaves their <code>command</code> unset. The Controller wires behavior in from the outside.</p>
+
+  <div class="code-panel">
+    <div class="code-panel-header"><div class="dots"><span></span><span></span><span></span></div><span class="fname">views/student_view.py</span><button class="copy-btn" data-target="code-view-full">Copy</button></div>
+    <pre class="code-block"><code id="code-view-full" class="py-code">import tkinter as tk
+from tkinter import ttk
+from tkinter import messagebox
+
+
+class StudentView:
+
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Student Management System")
+        self.root.geometry("850x650")
+
+        self.build_form()
+        self.build_buttons()
+        self.build_search()
+        self.build_table()
+
+    def build_form(self):
+        form_frame = tk.Frame(self.root, padx=20, pady=20)
+        form_frame.pack(fill="x")
+
+        tk.Label(form_frame, text="Student ID").grid(row=0, column=0, sticky="w")
+        self.entry_id = tk.Entry(form_frame, width=25)
+        self.entry_id.grid(row=0, column=1, padx=10, pady=5)
+
+        tk.Label(form_frame, text="Name").grid(row=1, column=0, sticky="w")
+        self.entry_name = tk.Entry(form_frame, width=25)
+        self.entry_name.grid(row=1, column=1, padx=10, pady=5)
+
+        tk.Label(form_frame, text="Age").grid(row=2, column=0, sticky="w")
+        self.entry_age = tk.Entry(form_frame, width=25)
+        self.entry_age.grid(row=2, column=1, padx=10, pady=5)
+
+        tk.Label(form_frame, text="Grade").grid(row=3, column=0, sticky="w")
+        self.entry_grade = tk.Entry(form_frame, width=25)
+        self.entry_grade.grid(row=3, column=1, padx=10, pady=5)
+
+    def build_buttons(self):
+        button_frame = tk.Frame(self.root, padx=20, pady=10)
+        button_frame.pack(fill="x")
+
+        self.btn_add = tk.Button(button_frame, text="Add", width=12)
+        self.btn_add.grid(row=0, column=0, padx=5)
+
+        self.btn_update = tk.Button(button_frame, text="Update", width=12)
+        self.btn_update.grid(row=0, column=1, padx=5)
+
+        self.btn_delete = tk.Button(button_frame, text="Delete", width=12)
+        self.btn_delete.grid(row=0, column=2, padx=5)
+
+        self.btn_clear = tk.Button(button_frame, text="Clear", width=12)
+        self.btn_clear.grid(row=0, column=3, padx=5)
+
+    def build_search(self):
+        search_frame = tk.Frame(self.root, padx=20, pady=10)
+        search_frame.pack(fill="x")
+
+        tk.Label(search_frame, text="Search").pack(side="left")
+
+        self.entry_search = tk.Entry(search_frame, width=30)
+        self.entry_search.pack(side="left", padx=10)
+
+        self.btn_search = tk.Button(search_frame, text="Search", width=10)
+        self.btn_search.pack(side="left", padx=5)
+
+        self.btn_clear_search = tk.Button(search_frame, text="Clear Search", width=12)
+        self.btn_clear_search.pack(side="left", padx=5)
+
+    def build_table(self):
+        table_frame = tk.Frame(self.root, padx=20, pady=10)
+        table_frame.pack(fill="both", expand=True)
+
+        columns = ("student_id", "name", "age", "grade")
+
+        self.tree = ttk.Treeview(
+            table_frame,
+            columns=columns,
+            show="headings",
+            height=12
+        )
+
+        self.tree.heading("student_id", text="Student ID")
+        self.tree.heading("name", text="Name")
+        self.tree.heading("age", text="Age")
+        self.tree.heading("grade", text="Grade")
+
+        self.tree.column("student_id", width=100)
+        self.tree.column("name", width=200)
+        self.tree.column("age", width=80)
+        self.tree.column("grade", width=150)
+
+        self.tree.pack(fill="both", expand=True)
+
+    def get_form_data(self):
+        return (
+            self.entry_id.get().strip(),
+            self.entry_name.get().strip(),
+            self.entry_age.get().strip(),
+            self.entry_grade.get().strip()
+        )
+
+    def clear_form(self):
+        self.entry_id.delete(0, tk.END)
+        self.entry_name.delete(0, tk.END)
+        self.entry_age.delete(0, tk.END)
+        self.entry_grade.delete(0, tk.END)
+
+    def fill_form(self, student_id, name, age, grade):
+        self.clear_form()
+        self.entry_id.insert(0, student_id)
+        self.entry_name.insert(0, name)
+        self.entry_age.insert(0, age)
+        self.entry_grade.insert(0, grade)
+
+    def clear_table(self):
+        for row in self.tree.get_children():
+            self.tree.delete(row)
+
+    def insert_row(self, student_id, name, age, grade):
+        self.tree.insert("", tk.END, values=(student_id, name, age, grade))
+
+    def get_selected_item(self):
+        return self.tree.selection()
+
+    def get_row_values(self, item):
+        return self.tree.item(item, "values")
+
+    def show_message(self, title, message):
+        messagebox.showinfo(title, message)
+
+    def show_error(self, title, message):
+        messagebox.showerror(title, message)
+
+    def ask_confirmation(self, title, message):
+        return messagebox.askyesno(title, message)</code></pre>
+  </div>
+
+  <div class="callout">Every method here either builds a widget or moves data in and out of one. There isn't a single <code>if</code> statement deciding whether input is valid — that's the Controller's job.</div>
+</section>
+
+<!-- 11 CONTROLLER -->
+<section class="lesson-section" id="sec-controller">
+  <span class="eyebrow">11 · Controller</span>
+  <h2 class="section-title">The Controller</h2>
+  <p class="section-lede"><code>StudentController</code> is the only piece that knows about both the View and the Model. It assigns every button's <code>command</code>, validates input, and keeps the table in sync with the data.</p>
+
+  <div class="code-panel">
+    <div class="code-panel-header"><div class="dots"><span></span><span></span><span></span></div><span class="fname">controllers/student_controller.py</span><button class="copy-btn" data-target="code-controller-full">Copy</button></div>
+    <pre class="code-block"><code id="code-controller-full" class="py-code">from models.student import Student
+from models.student_manager import StudentManager
+
+
+class StudentController:
+
+    def __init__(self, view):
+        self.view = view
+        self.manager = StudentManager()
+
+        self.view.btn_add.config(command=self.add_student)
+        self.view.btn_update.config(command=self.update_student)
+        self.view.btn_delete.config(command=self.delete_student)
+        self.view.btn_clear.config(command=self.clear_form)
+        self.view.btn_search.config(command=self.search_student)
+        self.view.btn_clear_search.config(command=self.clear_search)
+
+        self.view.tree.bind("<<TreeviewSelect>>", self.select_student)
+
+        self.load_sample_data()
+
+    def load_sample_data(self):
+        sample_students = [
+            Student("S001", "Nguyen Van An", 15, "Grade 9"),
+            Student("S002", "Tran Minh Anh", 16, "Grade 10"),
+            Student("S003", "Le Hoang Nam", 17, "Grade 11"),
+        ]
+        for student in sample_students:
+            self.manager.add_student(student)
+        self.refresh_table()
+
+    def validate_input(self, student_id, name, age, grade):
+        if not student_id:
+            self.view.show_error("Validation Error", "Student ID cannot be empty.")
+            return False
+        if not name:
+            self.view.show_error("Validation Error", "Name cannot be empty.")
+            return False
+        if not age:
+            self.view.show_error("Validation Error", "Age cannot be empty.")
+            return False
+        if not grade:
+            self.view.show_error("Validation Error", "Grade cannot be empty.")
+            return False
+
+        try:
+            age_value = int(age)
+        except ValueError:
+            self.view.show_error("Validation Error", "Age must be a number.")
+            return False
+
+        if age_value <= 0:
+            self.view.show_error("Validation Error", "Age must be greater than 0.")
+            return False
+
+        return True
+
+    def add_student(self):
+        student_id, name, age, grade = self.view.get_form_data()
+
+        if not self.validate_input(student_id, name, age, grade):
+            return
+
+        if self.manager.find_student(student_id):
+            self.view.show_error("Duplicate ID", "This Student ID already exists.")
+            return
+
+        student = Student(student_id, name, int(age), grade)
+        self.manager.add_student(student)
+
+        self.refresh_table()
+        self.clear_form()
+        self.view.show_message("Success", "Student added successfully.")
+
+    def update_student(self):
+        student_id, name, age, grade = self.view.get_form_data()
+
+        if not self.validate_input(student_id, name, age, grade):
+            return
+
+        updated = self.manager.update_student(student_id, name, int(age), grade)
+
+        if not updated:
+            self.view.show_error("Not Found", "Student ID not found.")
+            return
+
+        self.refresh_table()
+        self.clear_form()
+        self.view.show_message("Success", "Student updated successfully.")
+
+    def delete_student(self):
+        student_id, name, age, grade = self.view.get_form_data()
+
+        if not student_id:
+            self.view.show_error("Validation Error", "Select a student to delete.")
+            return
+
+        confirmed = self.view.ask_confirmation(
+            "Confirm Delete",
+            "Delete student " + student_id + "?"
+        )
+
+        if not confirmed:
+            return
+
+        deleted = self.manager.delete_student(student_id)
+
+        if not deleted:
+            self.view.show_error("Not Found", "Student ID not found.")
+            return
+
+        self.refresh_table()
+        self.clear_form()
+        self.view.show_message("Success", "Student deleted successfully.")
+
+    def clear_form(self):
+        self.view.clear_form()
+
+    def select_student(self, event):
+        selected = self.view.get_selected_item()
+
+        if not selected:
+            return
+
+        values = self.view.get_row_values(selected[0])
+        self.view.fill_form(*values)
+
+    def search_student(self):
+        keyword = self.view.entry_search.get().strip().lower()
+
+        self.view.clear_table()
+
+        for student in self.manager.get_all_students():
+            if keyword in student.name.lower():
+                self.view.insert_row(*student.get_info())
+
+    def clear_search(self):
+        self.view.entry_search.delete(0, "end")
+        self.refresh_table()
+
+    def refresh_table(self):
+        self.view.clear_table()
+        for student in self.manager.get_all_students():
+            self.view.insert_row(*student.get_info())</code></pre>
+  </div>
+
+  <p>How <code>add_student()</code> actually flows:</p>
+  <div class="accordion" id="controllerAccordion">
+    <div class="accordion-item">
+      <button class="accordion-head"><span>How add_student() works</span><span class="chev">⌄</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner">
+        <div class="flow">
+          <div class="node">Read entries</div><div class="arrow">↓</div>
+          <div class="node">Validate</div><div class="arrow">↓</div>
+          <div class="node">Check duplicate ID</div><div class="arrow">↓</div>
+          <div class="node">Create Student</div><div class="arrow">↓</div>
+          <div class="node">Add to manager</div><div class="arrow">↓</div>
+          <div class="node">Refresh table</div><div class="arrow">↓</div>
+          <div class="node">Clear form</div>
+        </div>
+      </div></div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-head"><span>Why validate_input() is its own method</span><span class="chev">⌄</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner">Both <code>add_student()</code> and <code>update_student()</code> need the exact same checks. Writing the logic once and calling it twice means one bug fix covers both.</div></div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-head"><span>Why refresh_table() clears before re-inserting</span><span class="chev">⌄</span></button>
+      <div class="accordion-body"><div class="accordion-body-inner">Treeview has no "update all rows" command — the simplest reliable way to keep it in sync with <code>self.manager.students</code> is to wipe it and rebuild it from the Model every time something changes.</div></div>
+    </div>
+  </div>
+
+  <div class="teacher-box">
+    <span class="tb-label">⭐ Extension question</span>
+    What happens to <code>refresh_table()</code>'s performance once there are 10,000 students? Is clear-and-rebuild still a good idea?
+  </div>
+</section>
+
+<!-- MAIN.PY as part of architecture wrap-up -->
+<section class="lesson-section" id="sec-main" style="padding-top:0; border-bottom:none;">
+  <h3>main.py — starting the application</h3>
+  <p style="font-size:14.5px; color:var(--ink-soft);">main.py doesn't know about buttons or validation. Its only job is to create the three pieces, in order, and start the event loop.</p>
+  <div class="code-panel">
+    <div class="code-panel-header"><div class="dots"><span></span><span></span><span></span></div><span class="fname">main.py</span><button class="copy-btn" data-target="code-main-inline">Copy</button></div>
+    <pre class="code-block"><code id="code-main-inline" class="py-code">import tkinter as tk
+
+from views.student_view import StudentView
+from controllers.student_controller import StudentController
+
+
+def main():
+    root = tk.Tk()
+    view = StudentView(root)
+    controller = StudentController(view)
+    root.mainloop()
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+  </div>
+</section>
+
+<!-- 12 CRUD -->
+<section class="lesson-section" id="sec-crud">
+  <span class="eyebrow">12 · Pattern</span>
+  <h2 class="section-title">CRUD</h2>
+  <p class="section-lede">Almost every app that manages records reduces to four operations. Here's each one, mapped to this project.</p>
+
+  <div class="grid-4">
+    <div class="card">
+      <span class="badge green">Create</span>
+      <p style="font-size:13.5px; margin:10px 0 0;">Add a new student. <br><code>manager.add_student(student)</code></p>
+    </div>
+    <div class="card">
+      <span class="badge blue">Read</span>
+      <p style="font-size:13.5px; margin:10px 0 0;">Display students in the table.<br><code>manager.get_all_students()</code></p>
+    </div>
+    <div class="card">
+      <span class="badge amber">Update</span>
+      <p style="font-size:13.5px; margin:10px 0 0;">Edit the selected student.<br><code>manager.update_student(...)</code></p>
+    </div>
+    <div class="card">
+      <span class="badge red">Delete</span>
+      <p style="font-size:13.5px; margin:10px 0 0;">Remove a student, with confirmation.<br><code>manager.delete_student(id)</code></p>
+    </div>
+  </div>
+</section>
+
+<!-- 13 VALIDATION -->
+<section class="lesson-section" id="sec-validation">
+  <span class="eyebrow">13 · Data safety</span>
+  <h2 class="section-title">Validation</h2>
+  <p class="section-lede">Never trust what a user typed. <code>validate_input()</code> runs before every add or update, in this order:</p>
+
+  <table class="spec-table">
+    <thead><tr><th>Input</th><th>Check</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td>Student ID empty</td><td><code>not student_id</code></td><td>Error: "Student ID cannot be empty."</td></tr>
+      <tr><td>Name empty</td><td><code>not name</code></td><td>Error: "Name cannot be empty."</td></tr>
+      <tr><td>Age empty</td><td><code>not age</code></td><td>Error: "Age cannot be empty."</td></tr>
+      <tr><td>Grade empty</td><td><code>not grade</code></td><td>Error: "Grade cannot be empty."</td></tr>
+      <tr><td>Age = "abc"</td><td><code>int(age)</code> raises <code>ValueError</code></td><td>Error: "Age must be a number."</td></tr>
+      <tr><td>Age = "-3" or "0"</td><td><code>age_value &lt;= 0</code></td><td>Error: "Age must be greater than 0."</td></tr>
+      <tr><td>Duplicate Student ID</td><td><code>manager.find_student(id)</code> returns a student</td><td>Error: "This Student ID already exists." (checked in <code>add_student</code>, after validation)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout warn">Order matters: emptiness is checked before <code>int(age)</code> is ever called — otherwise converting an empty string to an integer would crash the app instead of showing a clean error.</div>
+</section>
+
+<!-- 14 SEARCH -->
+<section class="lesson-section" id="sec-search">
+  <span class="eyebrow">14 · Feature</span>
+  <h2 class="section-title">Search</h2>
+  <p class="section-lede">Search is case-insensitive and matches anywhere inside the name — not just the start.</p>
+
+  <div class="code-panel">
+    <div class="code-panel-header"><div class="dots"><span></span><span></span><span></span></div><span class="fname">controllers/student_controller.py</span><button class="copy-btn" data-target="code-search">Copy</button></div>
+    <pre class="code-block"><code id="code-search" class="py-code">def search_student(self):
+    keyword = self.view.entry_search.get().strip().lower()
+
+    self.view.clear_table()
+
+    for student in self.manager.get_all_students():
+        if keyword in student.name.lower():
+            self.view.insert_row(*student.get_info())</code></pre>
+  </div>
+
+  <div class="grid-3">
+    <div class="card"><span class="badge blue">"anh"</span><p style="font-size:13.5px; margin:8px 0 0;">Matches "Tran Minh <strong>Anh</strong>"</p></div>
+    <div class="card"><span class="badge blue">"Anh"</span><p style="font-size:13.5px; margin:8px 0 0;">Same match — case is ignored</p></div>
+    <div class="card"><span class="badge blue">"ANH"</span><p style="font-size:13.5px; margin:8px 0 0;">Still the same match</p></div>
+  </div>
+
+  <p style="font-size:14px; color:var(--ink-soft);"><code>clear_search()</code> resets the search box and calls <code>refresh_table()</code> to show every student again.</p>
+</section>
+
+<!-- 15 UPDATE -->
+<section class="lesson-section" id="sec-update">
+  <span class="eyebrow">15 · Feature</span>
+  <h2 class="section-title">Update</h2>
+  <p class="section-lede">Clicking a row fills the form; editing and clicking Update saves the change.</p>
+  <div class="flow">
+    <div class="node">Click a student row</div><div class="arrow">↓</div>
+    <div class="node hi">&lt;&lt;TreeviewSelect&gt;&gt; event fires</div><div class="arrow">↓</div>
+    <div class="node">select_student()</div><div class="arrow">↓</div>
+    <div class="node">fill_form()</div><div class="arrow">↓</div>
+    <div class="node">Student edits the fields</div><div class="arrow">↓</div>
+    <div class="node">Click "Update"</div><div class="arrow">↓</div>
+    <div class="node hi">update_student()</div><div class="arrow">↓</div>
+    <div class="node">manager.update_student()</div><div class="arrow">↓</div>
+    <div class="node">refresh_table()</div>
+  </div>
+  <div class="callout">The Student ID field stays editable in the form but is never used to rename a record — <code>update_student()</code> looks the student up by the ID already on screen, then rewrites everything except that ID.</div>
+</section>
+
+<!-- 16 DELETE -->
+<section class="lesson-section" id="sec-delete">
+  <span class="eyebrow">16 · Feature</span>
+  <h2 class="section-title">Delete</h2>
+  <p class="section-lede">Delete always asks first — there's no undo for a removed row.</p>
+  <div class="flow">
+    <div class="node">Select a row</div><div class="arrow">↓</div>
+    <div class="node">Get its Student ID</div><div class="arrow">↓</div>
+    <div class="node hi">ask_confirmation()</div><div class="arrow">↓</div>
+    <div class="flow-row">
+      <div class="node" style="border-color:var(--red); color:#A02E44;">Cancelled → stop</div>
+      <div class="node" style="border-color:var(--green); color:#1E6B41;">Confirmed → delete</div>
+    </div>
+    <div class="arrow">↓</div>
+    <div class="node">refresh_table()</div>
+  </div>
+
+  <div class="app-mockup" style="max-width:360px;">
+    <div class="titlebar"><span></span><span></span><span></span>Confirm Delete</div>
+    <div class="app-mockup-body" style="text-align:center;">
+      <p style="font-size:13.5px; margin-bottom:16px;">Delete student S002?</p>
+      <div class="mock-btns" style="justify-content:center;">
+        <span class="mb primary">Yes</span><span class="mb">No</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 17 FULL CODE -->
+<section class="lesson-section" id="sec-fullcode">
+  <span class="eyebrow">17 · Reference</span>
+  <h2 class="section-title">The full project, file by file</h2>
+  <p class="section-lede">Every file, complete, nothing shortened. Copy any tab straight into your own project.</p>
+
+  <div class="tabbed-code">
+    <div class="code-tabs" id="codeTabs">
+      <button class="code-tab-btn active" data-tab="tab-student">student.py</button>
+      <button class="code-tab-btn" data-tab="tab-manager">student_manager.py</button>
+      <button class="code-tab-btn" data-tab="tab-view">student_view.py</button>
+      <button class="code-tab-btn" data-tab="tab-controller">student_controller.py</button>
+      <button class="code-tab-btn" data-tab="tab-main">main.py</button>
+    </div>
+
+    <div class="code-tab-panel active" id="tab-student">
+      <div class="code-panel">
+        <div class="code-panel-header"><div class="dots"><span></span><span></span><span></span></div><span class="fname">models/student.py</span><button class="copy-btn" data-target="code-full-student">Copy</button></div>
+        <pre class="code-block"><code id="code-full-student" class="py-code">class Student:
+
+    def __init__(self, student_id, name, age, grade):
+        self.student_id = student_id
+        self.name = name
+        self.age = age
+        self.grade = grade
+
+    def get_info(self):
+        return (self.student_id, self.name, self.age, self.grade)
+
+    def update(self, name, age, grade):
+        self.name = name
+        self.age = age
+        self.grade = grade
+
+    def is_adult(self):
+        return self.age >= 18</code></pre>
+      </div>
+    </div>
+
+    <div class="code-tab-panel" id="tab-manager">
+      <div class="code-panel">
+        <div class="code-panel-header"><div class="dots"><span></span><span></span><span></span></div><span class="fname">models/student_manager.py</span><button class="copy-btn" data-target="code-full-manager">Copy</button></div>
+        <pre class="code-block"><code id="code-full-manager" class="py-code">class StudentManager:
+
+    def __init__(self):
+        self.students = []
+
+    def add_student(self, student):
+        self.students.append(student)
+
+    def get_all_students(self):
+        return self.students
+
+    def find_student(self, student_id):
+        for student in self.students:
+            if student.student_id == student_id:
+                return student
+        return None
+
+    def update_student(self, student_id, name, age, grade):
+        student = self.find_student(student_id)
+        if student:
+            student.update(name, age, grade)
+            return True
+        return False
+
+    def delete_student(self, student_id):
+        student = self.find_student(student_id)
+        if student:
+            self.students.remove(student)
+            return True
+        return False
+
+    def count_students(self):
+        return len(self.students)</code></pre>
+      </div>
+    </div>
+
+    <div class="code-tab-panel" id="tab-view">
+      <div class="code-panel">
+        <div class="code-panel-header"><div class="dots"><span></span><span></span><span></span></div><span class="fname">views/student_view.py</span><button class="copy-btn" data-target="code-full-view">Copy</button></div>
+        <pre class="code-block"><code id="code-full-view" class="py-code">import tkinter as tk
+from tkinter import ttk
+from tkinter import messagebox
+
+
+class StudentView:
+
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Student Management System")
+        self.root.geometry("850x650")
+
+        self.build_form()
+        self.build_buttons()
+        self.build_search()
+        self.build_table()
+
+    def build_form(self):
+        form_frame = tk.Frame(self.root, padx=20, pady=20)
+        form_frame.pack(fill="x")
+
+        tk.Label(form_frame, text="Student ID").grid(row=0, column=0, sticky="w")
+        self.entry_id = tk.Entry(form_frame, width=25)
+        self.entry_id.grid(row=0, column=1, padx=10, pady=5)
+
+        tk.Label(form_frame, text="Name").grid(row=1, column=0, sticky="w")
+        self.entry_name = tk.Entry(form_frame, width=25)
+        self.entry_name.grid(row=1, column=1, padx=10, pady=5)
+
+        tk.Label(form_frame, text="Age").grid(row=2, column=0, sticky="w")
+        self.entry_age = tk.Entry(form_frame, width=25)
+        self.entry_age.grid(row=2, column=1, padx=10, pady=5)
+
+        tk.Label(form_frame, text="Grade").grid(row=3, column=0, sticky="w")
+        self.entry_grade = tk.Entry(form_frame, width=25)
+        self.entry_grade.grid(row=3, column=1, padx=10, pady=5)
+
+    def build_buttons(self):
+        button_frame = tk.Frame(self.root, padx=20, pady=10)
+        button_frame.pack(fill="x")
+
+        self.btn_add = tk.Button(button_frame, text="Add", width=12)
+        self.btn_add.grid(row=0, column=0, padx=5)
+
+        self.btn_update = tk.Button(button_frame, text="Update", width=12)
+        self.btn_update.grid(row=0, column=1, padx=5)
+
+        self.btn_delete = tk.Button(button_frame, text="Delete", width=12)
+        self.btn_delete.grid(row=0, column=2, padx=5)
+
+        self.btn_clear = tk.Button(button_frame, text="Clear", width=12)
+        self.btn_clear.grid(row=0, column=3, padx=5)
+
+    def build_search(self):
+        search_frame = tk.Frame(self.root, padx=20, pady=10)
+        search_frame.pack(fill="x")
+
+        tk.Label(search_frame, text="Search").pack(side="left")
+
+        self.entry_search = tk.Entry(search_frame, width=30)
+        self.entry_search.pack(side="left", padx=10)
+
+        self.btn_search = tk.Button(search_frame, text="Search", width=10)
+        self.btn_search.pack(side="left", padx=5)
+
+        self.btn_clear_search = tk.Button(search_frame, text="Clear Search", width=12)
+        self.btn_clear_search.pack(side="left", padx=5)
+
+    def build_table(self):
+        table_frame = tk.Frame(self.root, padx=20, pady=10)
+        table_frame.pack(fill="both", expand=True)
+
+        columns = ("student_id", "name", "age", "grade")
+
+        self.tree = ttk.Treeview(
+            table_frame,
+            columns=columns,
+            show="headings",
+            height=12
+        )
+
+        self.tree.heading("student_id", text="Student ID")
+        self.tree.heading("name", text="Name")
+        self.tree.heading("age", text="Age")
+        self.tree.heading("grade", text="Grade")
+
+        self.tree.column("student_id", width=100)
+        self.tree.column("name", width=200)
+        self.tree.column("age", width=80)
+        self.tree.column("grade", width=150)
+
+        self.tree.pack(fill="both", expand=True)
+
+    def get_form_data(self):
+        return (
+            self.entry_id.get().strip(),
+            self.entry_name.get().strip(),
+            self.entry_age.get().strip(),
+            self.entry_grade.get().strip()
+        )
+
+    def clear_form(self):
+        self.entry_id.delete(0, tk.END)
+        self.entry_name.delete(0, tk.END)
+        self.entry_age.delete(0, tk.END)
+        self.entry_grade.delete(0, tk.END)
+
+    def fill_form(self, student_id, name, age, grade):
+        self.clear_form()
+        self.entry_id.insert(0, student_id)
+        self.entry_name.insert(0, name)
+        self.entry_age.insert(0, age)
+        self.entry_grade.insert(0, grade)
+
+    def clear_table(self):
+        for row in self.tree.get_children():
+            self.tree.delete(row)
+
+    def insert_row(self, student_id, name, age, grade):
+        self.tree.insert("", tk.END, values=(student_id, name, age, grade))
+
+    def get_selected_item(self):
+        return self.tree.selection()
+
+    def get_row_values(self, item):
+        return self.tree.item(item, "values")
+
+    def show_message(self, title, message):
+        messagebox.showinfo(title, message)
+
+    def show_error(self, title, message):
+        messagebox.showerror(title, message)
+
+    def ask_confirmation(self, title, message):
+        return messagebox.askyesno(title, message)</code></pre>
+      </div>
+    </div>
+
+    <div class="code-tab-panel" id="tab-controller">
+      <div class="code-panel">
+        <div class="code-panel-header"><div class="dots"><span></span><span></span><span></span></div><span class="fname">controllers/student_controller.py</span><button class="copy-btn" data-target="code-full-controller">Copy</button></div>
+        <pre class="code-block"><code id="code-full-controller" class="py-code">from models.student import Student
+from models.student_manager import StudentManager
+
+
+class StudentController:
+
+    def __init__(self, view):
+        self.view = view
+        self.manager = StudentManager()
+
+        self.view.btn_add.config(command=self.add_student)
+        self.view.btn_update.config(command=self.update_student)
+        self.view.btn_delete.config(command=self.delete_student)
+        self.view.btn_clear.config(command=self.clear_form)
+        self.view.btn_search.config(command=self.search_student)
+        self.view.btn_clear_search.config(command=self.clear_search)
+
+        self.view.tree.bind("<<TreeviewSelect>>", self.select_student)
+
+        self.load_sample_data()
+
+    def load_sample_data(self):
+        sample_students = [
+            Student("S001", "Nguyen Van An", 15, "Grade 9"),
+            Student("S002", "Tran Minh Anh", 16, "Grade 10"),
+            Student("S003", "Le Hoang Nam", 17, "Grade 11"),
+        ]
+        for student in sample_students:
+            self.manager.add_student(student)
+        self.refresh_table()
+
+    def validate_input(self, student_id, name, age, grade):
+        if not student_id:
+            self.view.show_error("Validation Error", "Student ID cannot be empty.")
+            return False
+        if not name:
+            self.view.show_error("Validation Error", "Name cannot be empty.")
+            return False
+        if not age:
+            self.view.show_error("Validation Error", "Age cannot be empty.")
+            return False
+        if not grade:
+            self.view.show_error("Validation Error", "Grade cannot be empty.")
+            return False
+
+        try:
+            age_value = int(age)
+        except ValueError:
+            self.view.show_error("Validation Error", "Age must be a number.")
+            return False
+
+        if age_value <= 0:
+            self.view.show_error("Validation Error", "Age must be greater than 0.")
+            return False
+
+        return True
+
+    def add_student(self):
+        student_id, name, age, grade = self.view.get_form_data()
+
+        if not self.validate_input(student_id, name, age, grade):
+            return
+
+        if self.manager.find_student(student_id):
+            self.view.show_error("Duplicate ID", "This Student ID already exists.")
+            return
+
+        student = Student(student_id, name, int(age), grade)
+        self.manager.add_student(student)
+
+        self.refresh_table()
+        self.clear_form()
+        self.view.show_message("Success", "Student added successfully.")
+
+    def update_student(self):
+        student_id, name, age, grade = self.view.get_form_data()
+
+        if not self.validate_input(student_id, name, age, grade):
+            return
+
+        updated = self.manager.update_student(student_id, name, int(age), grade)
+
+        if not updated:
+            self.view.show_error("Not Found", "Student ID not found.")
+            return
+
+        self.refresh_table()
+        self.clear_form()
+        self.view.show_message("Success", "Student updated successfully.")
+
+    def delete_student(self):
+        student_id, name, age, grade = self.view.get_form_data()
+
+        if not student_id:
+            self.view.show_error("Validation Error", "Select a student to delete.")
+            return
+
+        confirmed = self.view.ask_confirmation(
+            "Confirm Delete",
+            "Delete student " + student_id + "?"
+        )
+
+        if not confirmed:
+            return
+
+        deleted = self.manager.delete_student(student_id)
+
+        if not deleted:
+            self.view.show_error("Not Found", "Student ID not found.")
+            return
+
+        self.refresh_table()
+        self.clear_form()
+        self.view.show_message("Success", "Student deleted successfully.")
+
+    def clear_form(self):
+        self.view.clear_form()
+
+    def select_student(self, event):
+        selected = self.view.get_selected_item()
+
+        if not selected:
+            return
+
+        values = self.view.get_row_values(selected[0])
+        self.view.fill_form(*values)
+
+    def search_student(self):
+        keyword = self.view.entry_search.get().strip().lower()
+
+        self.view.clear_table()
+
+        for student in self.manager.get_all_students():
+            if keyword in student.name.lower():
+                self.view.insert_row(*student.get_info())
+
+    def clear_search(self):
+        self.view.entry_search.delete(0, "end")
+        self.refresh_table()
+
+    def refresh_table(self):
+        self.view.clear_table()
+        for student in self.manager.get_all_students():
+            self.view.insert_row(*student.get_info())</code></pre>
+      </div>
+    </div>
+
+    <div class="code-tab-panel" id="tab-main">
+      <div class="code-panel">
+        <div class="code-panel-header"><div class="dots"><span></span><span></span><span></span></div><span class="fname">main.py</span><button class="copy-btn" data-target="code-full-main">Copy</button></div>
+        <pre class="code-block"><code id="code-full-main" class="py-code">import tkinter as tk
+
+from views.student_view import StudentView
+from controllers.student_controller import StudentController
+
+
+def main():
+    root = tk.Tk()
+    view = StudentView(root)
+    controller = StudentController(view)
+    root.mainloop()
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 18 TESTING -->
+<section class="lesson-section" id="sec-testing">
+  <span class="eyebrow">18 · Verify</span>
+  <h2 class="section-title">Testing checklist</h2>
+  <p class="section-lede">Run the app and work through every case below.</p>
+  <div class="card">
+    <div class="mini-progress">
+      <div class="track"><div class="fill" id="testFill"></div></div>
+      <span class="count" id="testCount">0 / 12 passed</span>
+    </div>
+    <div class="check-list" id="testList">
+      <label class="check-item"><input type="checkbox"><span>Add a student with valid data</span></label>
+      <label class="check-item"><input type="checkbox"><span>Try adding a duplicate Student ID</span></label>
+      <label class="check-item"><input type="checkbox"><span>Try adding an empty name</span></label>
+      <label class="check-item"><input type="checkbox"><span>Try an invalid (non-numeric) age</span></label>
+      <label class="check-item"><input type="checkbox"><span>Try an age of 0 or a negative number</span></label>
+      <label class="check-item"><input type="checkbox"><span>Select a student in the table</span></label>
+      <label class="check-item"><input type="checkbox"><span>Update the selected student</span></label>
+      <label class="check-item"><input type="checkbox"><span>Delete a student</span></label>
+      <label class="check-item"><input type="checkbox"><span>Cancel a delete confirmation</span></label>
+      <label class="check-item"><input type="checkbox"><span>Search for a student by partial name</span></label>
+      <label class="check-item"><input type="checkbox"><span>Clear the search and see the full list return</span></label>
+      <label class="check-item"><input type="checkbox"><span>Clear the form manually</span></label>
+    </div>
+  </div>
+</section>
+
+<!-- 19 CHALLENGES -->
+<section class="lesson-section" id="sec-challenges">
+  <span class="eyebrow">19 · Practice</span>
+  <h2 class="section-title">Challenges</h2>
+  <p class="section-lede">Ten tasks, easiest to hardest. Try each one yourself before revealing the answer — the code you write should slot straight into the project from section 17.</p>
+
+  <div id="challengesList"></div>
+</section>
+
+<!-- 20 QUIZ -->
+<section class="lesson-section" id="sec-quiz">
+  <span class="eyebrow">20 · Check yourself</span>
+  <h2 class="section-title">Final quiz</h2>
+  <p class="section-lede">10 questions covering everything from class basics to MVC. No backend — scored right here.</p>
+
+  <div id="quizList"></div>
+  <button class="btn" id="submitQuizBtn">Submit quiz</button>
+  <div class="quiz-result" id="quizResult">
+    <div class="score" id="quizScore">0 / 10</div>
+    <p id="quizFeedback" style="margin:8px 0 0; opacity:.85;"></p>
+  </div>
+</section>
+
+<!-- 21 RECAP -->
+<section class="lesson-section" id="sec-recap">
+  <span class="eyebrow">21 · Recap</span>
+  <h2 class="section-title">How it all connects</h2>
+  <div class="flow">
+    <div class="node">OOP</div><div class="arrow">↓</div>
+    <div class="node">Class</div><div class="arrow">↓</div>
+    <div class="node">Object</div><div class="arrow">↓</div>
+    <div class="node">Tkinter</div><div class="arrow">↓</div>
+    <div class="node">GUI</div><div class="arrow">↓</div>
+    <div class="node">Events</div><div class="arrow">↓</div>
+    <div class="node hi">MVC</div><div class="arrow">↓</div>
+    <div class="node">CRUD</div><div class="arrow">↓</div>
+    <div class="node">Validation</div><div class="arrow">↓</div>
+    <div class="node hi">Student Management System</div>
+  </div>
+  <p style="text-align:center; color:var(--ink-soft); font-size:14px;">Every earlier concept was a piece the finished app actually needed — none of it was there just for theory.</p>
+</section>
+
+<!-- 22 NEXT LEVEL -->
+<section class="lesson-section" id="sec-nextlevel">
+  <span class="eyebrow">22 · Where next</span>
+  <h2 class="section-title">Level up the project</h2>
+  <p class="section-lede">The in-memory list you built today is level one. Here's where this architecture can go.</p>
+
+  <div class="roadmap">
+    <div class="step"><div class="dot">1</div><div><h4>In-memory list <span class="badge green" style="margin-left:6px;">You are here</span></h4><p>Data lives only while the app is running — closing it loses everything.</p></div></div>
+    <div class="step"><div class="dot">2</div><div><h4>SQLite database</h4><p>Swap the Model's storage from a Python list to a real database file — the View and Controller barely change.</p></div></div>
+    <div class="step"><div class="dot">3</div><div><h4>Login system</h4><p>Add a login screen before the main window opens.</p></div></div>
+    <div class="step"><div class="dot">4</div><div><h4>Dashboard</h4><p>A summary screen — total students, students per grade.</p></div></div>
+    <div class="step"><div class="dot">5</div><div><h4>Attendance tracking</h4><p>A new Model for daily attendance, linked to each student.</p></div></div>
+    <div class="step"><div class="dot">6</div><div><h4>Grades &amp; scores</h4><p>Store and average subject grades per student.</p></div></div>
+    <div class="step"><div class="dot">7</div><div><h4>Export to CSV</h4><p>Let a teacher download the student list as a spreadsheet.</p></div></div>
+    <div class="step"><div class="dot">8</div><div><h4>Full school management system</h4><p>Multiple managers, multiple views, one consistent MVC architecture holding it together.</p></div></div>
+  </div>
+
+  <button class="btn" id="continueSqliteBtn">Continue to SQLite →</button>
+</section>
+
+<footer class="lesson-footer">
+  Built for the classroom · Python · Tkinter · OOP · MVC
+</footer>
+
+</main>
+</div>
+
+<div class="toast" id="toast">Copied ✓</div>
+
+<script>
+/* ============ DATA ============ */
+
+const CHALLENGES = [
+  {
+    id: 1, difficulty: "Easy",
+    title: "Challenge 1 — Clear button",
+    task: "Wire the Clear button so clicking it empties all four form fields without touching the table.",
+    hint: "The View already has a clear_form() method that empties every Entry — the Controller just needs a matching method to call it.",
+    expected: "Clicking Clear empties Student ID, Name, Age and Grade, and the table is untouched.",
+    answer: "def clear_form(self):\n    self.view.clear_form()\n\n# wired in __init__:\nself.view.btn_clear.config(command=self.clear_form)"
+  },
+  {
+    id: 2, difficulty: "Easy",
+    title: "Challenge 2 — Delete a student",
+    task: "Implement delete_student() so it removes the student matching the ID currently in the form.",
+    hint: "Reuse manager.delete_student(student_id) — it already returns True or False depending on whether it found something to remove.",
+    expected: "Deleting S002 removes only that row and calls refresh_table() afterwards.",
+    answer: "def delete_student(self):\n    student_id, name, age, grade = self.view.get_form_data()\n\n    deleted = self.manager.delete_student(student_id)\n\n    if not deleted:\n        self.view.show_error(\"Not Found\", \"Student ID not found.\")\n        return\n\n    self.refresh_table()\n    self.clear_form()"
+  },
+  {
+    id: 3, difficulty: "Easy",
+    title: "Challenge 3 — Prevent an empty name",
+    task: "Stop add_student() from creating a student when the Name field is left blank.",
+    hint: "An empty string is falsy in Python — 'if not name:' is enough to catch it.",
+    expected: "Leaving Name blank and clicking Add shows an error and does not touch the table.",
+    answer: "if not name:\n    self.view.show_error(\"Validation Error\", \"Name cannot be empty.\")\n    return False"
+  },
+  {
+    id: 4, difficulty: "Medium",
+    title: "Challenge 4 — Prevent a duplicate Student ID",
+    task: "Stop add_student() from creating two students with the same ID.",
+    hint: "manager.find_student(student_id) returns None when nothing matches — anything else means the ID is taken.",
+    expected: "Adding S001 a second time shows 'This Student ID already exists.' and no second row appears.",
+    answer: "if self.manager.find_student(student_id):\n    self.view.show_error(\"Duplicate ID\", \"This Student ID already exists.\")\n    return"
+  },
+  {
+    id: 5, difficulty: "Medium",
+    title: "Challenge 5 — Validate age",
+    task: "Make sure Age is a whole number greater than zero before a student is created.",
+    hint: "Wrap int(age) in a try/except ValueError, then separately check the converted value is > 0.",
+    expected: "'abc' → 'Age must be a number.' · '-3' or '0' → 'Age must be greater than 0.'",
+    answer: "try:\n    age_value = int(age)\nexcept ValueError:\n    self.view.show_error(\"Validation Error\", \"Age must be a number.\")\n    return False\n\nif age_value <= 0:\n    self.view.show_error(\"Validation Error\", \"Age must be greater than 0.\")\n    return False"
+  },
+  {
+    id: 6, difficulty: "Medium",
+    title: "Challenge 6 — Search a student",
+    task: "Filter the table to only rows whose name contains the search keyword, ignoring case.",
+    hint: "Lowercase both the keyword and student.name before checking 'in'.",
+    expected: "Typing 'anh' shows Tran Minh Anh even though the stored name is capitalised differently.",
+    answer: "def search_student(self):\n    keyword = self.view.entry_search.get().strip().lower()\n    self.view.clear_table()\n    for student in self.manager.get_all_students():\n        if keyword in student.name.lower():\n            self.view.insert_row(*student.get_info())"
+  },
+  {
+    id: 7, difficulty: "Medium",
+    title: "Challenge 7 — Update a student",
+    task: "Make the Update button save edits made to a student that's currently selected in the table.",
+    hint: "Validate first, then call manager.update_student(student_id, name, int(age), grade) — same pattern as add_student().",
+    expected: "Selecting S003, changing Grade to 'Grade 12' and clicking Update changes only that row.",
+    answer: "def update_student(self):\n    student_id, name, age, grade = self.view.get_form_data()\n\n    if not self.validate_input(student_id, name, age, grade):\n        return\n\n    updated = self.manager.update_student(student_id, name, int(age), grade)\n\n    if not updated:\n        self.view.show_error(\"Not Found\", \"Student ID not found.\")\n        return\n\n    self.refresh_table()\n    self.clear_form()"
+  },
+  {
+    id: 8, difficulty: "Hard",
+    title: "Challenge 8 — Confirmation dialog",
+    task: "Before deleting, ask the user to confirm — cancelling must leave the data untouched.",
+    hint: "view.ask_confirmation() wraps messagebox.askyesno() and returns True or False.",
+    expected: "Clicking 'No' in the confirmation popup leaves every row exactly as it was.",
+    answer: "confirmed = self.view.ask_confirmation(\n    \"Confirm Delete\",\n    \"Delete student \" + student_id + \"?\"\n)\n\nif not confirmed:\n    return"
+  },
+  {
+    id: 9, difficulty: "Hard",
+    title: "Challenge 9 — is_adult()",
+    task: "Add a method to Student that returns True if the student is 18 or older.",
+    hint: "This is a derived fact, not stored data — compute it from self.age every time it's asked.",
+    expected: "Student('S099','Test',18,'Grade 12').is_adult() returns True; age 17 returns False.",
+    answer: "def is_adult(self):\n    return self.age >= 18"
+  },
+  {
+    id: 10, difficulty: "Hard",
+    title: "Challenge 10 — Student count",
+    task: "Display how many students are currently stored, updated every time the table refreshes.",
+    hint: "manager.count_students() already returns len(self.students) — you just need somewhere in the View to show it, and to call it inside refresh_table().",
+    expected: "Adding a fourth student updates a visible counter from 3 to 4.",
+    answer: "# StudentManager already has:\ndef count_students(self):\n    return len(self.students)\n\n# Controller, inside refresh_table():\ncount = self.manager.count_students()\nself.view.show_count(count)  # a label you add to the View"
+  }
+];
+
+const QUIZ = [
+  { q:"What is a class in Python?", opts:["A blueprint that describes attributes and methods","A running program","A single value","A type of loop"], a:0 },
+  { q:"What is an object?", opts:["A syntax error","A real instance created from a class","A function with no arguments","A file on disk"], a:1 },
+  { q:"What does 'self' refer to inside a method?", opts:["The class itself","The module","The specific object the method was called on","Nothing — it's optional"], a:2 },
+  { q:"Which Tkinter widget shows tabular data with rows and columns?", opts:["Label","Entry","Treeview","Frame"], a:2 },
+  { q:"What's wrong with command=my_function() when wiring a button?", opts:["Nothing, it's correct","It calls the function immediately instead of passing it","It only works with lambdas","Buttons can't have commands"], a:1 },
+  { q:"In MVC, which part is allowed to directly change the Model's data?", opts:["The View","The Controller","Either one, it doesn't matter","Neither — data changes itself"], a:1 },
+  { q:"What does CRUD stand for?", opts:["Create, Read, Update, Delete","Copy, Run, Undo, Debug","Class, Return, Use, Define","Check, Repeat, Update, Draw"], a:0 },
+  { q:"Why does validate_input() check for an empty age before calling int(age)?", opts:["It doesn't matter, order is irrelevant","To avoid a crash when converting an empty string to int","Because Python requires it","To make the code longer"], a:1 },
+  { q:"How does search_student() match names case-insensitively?", opts:["It doesn't — search is case-sensitive","By lowercasing both the keyword and the stored name before comparing","By using a regular expression","By storing two copies of every name"], a:1 },
+  { q:"True or False: the View in this project decides whether a Student ID is a duplicate.", opts:["True","False"], a:1 }
+];
+
+/* ============ Python syntax highlighter (lightweight) ============ */
+function escapeHtml(s){
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+function highlightPython(raw){
+  const lines = raw.split("\n");
+  const kw = /\b(return|if|elif|else|for|while|in|not|and|or|import|from|try|except|as|self|True|False|None|pass|break|continue|is|with|raise|lambda)\b/g;
+  return lines.map(line=>{
+    let commentIdx = -1;
+    let inStr = false, strCh = "";
+    for(let i=0;i<line.length;i++){
+      const c = line[i];
+      if(inStr){ if(c===strCh) inStr=false; continue; }
+      if(c==='"'||c==="'"){ inStr=true; strCh=c; continue; }
+      if(c==='#'){ commentIdx=i; break; }
+    }
+    let code = commentIdx>=0 ? line.slice(0,commentIdx) : line;
+    let comment = commentIdx>=0 ? line.slice(commentIdx) : "";
+    code = escapeHtml(code);
+    code = code.replace(/(&quot;|&#39;)/g,"$1");
+    code = code.replace(/("(?:[^"\\]|\\.)*")/g,'<span class="tok-str">$1</span>');
+    code = code.replace(/('(?:[^'\\]|\\.)*')/g,'<span class="tok-str">$1</span>');
+    code = code.replace(/\b(class)\s+([A-Za-z_][A-Za-z0-9_]*)/g,'<span class="tok-kw">$1</span> <span class="tok-cls">$2</span>');
+    code = code.replace(/\b(def)\s+([A-Za-z_][A-Za-z0-9_]*)/g,'<span class="tok-kw">$1</span> <span class="tok-fn">$2</span>');
+    code = code.replace(kw,'<span class="tok-kw">$1</span>');
+    code = code.replace(/\b(\d+)\b/g,'<span class="tok-num">$1</span>');
+    comment = comment ? '<span class="tok-com">'+escapeHtml(comment)+'</span>' : "";
+    return code+comment;
+  }).join("\n");
+}
+document.querySelectorAll('code.py-code').forEach(el=>{
+  el.innerHTML = highlightPython(el.textContent);
+});
+
+/* ============ Copy buttons ============ */
+const toast = document.getElementById('toast');
+let toastTimer;
+function showToast(msg){
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>toast.classList.remove('show'), 1800);
+}
+document.querySelectorAll('.copy-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const target = document.getElementById(btn.dataset.target);
+    if(!target) return;
+    const text = target.innerText;
+    const done = ()=>{
+      const original = btn.textContent;
+      btn.textContent = 'Copied ✓';
+      btn.classList.add('copied');
+      showToast('Copied to clipboard');
+      setTimeout(()=>{ btn.textContent = original; btn.classList.remove('copied'); }, 1600);
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done).catch(()=>{
+        fallbackCopy(text); done();
+      });
+    } else {
+      fallbackCopy(text); done();
+    }
+  });
+});
+function fallbackCopy(text){
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); }catch(e){}
+  document.body.removeChild(ta);
+}
+
+/* ============ Sidebar toggle (mobile) ============ */
+const sidebar = document.getElementById('sidebar');
+const sidebarToggle = document.getElementById('sidebarToggle');
+sidebarToggle.addEventListener('click', ()=> sidebar.classList.toggle('open'));
+document.querySelectorAll('nav.toc a').forEach(a=>{
+  a.addEventListener('click', ()=> sidebar.classList.remove('open'));
+});
+
+/* ============ Active nav + progress via IntersectionObserver ============ */
+const sections = Array.from(document.querySelectorAll('main.content > section[id]')).filter(s=>document.querySelector('nav.toc a[data-target="'+s.id+'"]'));
+const navLinks = document.querySelectorAll('nav.toc a');
+const visited = new Set();
+
+function updateProgress(){
+  const pct = Math.round((visited.size / sections.length) * 100);
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('progressPct').textContent = pct+'%';
+}
+
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    const id = entry.target.id;
+    const link = document.querySelector('nav.toc a[data-target="'+id+'"]');
+    if(entry.isIntersecting){
+      visited.add(id);
+      updateProgress();
+      if(entry.intersectionRatio > 0.35 || entry.boundingClientRect.top < 200){
+        navLinks.forEach(l=>l.classList.remove('active'));
+        if(link) link.classList.add('active');
+      }
+    }
+  });
+}, { rootMargin: "-15% 0px -55% 0px", threshold: [0, 0.35, 0.6] });
+
+sections.forEach(s=> io.observe(s));
+
+navLinks.forEach(a=>{
+  a.addEventListener('click', (e)=>{
+    e.preventDefault();
+    const target = document.getElementById(a.dataset.target);
+    if(target){ target.scrollIntoView({behavior:'smooth', block:'start'}); }
+  });
+});
+
+document.getElementById('startLessonBtn').addEventListener('click', ()=>{
+  document.getElementById('sec-objectives').scrollIntoView({behavior:'smooth'});
+});
+document.getElementById('continueSqliteBtn').addEventListener('click', ()=>{
+  showToast('Level 2 — SQLite — is a lesson of its own 🎉');
+});
+
+/* ============ Objectives checklist ============ */
+function wireChecklist(listId, fillId, countId, labelSuffix){
+  const list = document.getElementById(listId);
+  const items = list.querySelectorAll('input[type="checkbox"]');
+  function update(){
+    let checked = 0;
+    items.forEach(i=>{ if(i.checked) checked++; i.closest('.check-item').classList.toggle('checked', i.checked); });
+    const pct = Math.round((checked/items.length)*100);
+    document.getElementById(fillId).style.width = pct+'%';
+    document.getElementById(countId).textContent = checked+' / '+items.length+' '+labelSuffix;
+  }
+  items.forEach(i=> i.addEventListener('change', update));
+  update();
+}
+wireChecklist('objectivesList','objFill','objCount','completed');
+wireChecklist('testList','testFill','testCount','passed');
+
+/* ============ Teacher / Student mode ============ */
+const btnStudent = document.getElementById('btnStudentMode');
+const btnTeacher = document.getElementById('btnTeacherMode');
+btnStudent.addEventListener('click', ()=>{
+  document.body.classList.remove('teacher-mode');
+  btnStudent.classList.add('active'); btnTeacher.classList.remove('active','teacher-active');
+});
+btnTeacher.addEventListener('click', ()=>{
+  document.body.classList.add('teacher-mode');
+  btnTeacher.classList.add('active','teacher-active'); btnStudent.classList.remove('active');
+});
+
+/* ============ Accordions ============ */
+document.querySelectorAll('.accordion-head').forEach(head=>{
+  head.addEventListener('click', ()=>{
+    head.parentElement.classList.toggle('open');
+  });
+});
+
+/* ============ Code tabs ============ */
+document.querySelectorAll('.code-tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const tabsWrap = btn.closest('.tabbed-code');
+    tabsWrap.querySelectorAll('.code-tab-btn').forEach(b=>b.classList.remove('active'));
+    tabsWrap.querySelectorAll('.code-tab-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* ============ Challenges ============ */
+const challengesWrap = document.getElementById('challengesList');
+CHALLENGES.forEach(ch=>{
+  const diffClass = ch.difficulty === "Easy" ? "green" : ch.difficulty === "Medium" ? "amber" : "red";
+  const card = document.createElement('div');
+  card.className = 'challenge-card';
+  card.innerHTML =
+    '<div class="meta"><span class="badge '+diffClass+'">'+ch.difficulty+'</span><span class="badge blue">Challenge '+ch.id+'</span></div>'+
+    '<h4>'+ch.title.replace(/^Challenge \d+ — /,'')+'</h4>'+
+    '<p style="font-size:14px; margin:0 0 4px;">'+ch.task+'</p>'+
+    '<p style="font-size:13px; color:var(--ink-faint); margin:0;"><strong>Expected result:</strong> '+ch.expected+'</p>'+
+    '<div style="display:flex; gap:8px; margin-top:14px;">'+
+      '<button class="btn ghost sm hint-btn">Show hint</button>'+
+      '<button class="btn sm answer-btn">Show answer</button>'+
+    '</div>'+
+    '<div class="hint">💡 '+ch.hint+'</div>'+
+    '<div class="answer"><div class="code-panel" style="margin-top:0;">'+
+      '<div class="code-panel-header"><div class="dots"><span></span><span></span><span></span></div><span class="fname">answer.py</span><button class="copy-btn" data-target="ans-'+ch.id+'">Copy</button></div>'+
+      '<pre class="code-block"><code id="ans-'+ch.id+'" class="py-code">'+escapeHtml(ch.answer)+'</code></pre>'+
+    '</div></div>';
+  challengesWrap.appendChild(card);
+
+  const hintBtn = card.querySelector('.hint-btn');
+  const answerBtn = card.querySelector('.answer-btn');
+  const hintBox = card.querySelector('.hint');
+  const answerBox = card.querySelector('.answer');
+
+  hintBtn.addEventListener('click', ()=>{
+    hintBox.classList.toggle('show');
+    hintBtn.textContent = hintBox.classList.contains('show') ? 'Hide hint' : 'Show hint';
+  });
+  answerBtn.addEventListener('click', ()=>{
+    answerBox.classList.toggle('show');
+    answerBtn.textContent = answerBox.classList.contains('show') ? 'Hide answer' : 'Show answer';
+    if(answerBox.classList.contains('show')){
+      const codeEl = answerBox.querySelector('code.py-code');
+      codeEl.innerHTML = highlightPython(codeEl.textContent);
+      const copyBtn = answerBox.querySelector('.copy-btn');
+      copyBtn.addEventListener('click', ()=>{
+        const text = codeEl.innerText;
+        (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.resolve()).then(()=>showToast('Copied to clipboard'));
+      });
+    }
+  });
+});
+
+/* ============ Quiz ============ */
+const quizWrap = document.getElementById('quizList');
+const quizAnswers = new Array(QUIZ.length).fill(null);
+
+QUIZ.forEach((item, qi)=>{
+  const card = document.createElement('div');
+  card.className = 'quiz-card';
+  const optsHtml = item.opts.map((opt, oi)=>
+    '<button class="quiz-opt" data-q="'+qi+'" data-o="'+oi+'">'+opt+'</button>'
+  ).join('');
+  card.innerHTML = '<h4>Q'+(qi+1)+'. '+item.q+'</h4><div class="quiz-opts">'+optsHtml+'</div>';
+  quizWrap.appendChild(card);
+});
+
+quizWrap.addEventListener('click', (e)=>{
+  const btn = e.target.closest('.quiz-opt');
+  if(!btn) return;
+  const qi = parseInt(btn.dataset.q, 10);
+  const oi = parseInt(btn.dataset.o, 10);
+  quizAnswers[qi] = oi;
+  const card = btn.closest('.quiz-card');
+  card.querySelectorAll('.quiz-opt').forEach(b=>{
+    b.classList.remove('correct','incorrect');
+  });
+  btn.classList.add(oi === QUIZ[qi].a ? 'sel-correct' : 'sel-wrong');
+  card.querySelectorAll('.quiz-opt').forEach(b=>{
+    const o = parseInt(b.dataset.o,10);
+    if(o === QUIZ[qi].a) b.style.outline = '2px solid var(--green)';
+    else b.style.outline = 'none';
+  });
+});
+
+document.getElementById('submitQuizBtn').addEventListener('click', ()=>{
+  let score = 0;
+  QUIZ.forEach((item, qi)=>{
+    const card = quizWrap.children[qi];
+    const opts = card.querySelectorAll('.quiz-opt');
+    opts.forEach((b, oi)=>{
+      b.disabled = true;
+      if(oi === item.a) b.classList.add('correct');
+      else if(oi === quizAnswers[qi]) b.classList.add('incorrect');
+    });
+    if(quizAnswers[qi] === item.a) score++;
+  });
+  const resultBox = document.getElementById('quizResult');
+  document.getElementById('quizScore').textContent = score+' / '+QUIZ.length;
+  const feedback = score === QUIZ.length ? "Perfect score — you've genuinely got this."
+    : score >= QUIZ.length*0.7 ? "Solid work. Review the missed ones and re-read that section."
+    : "Worth another pass through the sections you missed — MVC clicks with a second read.";
+  document.getElementById('quizFeedback').textContent = feedback;
+  resultBox.classList.add('show');
+  resultBox.scrollIntoView({behavior:'smooth', block:'center'});
+});
+
+updateProgress();
+</script>
+</body>
+</html>
